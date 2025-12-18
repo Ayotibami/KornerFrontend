@@ -1,0 +1,23 @@
+{
+  "folders": [
+	{
+		"path": "../../../../../Kampos-website"
+	},
+	{
+		"path": "../../../../../Kampos-frontend"
+	},
+	{
+		"path": "../../../../../KamposBackend"
+	},
+	{
+		"path": "../../../../../random"
+	},
+	{
+		"path": "../../../../../KornerBackend"
+	},
+	{
+		"path": "../../../.."
+	}
+],
+  "settings": {}
+}
