@@ -18,6 +18,9 @@ export default function page() {
     const password = formdata.get("password");
     const confirmPassword = formdata.get("confirmPassword");
     const avatar = formdata.get("avatar_url");
+    console.log("====================================");
+    console.log(avatar);
+    console.log("====================================");
     if (!email || !password || !name) {
       setError("Email, password and name are required");
       return;
@@ -61,10 +64,10 @@ export default function page() {
           label="Avatar"
           name="avatar_url"
           onChange={(e) => {
-            const file = e.target.files?.[0];
-            if (file.type !== "jpg") {
-              setError("Only image uploads are allowed");
-            }
+            // const file = e.target.files?.[0];
+            // if (file.type !== "jpg") {
+            //   setError("Only image uploads are allowed");
+            // }
           }}
         ></Input>
         <Input
@@ -104,7 +107,9 @@ export default function page() {
           type="password"
         ></Input>
 
-        <Button type={"submit"}>Shine like Werey</Button>
+        <Button type={"submit"} disabled={isPending}>
+          Shine like Werey
+        </Button>
       </form>
     </div>
   );
