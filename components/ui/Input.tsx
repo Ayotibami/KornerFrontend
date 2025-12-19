@@ -25,8 +25,9 @@ export default function Input({
       {label == "Avatar" && (
         <input
           type="file"
-          name="avatar"
-          placeholder="avatar"
+          onChange={onChange}
+          name={name}
+          // placeholder={placeholder}
           style={{
             height: 100,
             width: 100,
