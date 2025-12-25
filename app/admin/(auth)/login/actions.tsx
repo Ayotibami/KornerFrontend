@@ -24,29 +24,35 @@ const Login = async (formdata: FormData) => {
     const res = await fetch("http://127.0.0.1:3000/api/v1/admin/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
+      credentials: "include",
       body: JSON.stringify({ email, password }),
     });
 
     const data = await res.json();
+    const setCookieHeader = res.headers.get("set-cookie");
+
+    if (setCookieHeader) {
+      const firstPart = setCookieHeader.split(";")[0];
+
+      // 2. Split by the "=" to get just the "eyJhbG..."
+      const tokenValue = firstPart.split("=")[1];
+      const cookieStore = await cookies();
+      cookieStore.set("auth_token", tokenValue, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        maxAge: 86400, // Matching your Express setting
+        path: "/",
+      });
+    }
 
     if (!res.ok) {
       return { error: data.message || "Login failed" };
     }
 
-    // 2. Setting the Cookie (Check your API response structure!)
-    // If your backend sends { data: { token: "..." } } use data.data.token
     const token = data.data?.token;
 
     if (token) {
-      const cookieStore = await cookies();
-      cookieStore.set("admin_token", token, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "strict",
-        maxAge: 60 * 60 * 24,
-        path: "/",
-      });
-      success = true; // Mark success to trigger redirect outside try/catch
+      success = true;
     } else {
       return { error: "No token received from server" };
     }

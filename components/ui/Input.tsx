@@ -12,9 +12,7 @@ export default function Input({
   return (
     <div
       style={{
-        width: "100%",
         justifyContent: "center",
-        alignItems: "center",
         // backgroundColor: "red",
         display: "flex",
         flexDirection: "column",
@@ -22,39 +20,22 @@ export default function Input({
       }}
     >
       <label htmlFor="">{label}</label>
-      {label == "Avatar" && (
-        <input
-          type="file"
-          onChange={onChange}
-          name={name}
-          // placeholder={placeholder}
-          style={{
-            height: 100,
-            width: 100,
-            borderRadius: 50,
-            borderColor: "#165ABF",
-            borderWidth: 2,
-          }}
-        />
-      )}
-      {label !== "Avatar" && (
-        <input
-          type={type}
-          name={name}
-          style={{
-            width: "50%",
 
-            outline: "none",
-            padding: "15px 10px",
-            borderRadius: 30,
-            borderColor: "#165ABF",
-            borderWidth: 3,
-          }}
-          value={value}
-          onChange={onChange}
-          placeholder={placeholder}
-        ></input>
-      )}
+      <input
+        type={type}
+        name={name}
+        style={{
+          outline: "none",
+          padding: "15px 10px",
+          borderRadius: 30,
+          borderColor: "#165ABF",
+          borderWidth: 3,
+          // backgroundColor: "yellow",
+        }}
+        value={value}
+        onChange={onChange}
+        placeholder={placeholder}
+      ></input>
     </div>
   );
 }

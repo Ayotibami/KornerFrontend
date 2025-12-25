@@ -45,12 +45,13 @@ export default function page() {
       <form
         action={formSubmit}
         style={{
-          width: "50%",
+          width: "40%",
           gap: 30,
           flexDirection: "column",
           display: "flex",
-          alignItems: "center",
-          //   backgroundColor: "pink",
+
+          alignItems: "stretch",
+          // backgroundColor: "pink",
           justifyContent: "center",
         }}
       >

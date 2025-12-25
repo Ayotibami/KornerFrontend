@@ -4,41 +4,71 @@ import Input from "@/components/ui/Input";
 import React, { useState, useTransition } from "react";
 import signUp from "./actions";
 import { validatePassword } from "@/lib/validation";
+import Link from "next/link";
+import Avatar from "@/components/ui/Avatar";
 
-export default function page() {
+export default function Signup() {
   const [isPending, startTransition] = useTransition();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [name, setName] = useState("");
-  const [error, setError] = useState("");
+  const [email, setEmail] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+  const [confirmPassword, setConfirmPassword] = useState<string>("");
+  const [name, setName] = useState<string>("");
+  const [avatarUrl, setAvatarUrl] = useState<File | null>(null);
+  const [error, setError] = useState<string>("");
   const handleSubmit = (formdata: FormData) => {
     const name = formdata.get("name");
     const email = formdata.get("email");
     const password = formdata.get("password");
     const confirmPassword = formdata.get("confirmPassword");
-    const avatar = formdata.get("avatar_url");
-    console.log("====================================");
-    console.log(avatar);
-    console.log("====================================");
+    formdata.append("avatar_url", avatarUrl as File);
+    setError("");
     if (!email || !password || !name) {
-      setError("Email, password and name are required");
+      setError("Email, password and name are required abeg.");
+      return;
+    }
+    if (password != confirmPassword) {
+      setError("Passwords do not match abeg.");
       return;
     }
     if (!validatePassword(password).isValid) {
       setError(validatePassword(password).message);
       return;
     }
+    if (avatarUrl?.size == 0) {
+      setError("Avatar is required abeg.");
+      return;
+    }
+
+    if (avatarUrl?.type !== "image/jpeg") {
+      setError("Only image uploads are allowed");
+      return;
+    }
+    startTransition(async () => {
+      const res = await signUp(formdata);
+      if (res?.error) {
+        setError(res.error);
+      }
+    });
   };
   return (
-    <div>
+    <div
+      style={{
+        backgroundColor: "red",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        // height: "100vh",
+        // width: "100vw",
+      }}
+    >
       <form
         action={handleSubmit}
         style={{
           padding: 10,
+          backgroundColor: "yellow",
           justifyContent: "center",
           alignItems: "center",
-          width: "70%",
+          width: "50%",
           gap: 30,
           display: "flex",
           flexDirection: "column",
@@ -59,17 +89,7 @@ export default function page() {
         >
           {error}
         </p>
-        <Input
-          type="file"
-          label="Avatar"
-          name="avatar_url"
-          onChange={(e) => {
-            // const file = e.target.files?.[0];
-            // if (file.type !== "jpg") {
-            //   setError("Only image uploads are allowed");
-            // }
-          }}
-        ></Input>
+        <Avatar setAvatarUrl={setAvatarUrl}></Avatar>
         <Input
           name="name"
           label="Name"
@@ -92,7 +112,7 @@ export default function page() {
         <Input
           label="Password"
           name="password"
-          type="password"
+          type="text"
           value={password}
           onChange={(e) => {
             setPassword(e.target.value);
@@ -100,16 +120,28 @@ export default function page() {
         ></Input>
         <Input
           label="Confirm Password"
+          name="confirmPassword"
           value={confirmPassword}
           onChange={(e) => {
             setConfirmPassword(e.target.value);
           }}
-          type="password"
+          type="text"
         ></Input>
 
         <Button type={"submit"} disabled={isPending}>
           Shine like Werey
         </Button>
+        <p>
+          Are you an admin?{" "}
+          <Link
+            href="/admin/login"
+            style={{
+              color: "#165ABF",
+            }}
+          >
+            Just login na
+          </Link>
+        </p>
       </form>
     </div>
   );

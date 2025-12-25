@@ -10,8 +10,7 @@ export default function Button({ children, type, disabled, onClick }: any) {
       style={{
         borderColor: "transparent",
 
-        width: "50%",
-        padding: "20px 10px",
+        padding: "20px 30px",
         borderRadius: "30px",
       }}
     >
@@ -19,7 +18,7 @@ export default function Button({ children, type, disabled, onClick }: any) {
         style={{
           color: "white",
           fontWeight: "bold",
-          fontSize: "16px",
+          fontSize: "14px",
         }}
       >
         {children}
