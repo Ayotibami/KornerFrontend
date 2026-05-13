@@ -10,7 +10,7 @@ const CreateStori = async (
   excerpt,
   reading_time,
   cover_image,
-  stori_blocks
+  stori_blocks,
 ) => {
   let success = false;
   const cookieStore = await cookies();
@@ -35,6 +35,9 @@ const CreateStori = async (
     const data = await res.json();
     if (data.success) {
       success = true;
+      console.log("====================================");
+      console.log("mf");
+      console.log("====================================");
     }
     console.log("response", data);
   } catch (error) {

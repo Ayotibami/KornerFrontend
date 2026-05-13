@@ -17,7 +17,7 @@ export default function StoriContents({
           gap: 5,
           alignItems: "center",
         }}
-        key={content.position}
+        key={content.id}
       >
         <StoriContent
           content={content}

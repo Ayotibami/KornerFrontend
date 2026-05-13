@@ -1,88 +1,41 @@
 "use client";
-import Button from "@/components/ui/Button";
-import CreateImage from "@/components/ui/StoriImage";
+
 import Excerpt from "@/components/ui/Excerpt";
 import ReadTime from "@/components/ui/ReadTime";
 import SecondaryButton from "@/components/ui/SecondaryButton";
 import StoriContents from "@/components/ui/StoriContents";
-import StoriContent from "@/components/ui/StoriContents";
 import SubsideTitle from "@/components/ui/SubTitle";
-
 import Title from "@/components/ui/Title";
-
-import React, { useState, useTransition } from "react";
 import StoriImage from "@/components/ui/StoriImage";
-import { ActivityIcon, BookCheck, Loader2, Pencil, Save } from "lucide-react";
-import CreateStori from "./action";
+import { BookCheck, Loader2, Pencil, Save } from "lucide-react";
+import { useCreateStori } from "@/context/CreateStoriContext";
 
 export default function Create() {
-  const [isPending, startTransition] = useTransition();
-  const [coverImage, setCoverImage] = React.useState<File | null>(null);
-  const [mode, setMode] = useState<"write" | "read">("write");
-  const [title, setTitle] = React.useState("");
-  const [subTitle, setSubTitle] = React.useState("");
-  const [excerpt, setExcerpt] = React.useState("");
-  const [readTime, setReadTime] = React.useState("");
-  const [contents, setContents] = React.useState([]);
-
-  const onuploadDraft = async () => {
-    startTransition(async () => {
-      const response = await CreateStori(
-        title,
-        subTitle,
-        excerpt,
-        readTime,
-        coverImage,
-        contents
-      );
-    });
-  };
-
-  const appendContent = (contentType) => {
-    const newContent = {
-      block_type: contentType,
-      content: "",
-      image_url: "",
-      position: contents.length + 1,
-    };
-    setContents([...contents, newContent]);
-  };
-  const editContent = (pos, value) => {
-    const newContents = contents.map((content) => {
-      if (content.position == pos && content.block_type !== "image") {
-        return {
-          ...content,
-          content: value,
-        };
-      } else {
-        return content;
-      }
-    });
-    setContents([...newContents]);
-  };
-  const uploadImageBlock = (pos, url) => {
-    const newContents = contents.map((content) => {
-      if (content.position == pos) {
-        return {
-          ...content,
-          image_url: url,
-        };
-      } else {
-        return content;
-      }
-    });
-    setContents(newContents);
-  };
-  const deleteContent = (pos) => {
-    const newContents = contents.filter((content) => content.position !== pos);
-    let rightContents = newContents.map((content, index) => {
-      return {
-        ...content,
-        position: index + 1,
-      };
-    });
-    setContents(rightContents);
-  };
+  const {
+    mode,
+    setMode,
+    title,
+    setTitle,
+    subTitle,
+    setSubTitle,
+    excerpt,
+    setExcerpt,
+    readTime,
+    setReadTime,
+    coverImage,
+    setCoverImage,
+    contentBlocks,
+    setContentBlocks,
+    isDrafting,
+    onuploadDraft,
+    appendBlock,
+    UpdateBlock,
+    updateImageBlock,
+    deleteBlock,
+  } = useCreateStori();
+  console.log("====================================");
+  console.log(contentBlocks);
+  console.log("====================================");
   return (
     <div
       style={{
@@ -117,7 +70,7 @@ export default function Create() {
             alignItems: "center",
           }}
         >
-          {isPending ? (
+          {isDrafting ? (
             <Loader2 className="h-4 w-4 animate-spin" />
           ) : (
             <BookCheck
@@ -193,11 +146,11 @@ export default function Create() {
         }}
       >
         <StoriContents
-          contents={contents}
+          contents={contentBlocks}
           mode={mode}
-          editContent={editContent}
-          deleteContent={deleteContent}
-          updateImage={uploadImageBlock}
+          editContent={UpdateBlock}
+          deleteContent={deleteBlock}
+          updateImage={updateImageBlock}
         ></StoriContents>
       </div>
 
@@ -211,16 +164,16 @@ export default function Create() {
             justifyContent: "space-around",
           }}
         >
-          <SecondaryButton onClick={() => appendContent("heading")}>
+          <SecondaryButton onClick={() => appendBlock("heading")}>
             Heading
           </SecondaryButton>
-          <SecondaryButton onClick={() => appendContent("paragraph")}>
+          <SecondaryButton onClick={() => appendBlock("paragraph")}>
             Paragraph
           </SecondaryButton>
-          <SecondaryButton onClick={() => appendContent("quote")}>
+          <SecondaryButton onClick={() => appendBlock("quote")}>
             Quote
           </SecondaryButton>
-          <SecondaryButton onClick={() => appendContent("image")}>
+          <SecondaryButton onClick={() => appendBlock("image")}>
             Image
           </SecondaryButton>
         </div>

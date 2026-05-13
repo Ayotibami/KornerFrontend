@@ -1,0 +1,25 @@
+import isAuthenticated from "@/lib/auth";
+import React from "react";
+import "../../globals.css";
+import Navbar from "@/components/Navbar";
+
+export default async function layout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  await isAuthenticated();
+  return (
+    <div>
+      <Navbar></Navbar>
+      <div
+        style={{
+          paddingTop: "14vh",
+          paddingBottom: "20px",
+        }}
+      >
+        {children}
+      </div>
+    </div>
+  );
+}

@@ -4,6 +4,8 @@ import { validatePassword } from "@/lib/validation";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
+const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+
 const Login = async (formdata: FormData) => {
   const email = formdata.get("email");
   const password = formdata.get("password") as string; // Cast to string for validator
@@ -21,7 +23,7 @@ const Login = async (formdata: FormData) => {
   let success = false;
 
   try {
-    const res = await fetch("http://127.0.0.1:3000/api/v1/admin/login", {
+    const res = await fetch(`${apiUrl}/api/v1/admin/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       credentials: "include",

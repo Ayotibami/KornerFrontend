@@ -9,3 +9,34 @@ button:focus {
 textarea:focus {
   outline: none;
 }
+
+p {
+  overflow-wrap: break-word; /* modern */
+  text-align: justify;
+}
+
+/* Add this at the very bottom of globals.css */
+@keyframes shake-logic {
+  0%,
+  90%,
+  100% {
+    transform: translateX(0);
+  }
+  92% {
+    transform: translateX(-5px);
+  }
+  94% {
+    transform: translateX(5px);
+  }
+  96% {
+    transform: translateX(-5px);
+  }
+  98% {
+    transform: translateX(5px);
+  }
+}
+
+.custom-shake {
+  animation: shake-logic 3s ease-in-out infinite;
+  display: inline-block; /* Crucial: transform doesn't work on 'inline' elements like <span> */
+}

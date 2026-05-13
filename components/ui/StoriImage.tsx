@@ -12,6 +12,8 @@ export default function StoriImage({
 }) {
   const [previewImage, setPreviewImage] = React.useState<string | null>(null);
   const ref = useRef<HTMLImageElement>(null);
+  console.log(previewImage);
+
   const uploadImage = async (file) => {
     const formData = new FormData();
     formData.append("file", file);
@@ -86,9 +88,9 @@ export default function StoriImage({
         accept="image/*"
         onChange={async (e) => {
           const file = e.target.files[0];
-          const url = await uploadImage(file);
           const localUrl = URL.createObjectURL(file);
           setPreviewImage(localUrl);
+          const url = await uploadImage(file);
           if (content) {
             updateImage(content.position, url);
             return;

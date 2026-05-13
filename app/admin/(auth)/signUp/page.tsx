@@ -5,7 +5,7 @@ import React, { useState, useTransition } from "react";
 import signUp from "./actions";
 import { validatePassword } from "@/lib/validation";
 import Link from "next/link";
-import Avatar from "@/components/ui/Avatar";
+import Avatar from "@/components/ui/AvatarPicker";
 
 export default function Signup() {
   const [isPending, startTransition] = useTransition();
@@ -89,7 +89,7 @@ export default function Signup() {
         >
           {error}
         </p>
-        <Avatar setAvatarUrl={setAvatarUrl}></Avatar>
+        {/* <Avatar setAvatarUrl={setAvatarUrl}></Avatar> */}
         <Input
           name="name"
           label="Name"
