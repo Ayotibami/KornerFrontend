@@ -1,0 +1,79 @@
+import React from "react";
+import StoriCard from "./StoriCard";
+
+const stories = [
+  {
+    image: "",
+    authorAvatar: "",
+    authorName: "Tenuojo Favor",
+    title: "The Night Reading Struggle No One Talks About",
+    excerpt: "We write — you grab popcorn and read. It's your corner.",
+    date: "24 Oct 2025",
+  },
+  {
+    image: "",
+    authorAvatar: "",
+    authorName: "Amaka Obi",
+    title: "How I Survived Finals Week on Jollof and Spite",
+    excerpt: "A survival guide nobody asked for but everyone needs.",
+    date: "18 Oct 2025",
+  },
+  {
+    image: "",
+    authorAvatar: "",
+    authorName: "Chike Bello",
+    title: "Campus Crushes and the Art of Saying Nothing",
+    excerpt: "Eye contact across the library. A whole semester wasted.",
+    date: "10 Oct 2025",
+  },
+  {
+    image: "",
+    authorAvatar: "",
+    authorName: "Sade Yusuf",
+    title: "Why Everyone Hates Group Work But Still Does It",
+    excerpt: "One person does everything. You know who you are.",
+    date: "2 Oct 2025",
+  },
+  {
+    image: "",
+    authorAvatar: "",
+    authorName: "Emeka Nwachukwu",
+    title: "The Unspoken Rules of the Campus Cafeteria",
+    excerpt: "Don't sit there. No seriously, not that seat.",
+    date: "25 Sep 2025",
+  },
+  {
+    image: "",
+    authorAvatar: "",
+    authorName: "Zainab Musa",
+    title: "Midnight Thoughts From a Sleep-Deprived 300L Student",
+    excerpt: "Is it too late to switch to mass comm?",
+    date: "15 Sep 2025",
+  },
+];
+
+export default function StoriCardList() {
+  return (
+    <div
+      style={{
+        display: "grid",
+        gridTemplateColumns: "repeat(auto-fit, minmax(200px, 220px))",
+        justifyContent: "center",
+        gap: 30,
+        width: "100%",
+      }}
+    >
+      {stories.map((story, index) => (
+        <StoriCard
+          key={index}
+          image={story.image}
+          authorAvatar={story.authorAvatar}
+          authorName={story.authorName}
+          title={story.title}
+          excerpt={story.excerpt}
+          date={story.date}
+        />
+      ))}
+    </div>
+  );
+}

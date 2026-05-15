@@ -1,5 +1,5 @@
-import StoriImage from "@/components/ui/StoriImage";
-import Title from "@/components/ui/Title";
+import StoriImage from "@/components/admincomponent/ui/StoriImage";
+import Title from "@/components/admincomponent/ui/Title";
 import { cookies } from "next/headers";
 import React from "react";
 

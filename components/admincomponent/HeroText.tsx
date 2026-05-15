@@ -10,7 +10,7 @@ export default function HeroText({ children }: { children: React.ReactNode }) {
     <h1
       style={{
         fontFamily: nunito.style.fontFamily,
-        fontSize: 80,
+        fontSize: "clamp(2rem, 6vw, 5rem)",
         fontWeight: 800,
         color: "white",
       }}

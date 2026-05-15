@@ -1,12 +1,12 @@
 "use client";
 
-import Excerpt from "@/components/ui/Excerpt";
-import ReadTime from "@/components/ui/ReadTime";
-import SecondaryButton from "@/components/ui/SecondaryButton";
-import StoriContents from "@/components/ui/StoriContents";
-import SubsideTitle from "@/components/ui/SubTitle";
-import Title from "@/components/ui/Title";
-import StoriImage from "@/components/ui/StoriImage";
+import Excerpt from "@/components/admincomponent/ui/Excerpt";
+import ReadTime from "@/components/admincomponent/ui/ReadTime";
+import SecondaryButton from "@/components/admincomponent/ui/SecondaryButton";
+import StoriContents from "@/components/admincomponent/ui/StoriContents";
+import SubsideTitle from "@/components/admincomponent/ui/SubTitle";
+import Title from "@/components/admincomponent/ui/Title";
+import StoriImage from "@/components/admincomponent/ui/StoriImage";
 import { BookCheck, Loader2, Pencil, Save } from "lucide-react";
 import { useCreateStori } from "@/context/CreateStoriContext";
 

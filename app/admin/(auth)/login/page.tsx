@@ -1,6 +1,6 @@
 "use client";
-import Button from "@/components/ui/Button";
-import Input from "@/components/ui/Input";
+import Button from "@/components/admincomponent/ui/Button";
+import Input from "@/components/admincomponent/ui/Input";
 import React, { useState, useTransition } from "react";
 import Login from "./actions";
 import Link from "next/link";

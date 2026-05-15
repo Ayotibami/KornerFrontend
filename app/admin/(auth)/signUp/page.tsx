@@ -1,11 +1,11 @@
 "use client";
-import Button from "@/components/ui/Button";
-import Input from "@/components/ui/Input";
+import Button from "@/components/admincomponent/ui/Button";
+import Input from "@/components/admincomponent/ui/Input";
 import React, { useState, useTransition } from "react";
 import signUp from "./actions";
 import { validatePassword } from "@/lib/validation";
 import Link from "next/link";
-import Avatar from "@/components/ui/AvatarPicker";
+import Avatar from "@/components/admincomponent/ui/AvatarPicker";
 
 export default function Signup() {
   const [isPending, startTransition] = useTransition();

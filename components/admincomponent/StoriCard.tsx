@@ -1,7 +1,6 @@
 import Image from "next/image";
 
 import React from "react";
-import "../app/globals.css";
 import { primaryColor, secondaryColor } from "@/app/constants/color";
 import { Clock } from "lucide-react";
 import { capitalize } from "@/lib/stringFormatting";

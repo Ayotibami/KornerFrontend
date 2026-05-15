@@ -5,12 +5,18 @@ const inter = Inter({
   weight: ["400", "500", "600", "700"], // optional but common
 });
 
-export default function Button({ children }: { children: React.ReactNode }) {
+export default function Button({
+  children,
+  inverted,
+}: {
+  children: React.ReactNode;
+  inverted: boolean;
+}) {
   return (
     <div
       onClick={() => {}}
       style={{
-        backgroundColor: "white",
+        backgroundColor: inverted ? "#112C4A" : "white",
         padding: 12,
         borderRadius: 12,
         cursor: "pointer",
@@ -18,7 +24,7 @@ export default function Button({ children }: { children: React.ReactNode }) {
     >
       <p
         style={{
-          color: "#112C4A",
+          color: inverted ? "white" : "#112C4A",
           fontFamily: inter.style.fontFamily,
           fontWeight: 800,
         }}

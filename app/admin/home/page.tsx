@@ -1,5 +1,5 @@
-import StoriesList from "@/components/StoriesList";
-import Button from "@/components/ui/Button";
+import StoriesList from "@/components/admincomponent/StoriesList";
+import Button from "@/components/admincomponent/ui/Button";
 // import { useRouter } from "next/navigation";
 import React from "react";
 

@@ -1,5 +1,4 @@
 import React from "react";
-import "../app/globals.css";
 export default function AdminGreeting({ name }) {
   const greetings = ["Hello", "Wassup", "How far", "Hi", "Halo", "Konnichiwa"];
   const randomGreeting = (greetings: string[]) =>
