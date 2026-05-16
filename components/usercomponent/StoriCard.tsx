@@ -23,18 +23,16 @@ export default function StoriCard({
         width: "100%",
         borderTopLeftRadius: 24,
         borderTopRightRadius: 24,
-        height: 300,
+        height: 500,
         overflow: "hidden",
-
         display: "flex",
         flexDirection: "column",
-
         backgroundColor: "white",
       }}
     >
       <div
         style={{
-          height: "45%",
+          height: "55%",
           backgroundColor: "lightgray",
           position: "relative",
         }}
@@ -45,9 +43,9 @@ export default function StoriCard({
       </div>
       <div
         style={{
-          padding: 10,
-          height: "55%",
-          justifyContent: "space-around",
+          padding: 14,
+          height: "45%",
+          justifyContent: "space-evenly",
           display: "flex",
           flexDirection: "column",
           gap: 5,
@@ -57,8 +55,9 @@ export default function StoriCard({
           style={{
             fontFamily: nunito.style.fontFamily,
             fontWeight: 800,
-            fontSize: "0.8rem",
+            fontSize: "1rem",
             color: "black",
+            textAlign: "left",
           }}
         >
           {title}
@@ -67,8 +66,9 @@ export default function StoriCard({
           style={{
             color: "#767575",
             fontFamily: inter.style.fontFamily,
-            fontSize: "0.6rem",
+            fontSize: "0.8rem",
             fontWeight: 500,
+            textAlign: "left",
           }}
         >
           {excerpt}
@@ -91,25 +91,27 @@ export default function StoriCard({
           >
             <div
               style={{
-                width: 20,
-                height: 20,
+                width: 28,
+                height: 28,
                 borderRadius: "50%",
                 overflow: "hidden",
                 backgroundColor: "lightgray",
                 flexShrink: 0,
               }}
             >
-              <Image
-                src={authorAvatar || "/placeholder.png"}
-                alt="avatar"
-                fill
-                style={{ objectFit: "cover" }}
-              />
+              {authorAvatar && (
+                <Image
+                  src={authorAvatar}
+                  alt="avatar"
+                  fill
+                  style={{ objectFit: "cover" }}
+                />
+              )}
             </div>
             <p
               style={{
                 fontFamily: inter.style.fontFamily,
-                fontSize: "0.5rem",
+                fontSize: "0.7rem",
                 color: "#767575",
                 fontWeight: 600,
                 fontStyle: "italic",
@@ -125,7 +127,7 @@ export default function StoriCard({
             style={{
               color: "#767575",
               fontFamily: inter.style.fontFamily,
-              fontSize: "0.5rem",
+              fontSize: "0.7rem",
               fontWeight: 500,
             }}
           >

@@ -4,13 +4,15 @@ import HeroSection from "@/components/usercomponent/HeroSection";
 import AboutSection from "@/components/usercomponent/AboutSection";
 import PeepSection from "@/components/usercomponent/PeepSection";
 import Button from "@/components/admincomponent/Button";
+import Testimony from "@/components/usercomponent/Testimony";
+import ActivationForm from "@/components/usercomponent/ActivationForm";
+import Footer from "@/components/usercomponent/Footer";
 
 export default function Home() {
   return (
     <div
       style={{
         paddingTop: 10,
-        paddingBottom: 10,
         height: "100%",
         display: "flex",
         alignItems: "center",
@@ -29,6 +31,12 @@ export default function Home() {
 
       {/* Torn dark section with story card previews */}
       <PeepSection />
+
+      <Testimony></Testimony>
+
+      <ActivationForm></ActivationForm>
+
+      <Footer></Footer>
     </div>
   );
 }

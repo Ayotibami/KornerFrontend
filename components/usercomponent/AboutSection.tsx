@@ -5,7 +5,7 @@ export default function AboutSection() {
   return (
     <div
       style={{
-        padding: 20,
+        padding: 30,
         borderRadius: 20,
         width: "95%",
         display: "grid",
@@ -51,7 +51,7 @@ export default function AboutSection() {
       </div>
 
       {/* Right: animated icon grid */}
-      <div>
+      <div style={{ display: "flex", justifyContent: "flex-end" }}>
         <AnimatedIconGrid />
       </div>
     </div>

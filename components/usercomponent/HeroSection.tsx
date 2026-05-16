@@ -4,6 +4,7 @@ import HeroText from "@/components/admincomponent/HeroText";
 import Button from "@/components/admincomponent/Button";
 import FloatingCards from "@/components/admincomponent/FloatingCards";
 import { inter, nunito } from "@/lib/font";
+import Link from "next/link";
 
 export default function HeroSection() {
   return (
@@ -11,13 +12,14 @@ export default function HeroSection() {
       style={{
         width: "95%",
         minHeight: "100vh",
-        marginBottom: 60,
+        marginBottom: 20,
         padding: 10,
         display: "flex",
         flexDirection: "column",
+        justifyContent: "space-evenly",
         alignItems: "center",
         borderRadius: 36,
-        backgroundImage: "url('/images/landingcover.png')",
+        backgroundImage: "url('/images/landingcover3.png')",
         backgroundSize: "cover",
         backgroundPosition: "center",
         backgroundRepeat: "no-repeat",
@@ -63,11 +65,22 @@ export default function HeroSection() {
           from our hearts to yours.
         </p>
 
-        <Button>Hop into Korner</Button>
+        <Link href="/stories" style={{ textDecoration: "none" }}>
+          <Button>Hop into Korner</Button>
+        </Link>
       </div>
 
-      {/* Animated floating cards below the copy */}
-      <FloatingCards />
+      {/* Animated floating cards — bleeds below the hero boundary */}
+      <div
+        style={{
+          position: "relative",
+          zIndex: 10,
+          marginBottom: -60,
+          width: "100%",
+        }}
+      >
+        <FloatingCards />
+      </div>
     </div>
   );
 }

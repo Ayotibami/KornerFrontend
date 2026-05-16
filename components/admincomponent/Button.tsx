@@ -1,36 +1,142 @@
-import React from "react";
+"use client";
+import React, { useState } from "react";
 import { Inter } from "next/font/google";
+
 const inter = Inter({
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"], // optional but common
+  weight: ["400", "500", "600", "700"],
 });
+
+// Jagged torn line running roughly through the middle of the button
+const tornLine: [number, number][] = [
+  [0, 50], [10, 41], [20, 55], [32, 44], [44, 58],
+  [56, 45], [68, 57], [80, 42], [92, 53], [100, 46],
+];
+
+function topClip() {
+  const reversed = [...tornLine]
+    .reverse()
+    .map(([x, y]) => `${x}% ${y}%`)
+    .join(", ");
+  return `polygon(0% 0%, 100% 0%, ${reversed})`;
+}
+
+function bottomClip() {
+  const forward = tornLine.map(([x, y]) => `${x}% ${y}%`).join(", ");
+  return `polygon(${forward}, 100% 100%, 0% 100%)`;
+}
 
 export default function Button({
   children,
-  inverted,
+  inverted = false,
+  onClick,
 }: {
   children: React.ReactNode;
-  inverted: boolean;
+  inverted?: boolean;
+  onClick?: () => void;
 }) {
+  const [tearing, setTearing] = useState(false);
+
+  const trigger = () => {
+    if (tearing) return;
+    setTearing(true);
+    setTimeout(() => {
+      setTearing(false);
+      onClick?.();
+    }, 950);
+  };
+
+  const bg = inverted ? "#112C4A" : "white";
+  const fg = inverted ? "white" : "#112C4A";
+
   return (
-    <div
-      onClick={() => {}}
-      style={{
-        backgroundColor: inverted ? "#112C4A" : "white",
-        padding: 12,
-        borderRadius: 12,
-        cursor: "pointer",
-      }}
-    >
-      <p
+    <>
+      <style>{`
+        @keyframes tear-top {
+          0%   { transform: translateY(0)     rotate(0deg); }
+          38%  { transform: translateY(-130%) rotate(-6deg); }
+          68%  { transform: translateY(-130%) rotate(-6deg); }
+          88%  { transform: translateY(4%)    rotate(1deg); }
+          100% { transform: translateY(0)     rotate(0deg); }
+        }
+        @keyframes tear-bottom {
+          0%   { transform: translateY(0)    rotate(0deg); }
+          38%  { transform: translateY(130%) rotate(6deg); }
+          68%  { transform: translateY(130%) rotate(6deg); }
+          88%  { transform: translateY(-4%)  rotate(-1deg); }
+          100% { transform: translateY(0)    rotate(0deg); }
+        }
+        @keyframes flash-in {
+          0%        { opacity: 0; transform: scaleY(0.6); }
+          25%, 65%  { opacity: 1; transform: scaleY(1); }
+          100%      { opacity: 0; transform: scaleY(1); }
+        }
+      `}</style>
+
+      <div
+        onClick={trigger}
         style={{
-          color: inverted ? "white" : "#112C4A",
-          fontFamily: inter.style.fontFamily,
-          fontWeight: 800,
+          padding: 12,
+          borderRadius: 12,
+          cursor: "pointer",
+          position: "relative",
+          userSelect: "none",
+          overflow: "hidden",
         }}
       >
-        {children}
-      </p>
-    </div>
+        {/* Flash color revealed when the tear opens */}
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            backgroundColor: "#B4CFF6",
+            opacity: 0,
+            animation: tearing ? "flash-in 0.95s ease-in-out forwards" : "none",
+          }}
+        />
+
+        {/* Top half of button - tears upward */}
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            backgroundColor: bg,
+            clipPath: topClip(),
+            animation: tearing
+              ? "tear-top 0.95s cubic-bezier(0.4, 0, 0.2, 1.4) forwards"
+              : "none",
+            zIndex: 1,
+          }}
+        />
+
+        {/* Bottom half of button - tears downward */}
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            backgroundColor: bg,
+            clipPath: bottomClip(),
+            animation: tearing
+              ? "tear-bottom 0.95s cubic-bezier(0.4, 0, 0.2, 1.4) forwards"
+              : "none",
+            zIndex: 1,
+          }}
+        />
+
+        {/* Text stays on top */}
+        <p
+          style={{
+            color: fg,
+            fontFamily: inter.style.fontFamily,
+            fontWeight: 800,
+            position: "relative",
+            zIndex: 2,
+            margin: 0,
+          }}
+        >
+          {children}
+        </p>
+      </div>
+    </>
   );
 }

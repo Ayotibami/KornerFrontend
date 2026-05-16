@@ -2,6 +2,7 @@ import TornSection from "@/components/admincomponent/Tornsection";
 import StoriCardList from "@/components/usercomponent/StoriCardList";
 import { nunito } from "@/lib/font";
 import Button from "../admincomponent/Button";
+import Link from "next/link";
 
 export default function PeepSection() {
   return (
@@ -36,7 +37,9 @@ export default function PeepSection() {
           justifyContent: "center",
         }}
       >
-        <Button>Hop into Korner</Button>
+        <Link href="/stories" style={{ textDecoration: "none" }}>
+          <Button>Hop into Korner</Button>
+        </Link>
       </div>
     </TornSection>
   );

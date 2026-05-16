@@ -11,8 +11,7 @@ textarea:focus {
 }
 
 p {
-  overflow-wrap: break-word; /* modern */
-  text-align: justify;
+  overflow-wrap: break-word;
 }
 
 /* Add this at the very bottom of globals.css */

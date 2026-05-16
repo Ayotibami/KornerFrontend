@@ -1,4 +1,3 @@
-import React from "react";
 import StoriCard from "./StoriCard";
 
 const stories = [
@@ -57,7 +56,7 @@ export default function StoriCardList() {
     <div
       style={{
         display: "grid",
-        gridTemplateColumns: "repeat(auto-fit, minmax(200px, 220px))",
+        gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
         justifyContent: "center",
         gap: 30,
         width: "100%",
