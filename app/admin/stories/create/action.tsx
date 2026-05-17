@@ -5,12 +5,12 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
 const CreateStori = async (
-  title,
-  subtitle,
-  excerpt,
-  reading_time,
-  cover_image,
-  stori_blocks,
+  title: string,
+  subtitle: string,
+  excerpt: string,
+  reading_time: string,
+  cover_image: File | null | string,
+  stori_blocks: unknown[],
 ) => {
   let success = false;
   const cookieStore = await cookies();

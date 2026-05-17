@@ -8,7 +8,14 @@ export default function Input({
   value,
   onChange,
   placeholder,
-}: any) {
+}: {
+  label?: string;
+  type?: string;
+  name?: string;
+  value?: string;
+  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  placeholder?: string;
+}) {
   return (
     <div
       style={{

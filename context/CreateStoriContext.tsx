@@ -1,9 +1,40 @@
 "use client";
 
 import CreateStori from "@/app/admin/stories/create/action";
-import React, { useState, useTransition } from "react";
-const CreateStoriContext = React.createContext({});
-import { useContext } from "react";
+import React, { useState, useTransition, useContext } from "react";
+
+type ContentBlock = {
+  block_type: string;
+  content: string;
+  image_url: string;
+  position: number;
+  id: string;
+};
+
+type CreateStoriContextType = {
+  mode: "write" | "read";
+  setMode: React.Dispatch<React.SetStateAction<"write" | "read">>;
+  title: string;
+  setTitle: React.Dispatch<React.SetStateAction<string>>;
+  subTitle: string;
+  setSubTitle: React.Dispatch<React.SetStateAction<string>>;
+  excerpt: string;
+  setExcerpt: React.Dispatch<React.SetStateAction<string>>;
+  readTime: string;
+  setReadTime: React.Dispatch<React.SetStateAction<string>>;
+  coverImage: File | null;
+  setCoverImage: React.Dispatch<React.SetStateAction<File | null>>;
+  contentBlocks: ContentBlock[];
+  setContentBlocks: React.Dispatch<React.SetStateAction<ContentBlock[]>>;
+  isDrafting: boolean;
+  onuploadDraft: () => void;
+  appendBlock: (contentType: string) => void;
+  UpdateBlock: (pos: number, value: string) => void;
+  updateImageBlock: (pos: number, url: string) => void;
+  deleteBlock: (pos: number) => void;
+};
+
+const CreateStoriContext = React.createContext<CreateStoriContextType>({} as CreateStoriContextType);
 export default function CreateStoriProvider({
   children,
 }: {
@@ -18,13 +49,6 @@ export default function CreateStoriProvider({
   const [readTime, setReadTime] = React.useState("");
   const [contentBlocks, setContentBlocks] = React.useState<ContentBlock[]>([]);
 
-  type ContentBlock = {
-    block_type: string;
-    content: string;
-    image_url: string;
-    position: number;
-    id: string;
-  };
   const onuploadDraft = () => {
     startDrafting(async () => {
       const response = await CreateStori(

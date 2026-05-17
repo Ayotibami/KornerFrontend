@@ -16,7 +16,7 @@ export default async function StoriesList() {
     },
   );
   const data = await res.json();
-  const stories: [] = data.stories;
+  const stories: any[] = data.stories ?? [];
 
   return (
     <div

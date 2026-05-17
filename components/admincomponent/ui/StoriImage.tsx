@@ -8,13 +8,15 @@ export default function StoriImage({
   mode,
   content = null,
 }: {
-  setcoverImage: React.Dispatch<React.SetStateAction<File | null>>;
+  updateImage: (...args: any[]) => void;
+  mode?: string;
+  content?: { position: number } | null;
 }) {
   const [previewImage, setPreviewImage] = React.useState<string | null>(null);
-  const ref = useRef<HTMLImageElement>(null);
+  const ref = useRef<HTMLInputElement>(null);
   console.log(previewImage);
 
-  const uploadImage = async (file) => {
+  const uploadImage = async (file: File) => {
     const formData = new FormData();
     formData.append("file", file);
     formData.append("upload_preset", "wh6vvgfv");
@@ -87,7 +89,8 @@ export default function StoriImage({
         ref={ref}
         accept="image/*"
         onChange={async (e) => {
-          const file = e.target.files[0];
+          const file = e.target.files?.[0];
+          if (!file) return;
           const localUrl = URL.createObjectURL(file);
           setPreviewImage(localUrl);
           const url = await uploadImage(file);

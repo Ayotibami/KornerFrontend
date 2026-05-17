@@ -30,8 +30,8 @@ export default function Signup() {
       setError("Passwords do not match abeg.");
       return;
     }
-    if (!validatePassword(password).isValid) {
-      setError(validatePassword(password).message);
+    if (!validatePassword(password as string).isValid) {
+      setError(validatePassword(password as string).message);
       return;
     }
     if (avatarUrl?.size == 0) {

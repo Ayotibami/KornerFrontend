@@ -75,7 +75,6 @@ export default function page() {
           type="password"
           onChange={(e) => setPassword(e.target.value)}
           value={password}
-          s
         />
 
         <Button type="submit" disabled={isPending}>

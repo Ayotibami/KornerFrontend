@@ -6,10 +6,10 @@ export default function Title({
   title,
   setTitle,
 }: {
-  mode: string;
-  placeholder: string;
+  mode?: string;
+  placeholder?: string;
   title: string;
-  setTitle: React.Dispatch<React.SetStateAction<string>>;
+  setTitle?: React.Dispatch<React.SetStateAction<string>>;
 }) {
   return mode == "write" ? (
     <StoriInput
