@@ -1,7 +1,9 @@
+import Link from "next/link";
 import StoriCard from "./StoriCard";
 
 const stories = [
   {
+    id: "04e23ac7-3615-4cb5-aacc-2b470b156087",
     image: "",
     authorAvatar: "",
     authorName: "Tenuojo Favor",
@@ -10,6 +12,7 @@ const stories = [
     date: "24 Oct 2025",
   },
   {
+    id: "1b2c3d4e-5f6a-7b8c-9d0e-1f2a3b4c5d6e",
     image: "",
     authorAvatar: "",
     authorName: "Amaka Obi",
@@ -18,6 +21,7 @@ const stories = [
     date: "18 Oct 2025",
   },
   {
+    id: "2c3d4e5f-6a7b-8c9d-0e1f-2a3b4c5d6e7f",
     image: "",
     authorAvatar: "",
     authorName: "Chike Bello",
@@ -26,6 +30,7 @@ const stories = [
     date: "10 Oct 2025",
   },
   {
+    id: "3d4e5f6a-7b8c-9d0e-1f2a-3b4c5d6e7f8a",
     image: "",
     authorAvatar: "",
     authorName: "Sade Yusuf",
@@ -34,6 +39,7 @@ const stories = [
     date: "2 Oct 2025",
   },
   {
+    id: "4e5f6a7b-8c9d-0e1f-2a3b-4c5d6e7f8a9b",
     image: "",
     authorAvatar: "",
     authorName: "Emeka Nwachukwu",
@@ -42,6 +48,7 @@ const stories = [
     date: "25 Sep 2025",
   },
   {
+    id: "5f6a7b8c-9d0e-1f2a-3b4c-5d6e7f8a9b0c",
     image: "",
     authorAvatar: "",
     authorName: "Zainab Musa",
@@ -62,16 +69,21 @@ export default function StoriCardList() {
         width: "100%",
       }}
     >
-      {stories.map((story, index) => (
-        <StoriCard
-          key={index}
-          image={story.image}
-          authorAvatar={story.authorAvatar}
-          authorName={story.authorName}
-          title={story.title}
-          excerpt={story.excerpt}
-          date={story.date}
-        />
+      {stories.map((story) => (
+        <Link
+          key={story.id}
+          href={`/stories/${story.id}`}
+          style={{ textDecoration: "none" }}
+        >
+          <StoriCard
+            image={story.image}
+            authorAvatar={story.authorAvatar}
+            authorName={story.authorName}
+            title={story.title}
+            excerpt={story.excerpt}
+            date={story.date}
+          />
+        </Link>
       ))}
     </div>
   );

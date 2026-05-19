@@ -1,6 +1,5 @@
-import { inter, nunito } from "@/lib/font";
+import { nunito } from "@/lib/font";
 import Image from "next/image";
-import React from "react";
 
 export default function StoriCard({
   image,
@@ -65,7 +64,7 @@ export default function StoriCard({
         <p
           style={{
             color: "#767575",
-            fontFamily: inter.style.fontFamily,
+            fontFamily: nunito.style.fontFamily,
             fontSize: "0.8rem",
             fontWeight: 500,
             textAlign: "left",
@@ -110,7 +109,7 @@ export default function StoriCard({
             </div>
             <p
               style={{
-                fontFamily: inter.style.fontFamily,
+                fontFamily: nunito.style.fontFamily,
                 fontSize: "0.7rem",
                 color: "#767575",
                 fontWeight: 600,
@@ -126,7 +125,7 @@ export default function StoriCard({
           <p
             style={{
               color: "#767575",
-              fontFamily: inter.style.fontFamily,
+              fontFamily: nunito.style.fontFamily,
               fontSize: "0.7rem",
               fontWeight: 500,
             }}

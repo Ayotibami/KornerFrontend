@@ -1,11 +1,6 @@
 "use client";
 import React, { useState } from "react";
-import { Inter } from "next/font/google";
-
-const inter = Inter({
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-});
+import { nunito } from "@/lib/font";
 
 // Jagged torn line running roughly through the middle of the button
 const tornLine: [number, number][] = [
@@ -127,7 +122,7 @@ export default function Button({
         <p
           style={{
             color: fg,
-            fontFamily: inter.style.fontFamily,
+            fontFamily: nunito.style.fontFamily,
             fontWeight: 800,
             position: "relative",
             zIndex: 2,

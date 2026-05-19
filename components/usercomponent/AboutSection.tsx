@@ -1,5 +1,5 @@
 import AnimatedIconGrid from "@/app/landing/Animatedicongrid";
-import { inter, nunito } from "@/lib/font";
+import { nunito } from "@/lib/font";
 
 export default function AboutSection() {
   return (
@@ -39,7 +39,7 @@ export default function AboutSection() {
             color: "#767575",
             fontSize: "0.9375rem",
             fontWeight: 500,
-            fontFamily: inter.style.fontFamily,
+            fontFamily: nunito.style.fontFamily,
           }}
         >
           We write — you grab popcorn and read. It's your corner. It's your

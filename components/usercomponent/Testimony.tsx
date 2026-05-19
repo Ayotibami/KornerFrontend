@@ -1,4 +1,4 @@
-import { inter, nunito } from "@/lib/font";
+import { nunito } from "@/lib/font";
 import React from "react";
 
 export default function Testimony() {
@@ -30,7 +30,7 @@ export default function Testimony() {
         </p>
         <p
           style={{
-            fontFamily: inter.style.fontFamily,
+            fontFamily: nunito.style.fontFamily,
             fontWeight: 500,
             fontSize: "0.9375rem",
             color: "#767575",
@@ -52,7 +52,7 @@ export default function Testimony() {
           justifyContent: "center",
         }}
       >
-        <p style={{ color: "#aaa", fontFamily: inter.style.fontFamily, fontSize: "0.9rem" }}>
+        <p style={{ color: "#aaa", fontFamily: nunito.style.fontFamily, fontSize: "0.9rem" }}>
           Visual coming soon
         </p>
       </div>

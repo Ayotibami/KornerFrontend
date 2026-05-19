@@ -3,7 +3,7 @@
 import HeroText from "@/components/admincomponent/HeroText";
 import Button from "@/components/admincomponent/Button";
 import FloatingCards from "@/components/admincomponent/FloatingCards";
-import { inter, nunito } from "@/lib/font";
+import { nunito } from "@/lib/font";
 import Link from "next/link";
 
 export default function HeroSection() {
@@ -43,7 +43,7 @@ export default function HeroSection() {
             fontSize: "1rem",
             fontWeight: 500,
             color: "white",
-            fontFamily: inter.style.fontFamily,
+            fontFamily: nunito.style.fontFamily,
           }}
         >
           Kampos talks you listen
@@ -54,7 +54,7 @@ export default function HeroSection() {
           style={{
             textAlign: "center",
             color: "#C4C4C4",
-            fontFamily: inter.style.fontFamily,
+            fontFamily: nunito.style.fontFamily,
             fontSize: "1rem",
             fontWeight: 500,
           }}

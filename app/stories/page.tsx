@@ -39,7 +39,7 @@ export default function Page() {
         setIndex((prev) => (prev + 1) % greetings.length);
         setVisible(true);
       }, 400);
-    }, 4000);
+    }, 2000);
     return () => clearInterval(interval);
   }, []);
 
