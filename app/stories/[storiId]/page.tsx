@@ -19,7 +19,7 @@ export default async function StoriPage({
     >
       <StoriCover
         title="The Night Reading Struggle No One Talks About"
-        subtitle="Staying awake to finish just one more chapter can feel like a lonely battle against the clock. This exploration dives into the eye strain, the fading focus, and the unique mental fatigue that strikes when your love for literature clashes with your need for sleep."
+        subtitle="Omo no sleep for the wicked ooo"
         authorName="Tenuojo Favour"
         readingTime="5 min read"
         date="24 Oct 2025"
