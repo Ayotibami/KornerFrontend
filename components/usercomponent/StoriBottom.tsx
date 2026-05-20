@@ -6,7 +6,7 @@ import { nunito } from "@/lib/font";
 import { FaWhatsapp, FaFacebook } from "react-icons/fa";
 import { FaXTwitter } from "react-icons/fa6";
 import { LuLink } from "react-icons/lu";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export default function StoriBottom({
   authorName,
@@ -24,13 +24,17 @@ export default function StoriBottom({
   // controls whether the "Copied!" tooltip is visible on the link icon
   const [copied, setCopied] = useState(false);
 
-  // Determines the URL to share.
-  // We use a lazy useState initializer (the () => ... syntax) so that this runs
-  // only once when the component first mounts on the browser — never on the server.
-  // We need the () => because window.location.href does not exist on the server (Next.js SSR),
-  // so we guard with typeof window !== "undefined" before accessing it.
-  // If shareUrl was passed as a prop we use that directly, otherwise we grab the current page URL.
-  const [pageUrl] = useState(() => shareUrl || (typeof window !== "undefined" ? window.location.href : ""));
+  // pageUrl holds the URL that gets shared/copied.
+  // We use useEffect instead of a useState lazy initializer because Next.js SSR renders
+  // the component on the server first — the lazy initializer runs on the server where
+  // window doesn't exist, so pageUrl would start as "" and React would keep that value
+  // through hydration, never updating it. The result: share links are empty for all users.
+  // useEffect only runs on the client after hydration, so window.location.href is always available.
+  // eslint-disable-next-line react-hooks/set-state-in-effect
+  const [pageUrl, setPageUrl] = useState(shareUrl);
+  useEffect(() => {
+    setPageUrl(shareUrl || window.location.href);
+  }, [shareUrl]);
 
   // encodeURIComponent converts a string so it is safe to put inside a URL.
   // e.g. spaces become %20, slashes become %2F, so the URL doesn't break.
