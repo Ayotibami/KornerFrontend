@@ -1,14 +1,24 @@
+// Server component — no "use client" needed because there's no interactivity.
+// The quote-shake animation is pure CSS injected via a <style> tag,
+// which works fine in server components.
+
 import { nunito } from "@/lib/font";
 import Image from "next/image";
 import { FaQuoteLeft } from "react-icons/fa";
 
+// Block is the shape of each piece of story content coming from the backend.
+// position determines the order they render in (sorted before rendering).
+// block_type decides which sub-component handles it.
 type Block = {
   id: string;
   position: number;
   block_type: "heading" | "paragraph" | "quote" | "image";
   content: string;
-  image_url?: string;
+  image_url?: string; // only present on image blocks
 };
+
+// ── SUB-COMPONENTS ──────────────────────────────────────────────────────────
+// Each block type has its own component so styling stays isolated and easy to change.
 
 function HeadingBlock({ content }: { content: string }) {
   return (
@@ -29,6 +39,8 @@ function HeadingBlock({ content }: { content: string }) {
 
 function ParagraphBlock({ content }: { content: string }) {
   return (
+    // lineHeight: 1.85 gives generous spacing between lines — important for
+    // long-form reading comfort, especially on mobile.
     <p
       style={{
         fontFamily: nunito.style.fontFamily,
@@ -46,7 +58,14 @@ function ParagraphBlock({ content }: { content: string }) {
 
 function QuoteBlock({ content }: { content: string }) {
   return (
+    // Column layout: big quote icon on top, italic text below.
+    // gap: 12 between icon and text — keeps them close but not touching.
     <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+
+      {/* quote-shake: the icon rocks left and right on a 2.5s loop.
+          We use FaQuoteLeft (react-icons) instead of the " character because
+          font-rendered quotation marks carry large invisible line-height
+          that creates unwanted vertical space. An SVG icon has no such issue. */}
       <style>{`
         @keyframes quote-shake {
           0%, 100% { transform: rotate(0deg); }
@@ -62,6 +81,7 @@ function QuoteBlock({ content }: { content: string }) {
         color="#112C4A"
         style={{ animation: "quote-shake 2.5s ease-in-out infinite" }}
       />
+
       <p
         style={{
           fontFamily: nunito.style.fontFamily,
@@ -86,9 +106,16 @@ function ImageBlock({
   content: string;
   image_url?: string;
 }) {
+  // image_url is the primary source; content is used as fallback.
+  // If neither exists, we render the grey placeholder div only (no <Image>).
   const src = image_url || content;
 
   return (
+    // aspectRatio: "16/9" keeps the image at a widescreen ratio regardless of width.
+    // position: relative is required for Next.js <Image fill> to work —
+    // fill makes the image stretch to cover its parent, so the parent needs
+    // explicit dimensions (which aspectRatio + width: 100% provides).
+    // overflow: hidden clips the image to the rounded corners.
     <div
       style={{
         width: "100%",
@@ -96,7 +123,7 @@ function ImageBlock({
         position: "relative",
         borderRadius: "clamp(8px, 2vw, 16px)",
         overflow: "hidden",
-        backgroundColor: "#e2e8f0",
+        backgroundColor: "#e2e8f0", // grey shown while image loads or when no src
       }}
     >
       {src ? (
@@ -111,9 +138,15 @@ function ImageBlock({
   );
 }
 
+// ── MAIN COMPONENT ───────────────────────────────────────────────────────────
+
 export default function StoriBody({ blocks }: { blocks: Block[] }) {
   if (!blocks || blocks.length === 0) return null;
 
+  // Sort by position before rendering so the order is always correct
+  // regardless of what order the API returns them in.
+  // [...blocks] creates a copy first — sort() mutates the array in place,
+  // and we don't want to mutate the prop that was passed in.
   const sorted = [...blocks].sort((a, b) => a.position - b.position);
 
   return (
@@ -143,7 +176,7 @@ export default function StoriBody({ blocks }: { blocks: Block[] }) {
               image_url={block.image_url}
             />
           );
-        return null;
+        return null; // unknown block types are silently ignored
       })}
     </div>
   );

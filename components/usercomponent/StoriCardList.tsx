@@ -1,6 +1,7 @@
-import Link from "next/link";
 import StoriCard from "./StoriCard";
 
+// Hardcoded story data — will be replaced with an API fetch when the backend is ready.
+// Each story has a unique id (UUID) that matches the dynamic route /stories/[storiId].
 const stories = [
   {
     id: "04e23ac7-3615-4cb5-aacc-2b470b156087",
@@ -56,34 +57,51 @@ const stories = [
     excerpt: "Is it too late to switch to mass comm?",
     date: "15 Sep 2025",
   },
+  {
+    id: "6a7b8c9d-0e1f-2a3b-4c5d-6e7f8a9b0c1d",
+    image: "",
+    authorAvatar: "",
+    authorName: "Biodun Adeyemi",
+    title: "NEPA, Generator Fuel and the GPA That Could Have Been",
+    excerpt: "Light went. I was in the middle of my assignment. Classic.",
+    date: "5 Sep 2025",
+  },
 ];
 
-export default function StoriCardList() {
+// limit is optional — if passed, only that many stories are shown.
+// If not passed, all stories are shown.
+// Usage: <StoriCardList limit={3} /> shows 3, <StoriCardList /> shows all.
+export default function StoriCardList({ limit }: { limit?: number } = {}) {
+  const visible = limit ? stories.slice(0, limit) : stories;
+
   return (
+    // Responsive grid: repeat(auto-fill, minmax(clamp(250px, 30%, 400px), 1fr))
+    // - auto-fill: always creates as many columns as fit, even if some are empty
+    // - clamp(250px, 30%, 400px): each column is at least 250px, max 400px, ideally 30% of container
+    // - 30% as the preferred width caps columns at 3 (4 × 30% = 120% > 100%, impossible)
+    // - 1fr: columns share leftover space equally after the minimum is met
     <div
       style={{
         display: "grid",
-        gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
-        justifyContent: "center",
+        gridTemplateColumns:
+          "repeat(auto-fill, minmax(clamp(250px, 30%, 400px), 1fr))",
         gap: 30,
         width: "100%",
       }}
     >
-      {stories.map((story) => (
-        <Link
+      {visible.map((story) => (
+        // href is passed to StoriCard so it can handle navigation itself
+        // after the click-expand animation finishes (see StoriCard.tsx)
+        <StoriCard
           key={story.id}
           href={`/stories/${story.id}`}
-          style={{ textDecoration: "none" }}
-        >
-          <StoriCard
-            image={story.image}
-            authorAvatar={story.authorAvatar}
-            authorName={story.authorName}
-            title={story.title}
-            excerpt={story.excerpt}
-            date={story.date}
-          />
-        </Link>
+          image={story.image}
+          authorAvatar={story.authorAvatar}
+          authorName={story.authorName}
+          title={story.title}
+          excerpt={story.excerpt}
+          date={story.date}
+        />
       ))}
     </div>
   );

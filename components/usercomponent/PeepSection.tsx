@@ -6,6 +6,8 @@ import Link from "next/link";
 
 export default function PeepSection() {
   return (
+    // TornSection wraps content in a dark navy background with a torn-paper
+    // edge at the top and bottom — gives the visual effect of a ripped page.
     <TornSection>
       <div
         style={{
@@ -26,10 +28,12 @@ export default function PeepSection() {
           Peep at this one fess
         </h1>
 
-        {/* Responsive grid of story cards */}
-        <StoriCardList />
+        {/* limit={3} shows only the first 3 stories as a teaser.
+            The full list is on the /stories page. */}
+        <StoriCardList limit={3} />
       </div>
 
+      {/* CTA button below the cards — navigates to the full stories page */}
       <div
         style={{
           marginTop: 50,

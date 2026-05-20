@@ -1,5 +1,9 @@
 "use client";
 
+// Root landing page — assembles all the landing sections in order top to bottom.
+// Each section is a standalone component; this file just stacks them.
+// The background color #f1f5f9 (light grey-blue) is the base behind all sections.
+
 import HeroSection from "@/components/usercomponent/HeroSection";
 import AboutSection from "@/components/usercomponent/AboutSection";
 import PeepSection from "@/components/usercomponent/PeepSection";
@@ -20,23 +24,26 @@ export default function Home() {
         flexDirection: "column",
       }}
     >
-      {/* Full-screen hero with background image and floating cards */}
+      {/* Full-screen hero: background image, big title, floating cards at bottom */}
       <HeroSection />
 
-      {/* "Na your Korner" blurb + animated icon grid */}
+      {/* "Na your Korner" text blurb + the 2x2 animated icon grid */}
       <AboutSection />
 
-      {/* Spacer */}
+      {/* Spacer between About and the torn dark section */}
       <div style={{ marginTop: 40 }} />
 
-      {/* Torn dark section with story card previews */}
+      {/* Dark torn-paper section showing 3 story card previews */}
       <PeepSection />
 
-      <Testimony></Testimony>
+      {/* Testimonials section — placeholder visuals for now */}
+      <Testimony />
 
-      <ActivationForm></ActivationForm>
+      {/* Email subscription form — "Korner Effect" */}
+      <ActivationForm />
 
-      <Footer></Footer>
+      {/* Footer with link columns and social icons */}
+      <Footer />
     </div>
   );
 }

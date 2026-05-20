@@ -3,20 +3,23 @@ import { nunito } from "@/lib/font";
 
 export default function AboutSection() {
   return (
+    // Two-column layout: text on the left, animated icon grid on the right.
+    // auto-fit with minmax(300px, 1fr) means:
+    //   - on wide screens: 2 columns side by side
+    //   - on narrow screens: each column drops to its own row (stacks vertically)
     <div
       style={{
         padding: 30,
         borderRadius: 20,
         width: "95%",
         display: "grid",
-        // stacks to 1 column on small screens, 2 columns on wider screens
         gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
         gap: 40,
         alignItems: "center",
         backgroundColor: "white",
       }}
     >
-      {/* Left: text content */}
+      {/* Left column: heading + description text */}
       <div
         style={{
           display: "flex",
@@ -50,7 +53,7 @@ export default function AboutSection() {
         </p>
       </div>
 
-      {/* Right: animated icon grid */}
+      {/* Right column: the 2x2 animated SVG icon grid (chat, education, couple, money) */}
       <div style={{ display: "flex", justifyContent: "flex-end" }}>
         <AnimatedIconGrid />
       </div>

@@ -1,6 +1,9 @@
 import Button from "@/components/admincomponent/Button";
 import { nunito } from "@/lib/font";
 
+// Email subscription form — lets users get notified when new stories drop.
+// Two-column layout: description text left, form inputs right.
+// auto-fit collapses to single column on mobile.
 export default function ActivationForm() {
   return (
     <div
@@ -16,7 +19,7 @@ export default function ActivationForm() {
         marginTop: 50,
       }}
     >
-      {/* Left: text */}
+      {/* Left: heading + description */}
       <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
         <p
           style={{
@@ -44,7 +47,9 @@ export default function ActivationForm() {
         </p>
       </div>
 
-      {/* Right: form */}
+      {/* Right: name + email inputs + submit button.
+          boxSizing: "border-box" on inputs ensures padding is included in the width
+          calculation — without it, padding adds to the width and inputs overflow their container. */}
       <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
         <input
           placeholder="Full name"
@@ -77,6 +82,7 @@ export default function ActivationForm() {
             boxSizing: "border-box",
           }}
         />
+        {/* width: fit-content stops the button from stretching to full column width */}
         <div style={{ width: "fit-content" }}>
           <Button>Activate Korner Effect</Button>
         </div>

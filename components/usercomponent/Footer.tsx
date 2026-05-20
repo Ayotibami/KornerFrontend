@@ -7,6 +7,8 @@ import {
 } from "react-icons/fa6";
 import Image from "next/image";
 
+// Link columns data — each array is one column in the footer grid.
+// href values are empty strings for now; fill them in when the pages exist.
 const linkColumns = [
   [
     { label: "Contact us", href: "" },
@@ -21,6 +23,7 @@ const linkColumns = [
   [{ label: "Privacy Policy", href: "" }],
 ];
 
+// Social icons data — icon component + accessible label for screen readers.
 const socials = [
   { icon: FaXTwitter, label: "X" },
   { icon: FaInstagram, label: "Instagram" },
@@ -39,7 +42,8 @@ export default function Footer() {
         marginTop: 50,
       }}
     >
-      {/* Top section: logo + link columns */}
+      {/* Top section: logo on the left + link columns filling the rest.
+          auto-fit with minmax(140px, 1fr) makes columns wrap naturally on small screens. */}
       <div
         style={{
           display: "grid",
@@ -60,7 +64,8 @@ export default function Footer() {
           />
         </div>
 
-        {/* Link columns */}
+        {/* Render each column of links from the linkColumns array above.
+            href || "#" falls back to "#" so clicking doesn't break if href is empty. */}
         {linkColumns.map((col, ci) => (
           <div
             key={ci}
@@ -85,10 +90,12 @@ export default function Footer() {
         ))}
       </div>
 
-      {/* Divider */}
+      {/* Horizontal divider between top and bottom bar */}
       <div style={{ borderTop: "1px solid #333", marginBottom: 28 }} />
 
-      {/* Bottom bar: copyright + socials */}
+      {/* Bottom bar: copyright left, social icons right.
+          flexWrap: wrap allows them to stack on very small screens.
+          new Date().getFullYear() always shows the current year automatically. */}
       <div
         style={{
           display: "flex",
@@ -110,6 +117,8 @@ export default function Footer() {
           © {new Date().getFullYear()} Ayoti. All rights reserved.
         </p>
 
+        {/* Social icons — aria-label makes them accessible to screen readers
+            since there's no visible text, only an icon. */}
         <div style={{ display: "flex", gap: 28, alignItems: "center" }}>
           {socials.map(({ icon: Icon, label }) => (
             <a

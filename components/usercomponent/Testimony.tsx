@@ -1,8 +1,10 @@
 import { nunito } from "@/lib/font";
-import React from "react";
 
 export default function Testimony() {
   return (
+    // Two-column layout matching AboutSection — text left, visual right.
+    // auto-fit collapses to 1 column on mobile.
+    // The right column is a placeholder — real testimonial visuals come later.
     <div
       style={{
         backgroundColor: "white",
@@ -16,7 +18,7 @@ export default function Testimony() {
         alignItems: "center",
       }}
     >
-      {/* Left: text content */}
+      {/* Left: heading + subtext */}
       <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
         <p
           style={{
@@ -41,7 +43,7 @@ export default function Testimony() {
         </p>
       </div>
 
-      {/* Right: visual placeholder */}
+      {/* Right: visual placeholder — replace with real testimonial cards/carousel */}
       <div
         style={{
           backgroundColor: "#f1f5f9",

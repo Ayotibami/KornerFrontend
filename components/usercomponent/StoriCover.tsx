@@ -1,9 +1,13 @@
 "use client";
+// "use client" needed for useState, useEffect, and the typing animation intervals.
 
 import { useEffect, useState } from "react";
 import { nunito } from "@/lib/font";
 import AnimatedClock from "./AnimatedClock";
 
+// Phase controls which piece of text is currently being typed.
+// They run in sequence: title → subtitle → author → done.
+// "done" means all typing is finished and the cover stops dancing.
 type Phase = "typing-title" | "typing-subtitle" | "typing-author" | "done";
 
 export default function StoriCover({
@@ -23,12 +27,22 @@ export default function StoriCover({
   readingTime?: string;
   date?: string;
 }) {
+  // Each *Chars state tracks how many characters of that string have been revealed so far.
+  // We slice the string to *Chars length when rendering, which creates the typing effect.
   const [phase, setPhase] = useState<Phase>("typing-title");
   const [titleChars, setTitleChars] = useState(0);
   const [subtitleChars, setSubtitleChars] = useState(0);
   const [authorChars, setAuthorChars] = useState(0);
+
+  // showMeta appears only after all typing is done — the reading time + date row
+  // fades in as a final flourish once the author name finishes typing.
   const [showMeta, setShowMeta] = useState(false);
 
+  // ── TYPING EFFECT: TITLE ────────────────────────────────────────────────────
+  // setInterval fires every 35ms and reveals one more character of the title.
+  // When all characters are shown it clears itself and advances phase to subtitle.
+  // The return () => clearInterval(interval) is cleanup — runs when this effect
+  // re-runs or when the component unmounts, preventing memory leaks.
   useEffect(() => {
     if (phase !== "typing-title") return;
     const interval = setInterval(() => {
@@ -40,10 +54,12 @@ export default function StoriCover({
         }
         return prev + 1;
       });
-    }, 35);
+    }, 35); // 35ms per character — slower = feels more deliberate
     return () => clearInterval(interval);
   }, [phase, title.length]);
 
+  // ── TYPING EFFECT: SUBTITLE ─────────────────────────────────────────────────
+  // 12ms per character — much faster than title, subtitle feels like it rushes out.
   useEffect(() => {
     if (phase !== "typing-subtitle") return;
     const interval = setInterval(() => {
@@ -59,13 +75,16 @@ export default function StoriCover({
     return () => clearInterval(interval);
   }, [phase, subtitle.length]);
 
+  // ── TYPING EFFECT: AUTHOR NAME ──────────────────────────────────────────────
+  // 45ms per character — slowest of the three, author name feels carefully written.
+  // When finished: shows the meta row and sets phase to "done" which stops dancing.
   useEffect(() => {
     if (phase !== "typing-author") return;
     const interval = setInterval(() => {
       setAuthorChars((prev) => {
         if (prev >= authorName.length) {
           clearInterval(interval);
-          setShowMeta(true);
+          setShowMeta(true); // triggers the fade-in of reading time + date
           setPhase("done");
           return prev;
         }
@@ -75,12 +94,28 @@ export default function StoriCover({
     return () => clearInterval(interval);
   }, [phase, authorName.length]);
 
+  // Cover dances while any typing is happening, stops when everything is done.
   const isDancing = phase !== "done";
+
+  // Returns true only while a field is actively being typed and hasn't finished yet.
+  // Used to decide whether to show the blinking cursor next to each text element.
   const showCursor = (active: boolean, chars: number, total: number) =>
     active && chars < total;
 
   return (
     <>
+      {/* ── KEYFRAMES ──────────────────────────────────────────────────────────
+          cover-dance: subtle scale + rotate wobble applied to the whole cover
+          while typing is happening. Stops the moment phase becomes "done".
+          The small scale values (1.02, 0.99) give a breathing/bouncing feel.
+
+          fade-in: used by the meta row (reading time + date) to slide up and
+          appear smoothly after all typing finishes.
+
+          blink: drives the .typing-cursor class — the white blinking bar
+          that appears at the end of whichever text is currently being typed.
+          step-end means it switches opacity instantly (on/off) rather than fading,
+          which matches the look of a real terminal cursor. */}
       <style>{`
         @keyframes cover-dance {
           0%   { transform: scale(1)     rotate(0deg); }
@@ -110,6 +145,13 @@ export default function StoriCover({
         }
       `}</style>
 
+      {/* ── COVER IMAGE DIV ────────────────────────────────────────────────────
+          We use backgroundImage instead of <Image> because the cover URL is dynamic
+          and this approach lets us style the container directly without needing a
+          position:relative wrapper + fill pattern.
+          backgroundColor: "black" shows as the base when no coverImage is provided.
+          justifyContent: "flex-end" + flexDirection: "column" pushes all text
+          to the bottom of the cover. */}
       <div
         style={{
           width: "100%",
@@ -125,11 +167,15 @@ export default function StoriCover({
           backgroundSize: "cover",
           backgroundPosition: "center",
           backgroundRepeat: "no-repeat",
+          // animation is applied when isDancing is true (while typing is happening).
+          // Switches to "none" once phase === "done" — cover settles and stays still.
           animation: isDancing
             ? "cover-dance 0.9s ease-in-out infinite"
             : "none",
         }}
       >
+        {/* Title — only renders once at least 1 character has been typed.
+            title.slice(0, titleChars) reveals the string incrementally. */}
         {titleChars > 0 && (
           <h1
             style={{
@@ -141,12 +187,14 @@ export default function StoriCover({
             }}
           >
             {title.slice(0, titleChars)}
+            {/* Cursor only shows while this field is the active one being typed */}
             {showCursor(phase === "typing-title", titleChars, title.length) && (
               <span className="typing-cursor" />
             )}
           </h1>
         )}
 
+        {/* Subtitle — appears after title is fully typed */}
         {subtitleChars > 0 && (
           <p
             style={{
@@ -159,14 +207,15 @@ export default function StoriCover({
             }}
           >
             {subtitle.slice(0, subtitleChars)}
-            {showCursor(
-              phase === "typing-subtitle",
-              subtitleChars,
-              subtitle.length,
-            ) && <span className="typing-cursor" />}
+            {showCursor(phase === "typing-subtitle", subtitleChars, subtitle.length) && (
+              <span className="typing-cursor" />
+            )}
           </p>
         )}
 
+        {/* Author row — appears after subtitle is fully typed.
+            Contains: avatar circle + author name (typing) on the left,
+            reading time + date (fade-in) on the right. */}
         {authorChars > 0 && (
           <div
             style={{
@@ -184,15 +233,15 @@ export default function StoriCover({
                 gap: 10,
               }}
             >
+              {/* Avatar circle — CSS background-image approach, same as StoriBottom.
+                  Grey fallback shown when no avatar URL is provided. */}
               <div
                 style={{
                   width: "clamp(32px, 5vw, 44px)",
                   height: "clamp(32px, 5vw, 44px)",
                   borderRadius: "50%",
                   backgroundColor: "#e2e8f0",
-                  backgroundImage: authorAvatar
-                    ? `url("${authorAvatar}")`
-                    : "none",
+                  backgroundImage: authorAvatar ? `url("${authorAvatar}")` : "none",
                   backgroundSize: "cover",
                   backgroundPosition: "center",
                   backgroundRepeat: "no-repeat",
@@ -210,14 +259,16 @@ export default function StoriCover({
                 }}
               >
                 {authorName.slice(0, authorChars)}
-                {showCursor(
-                  phase === "typing-author",
-                  authorChars,
-                  authorName.length,
-                ) && <span className="typing-cursor" />}
+                {showCursor(phase === "typing-author", authorChars, authorName.length) && (
+                  <span className="typing-cursor" />
+                )}
               </p>
             </div>
 
+            {/* Meta row: reading time + date.
+                Only rendered after showMeta becomes true (all typing done).
+                animation: "fade-in 0.5s ease forwards" plays once — "forwards"
+                means it holds the final state (opacity: 1) after finishing. */}
             {showMeta && (
               <div
                 style={{
@@ -237,6 +288,7 @@ export default function StoriCover({
                       gap: 5,
                     }}
                   >
+                    {/* Animated clock icon — isolated in its own component */}
                     <AnimatedClock />
                     <p
                       style={{

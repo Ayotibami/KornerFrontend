@@ -8,6 +8,9 @@ import Link from "next/link";
 
 export default function HeroSection() {
   return (
+    // Full-screen container with the landing cover image as background.
+    // minHeight: "100vh" ensures it always fills the viewport even on tall screens.
+    // backgroundSize: "cover" scales the image to always fill the div, cropping if needed.
     <div
       style={{
         width: "95%",
@@ -19,13 +22,13 @@ export default function HeroSection() {
         justifyContent: "space-evenly",
         alignItems: "center",
         borderRadius: 36,
-        backgroundImage: "url('/images/landingcover3.png')",
+        backgroundImage: "url('/images/landingcover1.png')",
         backgroundSize: "cover",
         backgroundPosition: "center",
         backgroundRepeat: "no-repeat",
       }}
     >
-      {/* Centered hero copy */}
+      {/* Centered text block: title, tagline, description, CTA button */}
       <div
         style={{
           flexDirection: "column",
@@ -37,7 +40,6 @@ export default function HeroSection() {
       >
         <HeroText>The Korner</HeroText>
 
-        {/* Tagline */}
         <p
           style={{
             fontSize: "1rem",
@@ -49,7 +51,6 @@ export default function HeroSection() {
           Kampos talks you listen
         </p>
 
-        {/* Sub-description */}
         <p
           style={{
             textAlign: "center",
@@ -70,7 +71,10 @@ export default function HeroSection() {
         </Link>
       </div>
 
-      {/* Animated floating cards — bleeds below the hero boundary */}
+      {/* FloatingCards sits at the bottom of the hero and intentionally bleeds
+          below it using marginBottom: -60. This makes the cards appear to float
+          between the hero and the next section rather than being contained inside.
+          zIndex: 10 keeps the cards above surrounding content. */}
       <div
         style={{
           position: "relative",

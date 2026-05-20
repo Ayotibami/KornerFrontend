@@ -1,14 +1,57 @@
+import type { Metadata } from "next";
 import StoriCover from "@/components/usercomponent/StoriCover";
 import StoriBody from "@/components/usercomponent/StoriBody";
+import StoriBottom from "@/components/usercomponent/StoriBottom";
+import OtherStories from "@/components/usercomponent/OtherStories";
+import ActivationForm from "@/components/usercomponent/ActivationForm";
+import Footer from "@/components/usercomponent/Footer";
 
-export default async function StoriPage({
+// generateMetadata is a special Next.js reserved export name for page files.
+// You never call it yourself — Next.js calls it automatically when someone visits this route.
+// Whatever you return from it gets injected into the <head> of the page as meta tags:
+// <title>, <meta name="description">, <meta property="og:title"> etc.
+// This is what Facebook, Twitter, and WhatsApp read when building a share preview card.
+// When we connect the real API, this function will fetch the story by storiId
+// and return its actual title, description, and cover image instead of hardcoded values.
+export async function generateMetadata({
   params,
 }: {
   params: { storiId: string };
-}) {
+}): Promise<Metadata> {
   const { storiId } = await params;
 
+  return {
+    title: "The Night Reading Struggle No One Talks About",
+    description: "Omo no sleep for the wicked ooo",
+    openGraph: {
+      // openGraph fields specifically target social media share previews.
+      // Facebook reads og:title and og:description from here to build the card.
+      // og:url should be the canonical URL of this story page on production.
+      // TODO: replace hardcoded domain with an environment variable when domain is confirmed.
+      title: "The Night Reading Struggle No One Talks About",
+      description: "Omo no sleep for the wicked ooo",
+      url: `https://thekorner.com/stories/${storiId}`,
+      type: "article", // tells platforms this is a blog/news article, not a generic webpage
+    },
+  };
+}
+
+// This is a dynamic route — the folder is named [storiId] which means Next.js
+// captures whatever is in that URL segment and passes it as params.storiId.
+// e.g. /stories/04e23ac7-3615-4cb5-aacc-2b470b156087 → storiId = "04e23ac7-3615-4cb5-aacc-2b470b156087"
+// The function is async because when we connect the API we will await a fetch call
+// inside here to load the story data before rendering. For now everything is hardcoded.
+export default async function StoriPage() {
+  // when API is connected, add: { params }: { params: { storiId: string } }
+  // then: const { storiId } = await params;
+  // then use storiId to fetch the story e.g. fetch(`/api/stories/${storiId}`)
+
   return (
+    // Fragment wraps the padded content + footer so Footer sits outside the padding
+    // and stretches edge-to-edge while everything else stays contained.
+    <>
+    {/* Page wrapper: all sections stacked vertically with a gap between them.
+        padding: 20 gives breathing room from the screen edges on all sides. */}
     <div
       style={{
         display: "flex",
@@ -17,6 +60,10 @@ export default async function StoriPage({
         gap: 20,
       }}
     >
+      {/* ── COVER SECTION ──
+          Big visual header of the story. Shows the cover image (or dark gradient fallback),
+          title, subtitle, author name, reading time and date with a typing animation on load.
+          All props here will come from the API response once connected. */}
       <StoriCover
         title="The Night Reading Struggle No One Talks About"
         subtitle="Omo no sleep for the wicked ooo"
@@ -24,6 +71,13 @@ export default async function StoriPage({
         readingTime="5 min read"
         date="24 Oct 2025"
       />
+
+      {/* ── STORY BODY ──
+          Renders the actual story content block by block.
+          Each block has a type: "heading", "paragraph", "quote", or "image".
+          StoriBody sorts them by their position field and renders each with the right UI.
+          The blocks array will be replaced with the real content from the API.
+          image_url fields are empty strings for now — images will come from the backend. */}
       <StoriBody
         blocks={[
           {
@@ -51,7 +105,7 @@ export default async function StoriPage({
             position: 4,
             block_type: "image",
             content: "",
-            image_url: "",
+            image_url: "", // empty = shows grey placeholder; replace with real URL from API
           },
           {
             id: "5",
@@ -177,6 +231,25 @@ export default async function StoriPage({
           },
         ]}
       />
+
+      {/* ── AUTHOR + SHARE SECTION ──
+          Shows the author's avatar, name, and bio on the left.
+          Shows clickable share icons (Twitter, WhatsApp, Facebook, copy link) on the right.
+          title is passed so Twitter and WhatsApp can pre-fill it as the share message text. */}
+      <StoriBottom
+        authorName="Tenuojo Favour"
+        authorBio="Dealing with school trauma and wahala"
+        title="The Night Reading Struggle No One Talks About"
+      />
+
+      {/* ── OTHER STORIES ──
+          Renders a grid of 3 other story cards below the current story
+          with a "See all stories" button that navigates to /stories. */}
+      <OtherStories />
+
+      <ActivationForm />
     </div>
+    <Footer />
+    </>
   );
 }

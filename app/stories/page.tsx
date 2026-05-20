@@ -1,4 +1,6 @@
 "use client";
+// "use client" needed because of useState + useEffect for the greeting rotation animation
+
 import Button from "@/components/admincomponent/Button";
 import Image from "next/image";
 import HeroText from "@/components/admincomponent/HeroText";
@@ -10,37 +12,33 @@ import ActivationForm from "@/components/usercomponent/ActivationForm";
 import Footer from "@/components/usercomponent/Footer";
 import AuxillaryText from "@/components/usercomponent/AuxillaryText";
 
+// List of greetings in different Nigerian languages — cycles through them in the hero.
+// Commented-out ones are unverified and kept here for future reference.
 const greetings = [
-  "How far", // Nigerian Pidgin
-  "Bawo", // Yoruba
-  "Kedu", // Igbo
-  "Sannu", // Hausa
-  // "Ojẹchẹ", // Igala — unverified
-  // "Ite ni", // Ebira — unverified
-  "Migwo", // Urhobo
-  // "Doo", // Tiv
-  // "Jam", // Fulfulde (Fulani)
-  "Emem", // Ibibio
-  // "Barka", // Nupe — likely Hausa, not Nupe
-  // "Mọ̀dọ̀", // Efik — unverified
-  // "Ẹ káàbọ̀", // Itsekiri — means "welcome" in Yoruba, not "hey"
-  // "Wụ lawan", // Kanuri — unverified
-  // "Eche", // Idoma — unverified
+  "How far",  // Nigerian Pidgin
+  "Bawo",     // Yoruba
+  "Kedu",     // Igbo
+  "Sannu",    // Hausa
+  "Migwo",    // Urhobo
+  "Emem",     // Ibibio
 ];
 
 export default function Page() {
+  // index tracks which greeting is currently shown
   const [index, setIndex] = useState(0);
+  // visible drives the fade-out/fade-in transition between greetings
   const [visible, setVisible] = useState(true);
 
   useEffect(() => {
+    // Every 2 seconds: fade out → swap greeting → fade in
     const interval = setInterval(() => {
-      setVisible(false);
+      setVisible(false); // triggers CSS opacity transition to 0
       setTimeout(() => {
-        setIndex((prev) => (prev + 1) % greetings.length);
-        setVisible(true);
-      }, 400);
+        setIndex((prev) => (prev + 1) % greetings.length); // move to next greeting, wraps around
+        setVisible(true); // fade back in with new text
+      }, 400); // 400ms matches the CSS transition duration so text swaps while invisible
     }, 2000);
-    return () => clearInterval(interval);
+    return () => clearInterval(interval); // cleanup on unmount
   }, []);
 
   return (
@@ -53,6 +51,7 @@ export default function Page() {
         paddingTop: 20,
       }}
     >
+      {/* ── HERO SECTION ── full-screen cover image with animated greeting + CTA */}
       <div
         style={{
           position: "relative",
@@ -63,7 +62,7 @@ export default function Page() {
           justifyContent: "center",
           flexDirection: "column",
           height: "100vh",
-          backgroundImage: "url('/images/landingcover3.png')",
+          backgroundImage: "url('/images/landingcover1.png')",
           marginBottom: 30,
           gap: 25,
           padding: "20px",
@@ -73,6 +72,7 @@ export default function Page() {
           backgroundRepeat: "no-repeat",
         }}
       >
+        {/* Greeting text — opacity animates between 0 and 1 on each language swap */}
         <div
           style={{
             opacity: visible ? 1 : 0,
@@ -81,6 +81,7 @@ export default function Page() {
         >
           <HeroText>{greetings[index]}</HeroText>
         </div>
+
         <p
           style={{
             color: "white",
@@ -94,6 +95,9 @@ export default function Page() {
           Welcome to the Kornerrrrrrrrrrrrrrrrrrrrr
         </p>
 
+        {/* Clicking this button scrolls smoothly to the story list below.
+            getElementById("stories-list") finds the div with that id further down the page.
+            scrollIntoView({ behavior: "smooth" }) animates the scroll rather than jumping. */}
         <Button
           onClick={() =>
             document
@@ -105,6 +109,7 @@ export default function Page() {
         </Button>
       </div>
 
+      {/* Kappy mascot image */}
       <div
         style={{
           position: "relative",
@@ -119,10 +124,15 @@ export default function Page() {
           style={{ objectFit: "contain" }}
         />
       </div>
+
+      {/* Cheeky note about the spelling of "Korner" */}
       <AuxillaryText>
         Abeg it is spelt Korner o , na Kappy write the one wey dey for up
       </AuxillaryText>
 
+      {/* ── STORY LIST SECTION ──
+          id="stories-list" is the anchor target for both the button above
+          and the "See all stories" link in OtherStories. Clicking either scrolls here. */}
       <div id="stories-list">
         <TornSection>
           <div
@@ -144,12 +154,14 @@ export default function Page() {
             >
               Pick one na, No waste time!
             </h1>
+            {/* No limit passed — shows all stories */}
             <StoriCardList />
           </div>
         </TornSection>
       </div>
-      <ActivationForm></ActivationForm>
-      <Footer></Footer>
+
+      <ActivationForm />
+      <Footer />
     </div>
   );
 }
