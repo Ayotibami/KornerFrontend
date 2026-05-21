@@ -18,7 +18,19 @@ export default function ActivationForm() {
       return;
     }
     if (Notification.permission === "granted") {
-      setNotifStatus("already-on");
+      // call optIn() even if already granted — covers the case where the user
+      // enabled notifications directly in browser settings without going through
+      // our button, meaning OneSignal may have no record of them yet.
+      // optIn() is safe to call multiple times — OneSignal upserts, no duplicates.
+      try {
+        await oneSignalReady;
+        await OneSignal.User.PushSubscription.optIn();
+        setNotifStatus("already-on");
+      } catch (err) {
+        if (process.env.NODE_ENV === "development")
+          console.error("OneSignal optIn failed:", err);
+      }
+
       return;
     }
     try {
