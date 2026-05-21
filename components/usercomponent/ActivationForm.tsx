@@ -6,27 +6,30 @@ import { oneSignalReady } from "@/components/usercomponent/OneSignalInit";
 import Button from "@/components/admincomponent/Button";
 import { nunito } from "@/lib/font";
 
-// Email subscription form + push notification opt-in.
-// Two-column layout: description text left, inputs + buttons right.
-// auto-fit collapses to single column on mobile.
 export default function ActivationForm() {
-  const [notifEnabled, setNotifEnabled] = useState(false);
+  // "idle" = not yet clicked, "enabled" = just subscribed, "already-on" = was already subscribed, "blocked" = browser denied
+  const [notifStatus, setNotifStatus] = useState<
+    "idle" | "enabled" | "already-on" | "blocked"
+  >("idle");
 
   const handleEnableNotifications = async () => {
-    // Wait for OneSignal to finish initializing before doing anything.
-    // Without this await, clicking the button too early silently does nothing.
-    await oneSignalReady;
-
-    // requestPermission() shows the browser's native Allow/Block dialog
-    // and returns true if the user clicked Allow, false if they clicked Block.
-    const granted = await OneSignal.Notifications.requestPermission();
-
-    if (granted) {
-      // Register this device with OneSignal's servers so it can receive
-      // notifications. Just having browser permission is not enough —
-      // OneSignal needs to create a push subscription endpoint for this device.
-      await OneSignal.User.PushSubscription.optIn();
-      setNotifEnabled(true);
+    if (Notification.permission === "denied") {
+      setNotifStatus("blocked");
+      return;
+    }
+    if (Notification.permission === "granted") {
+      setNotifStatus("already-on");
+      return;
+    }
+    try {
+      await oneSignalReady;
+      const granted = await OneSignal.Notifications.requestPermission();
+      if (granted) {
+        await OneSignal.User.PushSubscription.optIn();
+        setNotifStatus("enabled");
+      }
+    } catch (error) {
+      console.error("OneSignal init or permission request failed", error);
     }
   };
 
@@ -72,10 +75,9 @@ export default function ActivationForm() {
         </p>
       </div>
 
-      {/* Right: name + email inputs + buttons.
-          boxSizing: "border-box" on inputs ensures padding is included in width
-          so inputs don't overflow their container. */}
+      {/* Right: email section + or divider + notify section */}
       <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+        {/* Email section */}
         <input
           placeholder="Full name"
           style={{
@@ -107,20 +109,55 @@ export default function ActivationForm() {
             boxSizing: "border-box",
           }}
         />
+        <div style={{ width: "fit-content" }}>
+          <Button>Email me</Button>
+        </div>
 
-        {/* width: fit-content stops buttons from stretching to full column width */}
-        <div style={{ display: "flex", flexDirection: "row", gap: 12, flexWrap: "wrap" }}>
-          <div style={{ width: "fit-content" }}>
-            <Button>Email me</Button>
-          </div>
+        {/* "or" divider — two lines with "or" centred between them */}
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 12,
+            marginTop: 8,
+          }}
+        >
+          <div
+            style={{
+              flex: 1,
+              height: 1,
+              backgroundColor: "rgba(255,255,255,0.15)",
+            }}
+          />
+          <p
+            style={{
+              fontFamily: nunito.style.fontFamily,
+              fontSize: "0.8rem",
+              fontWeight: 600,
+              color: "rgba(255,255,255,0.4)",
+              margin: 0,
+            }}
+          >
+            or
+          </p>
+          <div
+            style={{
+              flex: 1,
+              height: 1,
+              backgroundColor: "rgba(255,255,255,0.15)",
+            }}
+          />
+        </div>
 
-          {/* Notify me button — triggers OneSignal permission flow.
-              Swaps to a green "Notifications On" confirmation once subscribed. */}
-          {!notifEnabled ? (
+        {/* Notify section */}
+        <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+          {notifStatus === "idle" && (
             <div style={{ width: "fit-content" }}>
               <Button onClick={handleEnableNotifications}>Notify me</Button>
             </div>
-          ) : (
+          )}
+
+          {notifStatus === "enabled" && (
             <p
               style={{
                 fontFamily: nunito.style.fontFamily,
@@ -128,12 +165,60 @@ export default function ActivationForm() {
                 fontWeight: 600,
                 color: "#5ECFA8",
                 margin: 0,
-                alignSelf: "center",
               }}
             >
               Notifications On
             </p>
           )}
+
+          {notifStatus === "already-on" && (
+            <p
+              style={{
+                fontFamily: nunito.style.fontFamily,
+                fontSize: "0.875rem",
+                fontWeight: 600,
+                color: "#5ECFA8",
+                margin: 0,
+              }}
+            >
+              You don already subscribe — we go find you when we drop a new
+              stori
+            </p>
+          )}
+
+          {notifStatus === "blocked" && (
+            <p
+              style={{
+                fontFamily: nunito.style.fontFamily,
+                fontSize: "0.8rem",
+                fontWeight: 500,
+                color: "#FF6B6B",
+                margin: 0,
+                lineHeight: 1.6,
+              }}
+            >
+              You don block notifications for this site. To fix am, click the
+              lock icon for your address bar, go to Site settings, change
+              Notifications back to Allow, then reload the page.
+            </p>
+          )}
+
+          <p
+            style={{
+              fontFamily: nunito.style.fontFamily,
+              fontSize: "0.8rem",
+              fontWeight: 500,
+              color: "rgba(255,255,255,0.4)",
+              margin: 0,
+              lineHeight: 1.6,
+            }}
+          >
+            No time to dey check mail? Click Notify me and we go ping you
+            directly on your device whenever we drop a new stori — no inbox, no
+            wahala. iPhone users, you go need to add this site to your home
+            screen first: open in Safari, tap the share icon, select &ldquo;Add
+            to Home Screen&rdquo;, then come back and click the button.
+          </p>
         </div>
       </div>
     </div>
