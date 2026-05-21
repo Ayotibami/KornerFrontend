@@ -17,9 +17,9 @@ export default function ActivationForm() {
     // Without this await, clicking the button too early silently does nothing.
     await oneSignalReady;
 
-    // requestPermission(true) shows the browser's native Allow/Block dialog
+    // requestPermission() shows the browser's native Allow/Block dialog
     // and returns true if the user clicked Allow, false if they clicked Block.
-    const granted = await OneSignal.Notifications.requestPermission(true);
+    const granted = await OneSignal.Notifications.requestPermission();
 
     if (granted) {
       // Register this device with OneSignal's servers so it can receive
