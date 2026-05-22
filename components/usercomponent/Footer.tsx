@@ -53,8 +53,8 @@ export default function Footer() {
           marginBottom: 60,
         }}
       >
-        {/* Logo */}
-        <div>
+        {/* Logo + By Kampos label */}
+        <div style={{ display: "flex", flexDirection: "column", gap: 8, alignItems: "flex-start" }}>
           <Image
             src="/images/Icon.png"
             alt="Korner logo"
@@ -62,6 +62,9 @@ export default function Footer() {
             height={80}
             style={{ objectFit: "contain", width: "clamp(60px, 8vw, 80px)", height: "auto" }}
           />
+          <p style={{ color: "rgba(255,255,255,0.4)", fontFamily: nunito.style.fontFamily, fontSize: "0.75rem", fontWeight: 500, margin: 0 }}>
+            By Kampos
+          </p>
         </div>
 
         {/* Render each column of links from the linkColumns array above.

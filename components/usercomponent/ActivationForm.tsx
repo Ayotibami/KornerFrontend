@@ -91,7 +91,7 @@ export default function ActivationForm() {
       <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
         {/* Email section */}
         <input
-          placeholder="Full name"
+          placeholder="Nickname"
           style={{
             backgroundColor: "white",
             border: "none",
