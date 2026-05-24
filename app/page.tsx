@@ -17,7 +17,7 @@ export default function Home() {
   return (
     <div
       style={{
-        paddingTop: 10,
+        paddingTop: 16,
         height: "100%",
         display: "flex",
         alignItems: "center",
@@ -25,6 +25,8 @@ export default function Home() {
         flexDirection: "column",
       }}
     >
+      <Navbar />
+
       {/* Full-screen hero: background image, big title, floating cards at bottom */}
       <HeroSection />
 

@@ -49,9 +49,11 @@ export default function Page() {
         flexDirection: "column",
         alignItems: "center",
         backgroundColor: "#f1f5f9",
-        paddingTop: 20,
+        paddingTop: 16,
       }}
     >
+      <Navbar />
+
       {/* ── HERO SECTION ── full-screen cover image with animated greeting + CTA */}
       <div
         style={{
@@ -60,65 +62,51 @@ export default function Page() {
           borderRadius: "clamp(16px, 4vw, 36px)",
           display: "flex",
           alignItems: "center",
-          justifyContent: "flex-start",
+          justifyContent: "center",
           flexDirection: "column",
           height: "100vh",
           backgroundImage: "url('/images/landingcover1.png')",
           marginBottom: 30,
-          padding: "20px",
+          padding: "90px 20px 20px",
           boxSizing: "border-box",
           backgroundSize: "cover",
           backgroundPosition: "center",
           backgroundRepeat: "no-repeat",
         }}
       >
-        <Navbar />
-
+        {/* Greeting text — opacity animates between 0 and 1 on each language swap */}
         <div
           style={{
-            flex: 1,
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            justifyContent: "center",
-            gap: 25,
-            width: "100%",
+            opacity: visible ? 1 : 0,
+            transition: "opacity 0.4s ease-in-out",
           }}
         >
-          {/* Greeting text — opacity animates between 0 and 1 on each language swap */}
-          <div
-            style={{
-              opacity: visible ? 1 : 0,
-              transition: "opacity 0.4s ease-in-out",
-            }}
-          >
-            <HeroText>{greetings[index]}</HeroText>
-          </div>
-
-          <p
-            style={{
-              color: "white",
-              fontFamily: nunito.style.fontFamily,
-              fontSize: "clamp(0.9rem, 2.5vw, 1.2rem)",
-              fontWeight: 500,
-              textAlign: "center",
-              padding: "0 1rem",
-            }}
-          >
-            Welcome to the Kornerrrrrrrrrrrrrrrrrrrrr
-          </p>
-
-          {/* Clicking this button scrolls smoothly to the story list below. */}
-          <Button
-            onClick={() =>
-              document
-                .getElementById("stories-list")
-                ?.scrollIntoView({ behavior: "smooth" })
-            }
-          >
-            Oya check our stories
-          </Button>
+          <HeroText>{greetings[index]}</HeroText>
         </div>
+
+        <p
+          style={{
+            color: "white",
+            fontFamily: nunito.style.fontFamily,
+            fontSize: "clamp(0.9rem, 2.5vw, 1.2rem)",
+            fontWeight: 500,
+            textAlign: "center",
+            padding: "0 1rem",
+          }}
+        >
+          Welcome to the Kornerrrrrrrrrrrrrrrrrrrrr
+        </p>
+
+        {/* Clicking this button scrolls smoothly to the story list below. */}
+        <Button
+          onClick={() =>
+            document
+              .getElementById("stories-list")
+              ?.scrollIntoView({ behavior: "smooth" })
+          }
+        >
+          Oya check our stories
+        </Button>
       </div>
 
       {/* Kappy mascot image */}

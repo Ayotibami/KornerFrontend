@@ -5,22 +5,18 @@ import Button from "@/components/admincomponent/Button";
 import FloatingCards from "@/components/admincomponent/FloatingCards";
 import { nunito } from "@/lib/font";
 import Link from "next/link";
-import Navbar from "./Navbar";
 
 export default function HeroSection() {
   return (
-    // Full-screen container with the landing cover image as background.
-    // minHeight: "100vh" ensures it always fills the viewport even on tall screens.
-    // backgroundSize: "cover" scales the image to always fill the div, cropping if needed.
     <div
       style={{
         width: "95%",
         minHeight: "100vh",
         marginBottom: 20,
-        padding: 10,
+        padding: "90px 10px 10px",
         display: "flex",
         flexDirection: "column",
-        justifyContent: "flex-start",
+        justifyContent: "space-evenly",
         alignItems: "center",
         borderRadius: 36,
         backgroundImage: "url('/images/landingcover1.png')",
@@ -29,19 +25,6 @@ export default function HeroSection() {
         backgroundRepeat: "no-repeat",
       }}
     >
-      {/* Navbar pinned to top of the hero */}
-      <Navbar />
-
-      {/* Text block grows to fill remaining space and centers itself vertically */}
-      <div
-        style={{
-          flex: 1,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          width: "100%",
-        }}
-      >
       <div
         style={{
           flexDirection: "column",
@@ -83,12 +66,7 @@ export default function HeroSection() {
           <Button>Hop into Korner</Button>
         </Link>
       </div>
-      </div>
 
-      {/* FloatingCards sits at the bottom of the hero and intentionally bleeds
-          below it using marginBottom: -60. This makes the cards appear to float
-          between the hero and the next section rather than being contained inside.
-          zIndex: 10 keeps the cards above surrounding content. */}
       <div
         style={{
           position: "relative",

@@ -13,16 +13,21 @@ export default function Navbar() {
   return (
     <div
       style={{
+        position: "fixed",
+        top: 16,
+        left: "50%",
+        transform: "translateX(-50%)",
+        zIndex: 200,
         display: "flex",
         alignItems: "center",
         justifyContent: "space-between",
         padding: "clamp(8px, 1.5vw, 12px) clamp(14px, 3vw, 24px)",
         width: "95%",
         borderRadius: 20,
-        background: "rgba(255, 255, 255, 0.15)",
+        background: "rgba(22, 90, 191, 0.09)",
         backdropFilter: "blur(14px)",
         WebkitBackdropFilter: "blur(14px)",
-        border: "1px solid rgba(255, 255, 255, 0.25)",
+        border: "1px solid rgba(100, 160, 255, 0.35)",
         boxShadow: "0 4px 24px rgba(0, 0, 0, 0.06)",
       }}
     >
