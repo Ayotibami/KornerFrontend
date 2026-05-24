@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import GoBackButton from "@/components/usercomponent/GoBackButton";
 import StoriCover from "@/components/usercomponent/StoriCover";
 import StoriBody from "@/components/usercomponent/StoriBody";
 import StoriBottom from "@/components/usercomponent/StoriBottom";
@@ -61,6 +62,9 @@ export default async function StoriPage() {
           gap: 20,
         }}
       >
+        {/* ── GO BACK ── */}
+        <GoBackButton href="/stories" />
+
         {/* ── COVER SECTION ──
           Big visual header of the story. Shows the cover image (or dark gradient fallback),
           title, subtitle, author name, reading time and date with a typing animation on load.
