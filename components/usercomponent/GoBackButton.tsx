@@ -37,7 +37,7 @@ export default function GoBackButton({ href }: { href: string }) {
         alignItems: "center",
         gap: 8,
         textDecoration: "none",
-        color: "#0f1e3d",
+        color: "white",
         background: "rgba(22, 90, 191, 0.09)",
         backdropFilter: "blur(10px)",
         WebkitBackdropFilter: "blur(10px)",
