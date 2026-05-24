@@ -4,6 +4,7 @@
 // Each section is a standalone component; this file just stacks them.
 // The background color #f1f5f9 (light grey-blue) is the base behind all sections.
 
+import Navbar from "@/components/usercomponent/Navbar";
 import HeroSection from "@/components/usercomponent/HeroSection";
 import AboutSection from "@/components/usercomponent/AboutSection";
 import PeepSection from "@/components/usercomponent/PeepSection";

@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Korner — Logo Directions</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #f0f2f5;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      padding: 56px 48px;
+    }
+    h1 { color: #0f1e3d; font-size: 28px; font-weight: 800; margin-bottom: 6px; }
+    .subtitle { color: #888; font-size: 14px; margin-bottom: 48px; }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 28px;
+      max-width: 1200px;
+    }
+    .card {
+      background: white;
+      border-radius: 24px;
+      padding: 40px 28px 32px;
+      text-align: center;
+      box-shadow: 0 2px 20px rgba(0,0,0,0.07);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+    }
+    .logo-row { display: flex; gap: 20px; align-items: center; justify-content: center; }
+    .tag { font-size: 11px; font-weight: 700; color: #00B2FF; text-transform: uppercase; letter-spacing: 1px; }
+    .card-title { font-size: 15px; font-weight: 800; color: #0f1e3d; }
+    .card-desc { font-size: 12.5px; color: #888; line-height: 1.6; max-width: 260px; }
+    .variant-label { font-size: 10px; color: #bbb; font-weight: 500; margin-top: 6px; }
+  </style>
+</head>
+<body>
+
+  <h1>Korner — Logo Directions</h1>
+  <p class="subtitle">5 unique K directions · 2 variants each · refresh after opening</p>
+
+  <div class="grid">
+
+    <!-- ── A. BOLD EDITORIAL ── -->
+    <div class="card">
+      <div class="tag">Direction A</div>
+      <div class="logo-row">
+        <div>
+          <svg width="110" height="110" viewBox="0 0 100 100">
+            <rect width="100" height="100" rx="20" fill="#0f1e3d"/>
+            <line x1="26" y1="12" x2="26" y2="88" stroke="white" stroke-width="22" stroke-linecap="butt"/>
+            <line x1="37" y1="50" x2="84" y2="12" stroke="white" stroke-width="19" stroke-linecap="butt"/>
+            <line x1="37" y1="50" x2="84" y2="88" stroke="white" stroke-width="19" stroke-linecap="butt"/>
+          </svg>
+          <p class="variant-label">Dark</p>
+        </div>
+        <div>
+          <svg width="110" height="110" viewBox="0 0 100 100">
+            <rect width="100" height="100" rx="20" fill="white" stroke="#e8e8e8" stroke-width="1"/>
+            <line x1="26" y1="12" x2="26" y2="88" stroke="#0f1e3d" stroke-width="22" stroke-linecap="butt"/>
+            <line x1="37" y1="50" x2="84" y2="12" stroke="#0f1e3d" stroke-width="19" stroke-linecap="butt"/>
+            <line x1="37" y1="50" x2="84" y2="88" stroke="#0f1e3d" stroke-width="19" stroke-linecap="butt"/>
+          </svg>
+          <p class="variant-label">Light</p>
+        </div>
+      </div>
+      <div class="card-title">Bold Editorial</div>
+      <p class="card-desc">Maximum weight K that almost bursts out of the frame. Bold, loud, commanding. Think Nigerian magazine cover energy — unapologetic.</p>
+    </div>
+
+    <!-- ── B. GEOMETRIC GRID ── -->
+    <div class="card">
+      <div class="tag">Direction B</div>
+      <div class="logo-row">
+        <div>
+          <svg width="110" height="110" viewBox="0 0 100 100">
+            <rect width="100" height="100" rx="20" fill="#0f1e3d"/>
+            <!-- Vertical bar: teal, square ends -->
+            <line x1="26" y1="14" x2="26" y2="86" stroke="#5ECFA8" stroke-width="14" stroke-linecap="square"/>
+            <!-- Upper arm: blue, square ends -->
+            <line x1="33" y1="50" x2="76" y2="14" stroke="#00B2FF" stroke-width="12" stroke-linecap="square"/>
+            <!-- Lower arm: blue, square ends -->
+            <line x1="33" y1="50" x2="76" y2="86" stroke="#00B2FF" stroke-width="12" stroke-linecap="square"/>
+          </svg>
+          <p class="variant-label">Teal + Blue</p>
+        </div>
+        <div>
+          <svg width="110" height="110" viewBox="0 0 100 100">
+            <rect width="100" height="100" rx="20" fill="#0f1e3d"/>
+            <!-- Vertical bar: white, square ends -->
+            <line x1="26" y1="14" x2="26" y2="86" stroke="white" stroke-width="14" stroke-linecap="square"/>
+            <!-- Upper arm: yellow accent, square ends -->
+            <line x1="33" y1="50" x2="76" y2="14" stroke="#FFD97D" stroke-width="12" stroke-linecap="square"/>
+            <!-- Lower arm: yellow accent -->
+            <line x1="33" y1="50" x2="76" y2="86" stroke="#FFD97D" stroke-width="12" stroke-linecap="square"/>
+          </svg>
+          <p class="variant-label">White + Gold</p>
+        </div>
+      </div>
+      <div class="card-title">Geometric Grid</div>
+      <p class="card-desc">K built on a strict grid with sharp square ends — no curves, no softness. Two-tone coloring splits the bar from the arms. Precise and premium.</p>
+    </div>
+
+    <!-- ── C. DIAGONAL SPLIT ── -->
+    <div class="card">
+      <div class="tag">Direction C</div>
+      <div class="logo-row">
+        <div>
+          <svg width="110" height="110" viewBox="0 0 100 100">
+            <defs>
+              <!-- K as a mask shape (white = show) -->
+              <mask id="kMask1">
+                <rect width="100" height="100" fill="black"/>
+                <path d="M21,18 L21,82 L33,82 L33,58 L68,82 L80,82 L44,50 L80,18 L68,18 L33,42 L33,18 Z" fill="white"/>
+              </mask>
+            </defs>
+            <rect width="100" height="100" rx="20" fill="#0f1e3d"/>
+            <!-- Upper-left: white -->
+            <polygon points="0,0 100,0 0,100" fill="white" mask="url(#kMask1)"/>
+            <!-- Lower-right: electric blue -->
+            <polygon points="100,0 100,100 0,100" fill="#00B2FF" mask="url(#kMask1)"/>
+          </svg>
+          <p class="variant-label">White + Blue</p>
+        </div>
+        <div>
+          <svg width="110" height="110" viewBox="0 0 100 100">
+            <defs>
+              <mask id="kMask2">
+                <rect width="100" height="100" fill="black"/>
+                <path d="M21,18 L21,82 L33,82 L33,58 L68,82 L80,82 L44,50 L80,18 L68,18 L33,42 L33,18 Z" fill="white"/>
+              </mask>
+            </defs>
+            <rect width="100" height="100" rx="20" fill="#0f1e3d"/>
+            <!-- Upper-left: teal -->
+            <polygon points="0,0 100,0 0,100" fill="#5ECFA8" mask="url(#kMask2)"/>
+            <!-- Lower-right: electric blue -->
+            <polygon points="100,0 100,100 0,100" fill="#00B2FF" mask="url(#kMask2)"/>
+          </svg>
+          <p class="variant-label">Teal + Blue</p>
+        </div>
+      </div>
+      <div class="card-title">Diagonal Split</div>
+      <p class="card-desc">The K is sliced diagonally — two colors, one letter. The split gives it movement and energy without adding any extra elements. Very modern.</p>
+    </div>
+
+    <!-- ── D. NEGATIVE SPACE ── -->
+    <div class="card">
+      <div class="tag">Direction D</div>
+      <div class="logo-row">
+        <div>
+          <svg width="110" height="110" viewBox="0 0 100 100">
+            <rect width="100" height="100" rx="20" fill="#0f1e3d"/>
+            <!-- White inner block with K punched out using evenodd -->
+            <path fill-rule="evenodd" fill="white" d="
+              M8,8 L92,8 L92,92 L8,92 Z
+              M21,18 L21,82 L33,82 L33,58 L68,82 L80,82 L44,50 L80,18 L68,18 L33,42 L33,18 Z
+            "/>
+          </svg>
+          <p class="variant-label">Dark frame</p>
+        </div>
+        <div>
+          <svg width="110" height="110" viewBox="0 0 100 100">
+            <rect width="100" height="100" rx="20" fill="#00B2FF"/>
+            <!-- White inner block with K punched out -->
+            <path fill-rule="evenodd" fill="white" d="
+              M8,8 L92,8 L92,92 L8,92 Z
+              M21,18 L21,82 L33,82 L33,58 L68,82 L80,82 L44,50 L80,18 L68,18 L33,42 L33,18 Z
+            "/>
+          </svg>
+          <p class="variant-label">Blue frame</p>
+        </div>
+      </div>
+      <div class="card-title">Negative Space</div>
+      <p class="card-desc">The K is a hole — the background bleeds through the letter. White block, K-shaped void. Rare and unexpected for a logo. Immediately stands out.</p>
+    </div>
+
+    <!-- ── E. LAYERED / SHADOW ── -->
+    <div class="card">
+      <div class="tag">Direction E</div>
+      <div class="logo-row">
+        <div>
+          <svg width="110" height="110" viewBox="0 0 100 100">
+            <rect width="100" height="100" rx="20" fill="#0f1e3d"/>
+            <!-- Shadow K: blue, offset bottom-right -->
+            <line x1="30" y1="18" x2="30" y2="88" stroke="#00B2FF" stroke-width="13" stroke-linecap="round"/>
+            <line x1="36" y1="53" x2="78" y2="18" stroke="#00B2FF" stroke-width="11" stroke-linecap="round"/>
+            <line x1="36" y1="53" x2="78" y2="88" stroke="#00B2FF" stroke-width="11" stroke-linecap="round"/>
+            <!-- Top K: white, offset top-left -->
+            <line x1="24" y1="14" x2="24" y2="82" stroke="white" stroke-width="13" stroke-linecap="round"/>
+            <line x1="30" y1="48" x2="72" y2="14" stroke="white" stroke-width="11" stroke-linecap="round"/>
+            <line x1="30" y1="48" x2="72" y2="82" stroke="white" stroke-width="11" stroke-linecap="round"/>
+          </svg>
+          <p class="variant-label">Blue shadow</p>
+        </div>
+        <div>
+          <svg width="110" height="110" viewBox="0 0 100 100">
+            <rect width="100" height="100" rx="20" fill="#0f1e3d"/>
+            <!-- Shadow K: teal -->
+            <line x1="30" y1="18" x2="30" y2="88" stroke="#5ECFA8" stroke-width="13" stroke-linecap="round"/>
+            <line x1="36" y1="53" x2="78" y2="18" stroke="#5ECFA8" stroke-width="11" stroke-linecap="round"/>
+            <line x1="36" y1="53" x2="78" y2="88" stroke="#5ECFA8" stroke-width="11" stroke-linecap="round"/>
+            <!-- Top K: white -->
+            <line x1="24" y1="14" x2="24" y2="82" stroke="white" stroke-width="13" stroke-linecap="round"/>
+            <line x1="30" y1="48" x2="72" y2="14" stroke="white" stroke-width="11" stroke-linecap="round"/>
+            <line x1="30" y1="48" x2="72" y2="82" stroke="white" stroke-width="11" stroke-linecap="round"/>
+          </svg>
+          <p class="variant-label">Teal shadow</p>
+        </div>
+      </div>
+      <div class="card-title">Layered / Shadow</div>
+      <p class="card-desc">Two K shapes slightly offset — white on top, colored shadow underneath. Creates depth and energy. Feels alive, like it's in motion.</p>
+    </div>
+
+  </div>
+</body>
+</html>

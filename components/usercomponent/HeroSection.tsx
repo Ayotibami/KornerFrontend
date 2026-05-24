@@ -5,6 +5,7 @@ import Button from "@/components/admincomponent/Button";
 import FloatingCards from "@/components/admincomponent/FloatingCards";
 import { nunito } from "@/lib/font";
 import Link from "next/link";
+import Navbar from "./Navbar";
 
 export default function HeroSection() {
   return (
@@ -19,7 +20,7 @@ export default function HeroSection() {
         padding: 10,
         display: "flex",
         flexDirection: "column",
-        justifyContent: "space-evenly",
+        justifyContent: "flex-start",
         alignItems: "center",
         borderRadius: 36,
         backgroundImage: "url('/images/landingcover1.png')",
@@ -28,7 +29,19 @@ export default function HeroSection() {
         backgroundRepeat: "no-repeat",
       }}
     >
-      {/* Centered text block: title, tagline, description, CTA button */}
+      {/* Navbar pinned to top of the hero */}
+      <Navbar />
+
+      {/* Text block grows to fill remaining space and centers itself vertically */}
+      <div
+        style={{
+          flex: 1,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          width: "100%",
+        }}
+      >
       <div
         style={{
           flexDirection: "column",
@@ -60,15 +73,16 @@ export default function HeroSection() {
             fontWeight: 500,
           }}
         >
-          Korner's is that chill corner on Kampos where we just get student
+          Korner&apos;s is that chill corner on Kampos where we just get student
           life. From late-night gist about love and grades to real talks on
-          career, money, and culture — it's Kampos talking your talk, straight
+          career, money, and culture — it&apos;s Kampos talking your talk, straight
           from our hearts to yours.
         </p>
 
         <Link href="/stories" style={{ textDecoration: "none" }}>
           <Button>Hop into Korner</Button>
         </Link>
+      </div>
       </div>
 
       {/* FloatingCards sits at the bottom of the hero and intentionally bleeds
