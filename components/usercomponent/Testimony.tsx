@@ -1,4 +1,5 @@
 import { nunito } from "@/lib/font";
+import Freeform from "./Freeform";
 
 export default function Testimony() {
   return (
@@ -44,20 +45,8 @@ export default function Testimony() {
       </div>
 
       {/* Right: visual placeholder — replace with real testimonial cards/carousel */}
-      <div
-        style={{
-          backgroundColor: "#f1f5f9",
-          borderRadius: 16,
-          minHeight: 200,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
-        <p style={{ color: "#aaa", fontFamily: nunito.style.fontFamily, fontSize: "0.9rem" }}>
-          Visual coming soon
-        </p>
-      </div>
+
+      <Freeform></Freeform>
     </div>
   );
 }

@@ -34,7 +34,7 @@ export default function FloatingCards() {
   // scale is the ratio of available container width to NATURAL_W.
   // When the container is narrower than the natural layout, scale < 1
   // and the entire fan shrinks proportionally to fit.
-  const [scale, setScale] = useState(1);
+  const [scale, setScale] = useState(0);
 
   // wrapperRef attaches to the outer div so ResizeObserver can watch its width.
   const wrapperRef = useRef<HTMLDivElement>(null);

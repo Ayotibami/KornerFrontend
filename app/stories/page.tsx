@@ -67,6 +67,7 @@ export default function Page() {
           height: "100vh",
           backgroundImage: "url('/images/landingcover1.png')",
           marginBottom: 30,
+          gap: 25,
           padding: "90px 20px 20px",
           boxSizing: "border-box",
           backgroundSize: "cover",
