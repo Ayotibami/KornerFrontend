@@ -1,5 +1,3 @@
-import React from "react";
-
 import AdminGreeting from "./AdminGreeting";
 import Avatar from "./ui/Avatar";
 import CreateStoriBtn from "./ui/CreateStoriBtn";
@@ -8,7 +6,6 @@ import getProfile from "@/app/admin/home/action";
 
 export default async function Navbar() {
   const profile = await getProfile();
-  console.log(profile, "fuckkk");
 
   return (
     <div
@@ -21,11 +18,10 @@ export default async function Navbar() {
         boxShadow: "0 4px 20px rgba(0, 0, 0, 0.08)",
         position: "fixed",
         justifyContent: "space-between",
-
         zIndex: 5,
         width: "100%",
-
-        background: "rgba(255, 255, 255, 0.9)" /* 20% transparent */,
+        boxSizing: "border-box",
+        background: "rgba(255, 255, 255, 0.9)",
       }}
     >
       <div
@@ -33,11 +29,12 @@ export default async function Navbar() {
           flexDirection: "row",
           alignItems: "center",
           display: "flex",
-          gap: 5,
+          gap: 10,
+          minWidth: 0,
         }}
       >
-        <Avatar url={profile.avatar_url}></Avatar>
-        <AdminGreeting name={profile.admin_name}></AdminGreeting>
+        <Avatar url={profile?.avatar_url} />
+        <AdminGreeting name={profile?.admin_name} />
       </div>
 
       <div
@@ -46,10 +43,11 @@ export default async function Navbar() {
           flexDirection: "row",
           alignItems: "center",
           gap: 10,
+          flexShrink: 0,
         }}
       >
-        <CreateStoriBtn></CreateStoriBtn>
-        <UpdateAdmin></UpdateAdmin>
+        <CreateStoriBtn />
+        <UpdateAdmin />
       </div>
     </div>
   );

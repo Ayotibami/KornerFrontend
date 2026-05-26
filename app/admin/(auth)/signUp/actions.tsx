@@ -1,30 +1,32 @@
 "use server";
 
-import { error } from "console";
 import { redirect } from "next/navigation";
 
 const signUp = async (formdata: FormData) => {
-  let isSuccessful;
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+
+  if (!apiUrl) {
+    return { error: "Server configuration error. Please try again later." };
+  }
+
   try {
-    const res = await fetch("http://localhost:3000/api/v1/admin/signup", {
+    const res = await fetch(`${apiUrl}/admin/signup`, {
       method: "POST",
       body: formdata,
     });
+
     const data = await res.json();
 
-    if (!data.success) {
-      isSuccessful = false;
-      return { error: data.message };
-    } else {
-      isSuccessful = true;
+    if (!res.ok) {
+      return { error: data.message || "Signup failed" };
     }
-  } catch (error) {
-    isSuccessful = false;
-    return { error: "Something went wrong abeg." };
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Unknown error";
+    console.error("Signup Error:", message);
+    return { error: "Connection to server failed" };
   }
-  if (isSuccessful) {
-    redirect("/admin/login");
-  }
+
+  redirect("/admin/login");
 };
 
 export default signUp;

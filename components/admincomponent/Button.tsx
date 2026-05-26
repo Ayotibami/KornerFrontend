@@ -1,6 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import { nunito } from "@/lib/font";
+import { secondaryColor } from "@/app/constants/color";
 
 // Jagged torn line running roughly through the middle of the button
 const tornLine: [number, number][] = [
@@ -84,7 +85,7 @@ export default function Button({
           style={{
             position: "absolute",
             inset: 0,
-            backgroundColor: "#B4CFF6",
+            backgroundColor: secondaryColor,
             opacity: 0,
             animation: tearing ? "flash-in 0.95s ease-in-out forwards" : "none",
           }}

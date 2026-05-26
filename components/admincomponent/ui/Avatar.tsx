@@ -1,19 +1,23 @@
 import Image from "next/image";
-import React from "react";
-export default async function Avatar({ url }) {
+import { primaryColor, secondaryColor } from "@/app/constants/color";
+
+export default function Avatar({ url }: { url?: string }) {
   return (
     <div
       style={{
-        height: 70,
-        width: 70,
-        borderRadius: 35,
-        borderColor: "#165ABF",
-        borderWidth: 2,
+        height: 50,
+        width: 50,
+        borderRadius: "50%",
+        border: `2px solid ${primaryColor}`,
         overflow: "hidden",
         position: "relative",
+        flexShrink: 0,
+        backgroundColor: secondaryColor,
       }}
     >
-      <Image src={url} fill alt="Avatar" objectFit="cover"></Image>
+      {url && (
+        <Image src={url} fill alt="Avatar" style={{ objectFit: "cover" }} />
+      )}
     </div>
   );
 }

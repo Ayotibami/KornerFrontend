@@ -3,7 +3,7 @@
 import CreateStori from "@/app/admin/stories/create/action";
 import React, { useState, useTransition, useContext } from "react";
 
-type ContentBlock = {
+export type ContentBlock = {
   block_type: string;
   content: string;
   image_url: string;
@@ -22,26 +22,27 @@ type CreateStoriContextType = {
   setExcerpt: React.Dispatch<React.SetStateAction<string>>;
   readTime: string;
   setReadTime: React.Dispatch<React.SetStateAction<string>>;
-  coverImage: File | null;
-  setCoverImage: React.Dispatch<React.SetStateAction<File | null>>;
+  coverImage: string | null;
+  setCoverImage: React.Dispatch<React.SetStateAction<string | null>>;
   contentBlocks: ContentBlock[];
   setContentBlocks: React.Dispatch<React.SetStateAction<ContentBlock[]>>;
   isDrafting: boolean;
   onuploadDraft: () => void;
-  appendBlock: (contentType: string) => void;
+  insertBlock: (contentType: string, atPosition: number) => void;
   UpdateBlock: (pos: number, value: string) => void;
   updateImageBlock: (pos: number, url: string) => void;
   deleteBlock: (pos: number) => void;
 };
 
 const CreateStoriContext = React.createContext<CreateStoriContextType>({} as CreateStoriContextType);
+
 export default function CreateStoriProvider({
   children,
 }: {
   children: React.ReactNode;
 }) {
   const [isDrafting, startDrafting] = useTransition();
-  const [coverImage, setCoverImage] = React.useState<File | null>(null);
+  const [coverImage, setCoverImage] = React.useState<string | null>(null);
   const [mode, setMode] = useState<"write" | "read">("write");
   const [title, setTitle] = React.useState("");
   const [subTitle, setSubTitle] = React.useState("");
@@ -51,68 +52,56 @@ export default function CreateStoriProvider({
 
   const onuploadDraft = () => {
     startDrafting(async () => {
-      const response = await CreateStori(
-        title,
-        subTitle,
-        excerpt,
-        readTime,
-        coverImage,
-        contentBlocks
-      );
+      await CreateStori(title, subTitle, excerpt, readTime, coverImage, contentBlocks);
     });
   };
 
-  const appendBlock = (contentType: string) => {
-    const newContent: ContentBlock = {
+  // Inserts a new block at atPosition, shifting all existing blocks at or
+  // after that position up by one so there are no position conflicts.
+  const insertBlock = (contentType: string, atPosition: number) => {
+    const shifted = contentBlocks.map((block) =>
+      block.position >= atPosition
+        ? { ...block, position: block.position + 1 }
+        : block
+    );
+    const newBlock: ContentBlock = {
       block_type: contentType,
       content: "",
       image_url: "",
-      position: contentBlocks.length + 1,
+      position: atPosition,
       id: crypto.randomUUID(),
     };
-    setContentBlocks([...contentBlocks, newContent]);
+    setContentBlocks(
+      [...shifted, newBlock].sort((a, b) => a.position - b.position)
+    );
   };
 
   const UpdateBlock = (pos: number, value: string) => {
-    const newContents = contentBlocks.map((content) => {
-      if (content.position == pos && content.block_type !== "image") {
-        return {
-          ...content,
-          content: value,
-        };
-      } else {
-        return content;
-      }
-    });
-    setContentBlocks([...newContents]);
+    setContentBlocks((prev) =>
+      prev.map((block) =>
+        block.position === pos && block.block_type !== "image"
+          ? { ...block, content: value }
+          : block
+      )
+    );
   };
 
   const updateImageBlock = (pos: number, url: string) => {
-    const newContents = contentBlocks.map((content) => {
-      if (content.position == pos) {
-        return {
-          ...content,
-          image_url: url,
-        };
-      } else {
-        return content;
-      }
-    });
-    setContentBlocks(newContents);
+    setContentBlocks((prev) =>
+      prev.map((block) =>
+        block.position === pos ? { ...block, image_url: url } : block
+      )
+    );
   };
 
   const deleteBlock = (pos: number) => {
-    const newContents = contentBlocks.filter(
-      (content) => content.position !== pos
+    const filtered = contentBlocks.filter((block) => block.position !== pos);
+    // Renumber remaining blocks sequentially after deletion
+    setContentBlocks(
+      filtered.map((block, index) => ({ ...block, position: index + 1 }))
     );
-    const rightContents = newContents.map((content, index) => {
-      return {
-        ...content,
-        position: index + 1,
-      };
-    });
-    setContentBlocks(rightContents);
   };
+
   return (
     <CreateStoriContext.Provider
       value={{
@@ -132,7 +121,7 @@ export default function CreateStoriProvider({
         setContentBlocks,
         isDrafting,
         onuploadDraft,
-        appendBlock,
+        insertBlock,
         UpdateBlock,
         updateImageBlock,
         deleteBlock,

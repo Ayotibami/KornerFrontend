@@ -1,97 +1,108 @@
 "use client";
+
+import { useState, useTransition } from "react";
+import Link from "next/link";
+import { Loader2 } from "lucide-react";
 import Button from "@/components/admincomponent/ui/Button";
 import Input from "@/components/admincomponent/ui/Input";
-import React, { useState, useTransition } from "react";
+import { primaryColor } from "@/app/constants/color";
+import AuthBranding from "@/components/admincomponent/ui/AuthBranding";
+import AuthCard from "@/components/admincomponent/ui/AuthCard";
 import Login from "./actions";
-import Link from "next/link";
 
-export default function page() {
+export default function Page() {
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
 
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const formSubmit = (formdata: FormData) => {
     setError(null);
     startTransition(async () => {
       const res = await Login(formdata);
-
       if (res?.error) {
         setError(res.error);
       }
     });
   };
-  return (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "center",
-        alignItems: "center",
-        flex: 1,
-        gap: 10,
-        height: "100vh",
-        width: "100vw",
-      }}
-    >
-      <h1
-        style={{
-          fontSize: 25,
-          fontWeight: 600,
-        }}
-      >
-        Howfar? You don land for admin corner!{" "}
-      </h1>
-      <form
-        action={formSubmit}
-        style={{
-          width: "40%",
-          gap: 30,
-          flexDirection: "column",
-          display: "flex",
 
-          alignItems: "stretch",
-          // backgroundColor: "pink",
-          justifyContent: "center",
-        }}
-      >
-        <p
+  return (
+    <AuthCard>
+        <AuthBranding
+          title="Korner Admin"
+          subtitle="Howfar? You don land for admin corner!"
+        />
+
+        {/* Form */}
+        <form
+          action={formSubmit}
           style={{
-            color: "#dc2626",
+            display: "flex",
+            flexDirection: "column",
+            gap: 20,
           }}
         >
-          {error}
-        </p>
-        <Input
-          label="Email"
-          name="email"
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
-        <Input
-          label="Password"
-          name="password"
-          type="password"
-          onChange={(e) => setPassword(e.target.value)}
-          value={password}
-        />
+          {error && (
+            <p
+              style={{
+                color: "#dc2626",
+                fontSize: "0.875rem",
+                margin: 0,
+                textAlign: "center",
+              }}
+            >
+              {error}
+            </p>
+          )}
 
-        <Button type="submit" disabled={isPending}>
-          {isPending ? "Loading..." : "Login"}
-        </Button>
-        <p>
-          Not an admin?{" "}
+          <Input
+            label="Email"
+            name="email"
+            type="email"
+            placeholder="your@email.com"
+            disabled={isPending}
+          />
+          <Input
+            label="Password"
+            name="password"
+            type="password"
+            placeholder="••••••••"
+            disabled={isPending}
+          />
+
+          <Button type="submit" disabled={isPending}>
+            {isPending ? (
+              <span
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: 8,
+                }}
+              >
+                <Loader2 size={16} className="animate-spin" /> Logging in...
+              </span>
+            ) : (
+              "Login"
+            )}
+          </Button>
+        </form>
+
+        {/* Footer link */}
+        <p
+          style={{
+            textAlign: "center",
+            fontSize: "0.875rem",
+            color: "#6B7280",
+            margin: 0,
+          }}
+        >
+          Not a Werey??{" "}
           <Link
-            href={"/admin/signUp"}
-            style={{
-              color: "#165ABF",
-            }}
+            href="/admin/signUp"
+            style={{ color: primaryColor, fontWeight: 700 }}
           >
-            You can be sha!
+            Sign up
           </Link>
         </p>
-      </form>
-    </div>
+    </AuthCard>
   );
 }

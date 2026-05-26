@@ -1,31 +1,65 @@
-import React from "react";
-import StoriInput from "./StoriInput";
+import { nunito } from "@/lib/font";
+import { primaryColor } from "@/app/constants/color";
+import { Clock } from "lucide-react";
 
-export default function ReadTime({ mode, placeholder, readTime, setReadTime }) {
-  return mode == "write" ? (
-    <StoriInput
-      mode={mode}
-      placeholder={placeholder}
-      value={readTime}
-      onChange={setReadTime}
-    ></StoriInput>
-  ) : (
-    <p
-      style={{
-        fontSize: 12,
-      }}
-    >
-      Reading time{" "}
-      <span
+export default function ReadTime({
+  mode,
+  placeholder,
+  readTime,
+  setReadTime,
+}: {
+  mode?: string;
+  placeholder?: string;
+  readTime: string;
+  setReadTime?: (value: string) => void;
+}) {
+  if (mode === "write") {
+    return (
+      <div
         style={{
-          fontSize: 14,
-          fontWeight: "bold",
-          display: "inline-block",
+          display: "flex",
+          alignItems: "center",
+          gap: 8,
+          borderBottom: "2px solid #B4CFF6",
+          paddingBottom: 6,
         }}
       >
-        •
-      </span>
-      {" " + readTime}
-    </p>
+        <Clock size={16} color={primaryColor} style={{ flexShrink: 0 }} />
+        <input
+          type="text"
+          value={readTime}
+          onChange={(e) => setReadTime?.(e.target.value)}
+          placeholder={placeholder ?? "e.g. 5 min read"}
+          style={{
+            fontFamily: nunito.style.fontFamily,
+            fontSize: "clamp(0.75rem, 1.8vw, 0.9rem)",
+            fontWeight: 500,
+            color: "#374151",
+            background: "none",
+            border: "none",
+            outline: "none",
+            width: "100%",
+            padding: 0,
+          }}
+        />
+      </div>
+    );
+  }
+
+  return (
+    <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+      <Clock size={14} color={primaryColor} />
+      <p
+        style={{
+          fontFamily: nunito.style.fontFamily,
+          fontSize: "clamp(0.75rem, 1.8vw, 0.9rem)",
+          fontWeight: 500,
+          color: "#374151",
+          margin: 0,
+        }}
+      >
+        {readTime || "Read time"}
+      </p>
+    </div>
   );
 }

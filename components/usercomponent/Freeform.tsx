@@ -42,22 +42,22 @@ const BLOB_WAVES: BlobWave[] = [
 ];
 
 const WORDS_DATA: Pick<Word, "text" | "size" | "color">[] = [
-  { text: "Relatable", size: 20, color: "hsl(46,  100%, 70%)" },
-  { text: "Funny", size: 25, color: "hsl(16,  100%, 67%)" },
-  { text: "Engaging", size: 18, color: "hsl(172, 88%,  58%)" },
-  { text: "Insightful", size: 17, color: "hsl(268, 88%,  78%)" },
-  { text: "Helpful", size: 22, color: "hsl(152, 88%,  60%)" },
-  { text: "Authentic", size: 18, color: "hsl(36,  100%, 66%)" },
-  { text: "Unfiltered", size: 19, color: "hsl(338, 92%,  70%)" },
-  { text: "Real", size: 29, color: "hsl(0,   0%,   95%)" },
-  { text: "Friendly", size: 18, color: "hsl(193, 92%,  65%)" },
-  { text: "Trendy", size: 20, color: "hsl(308, 88%,  72%)" },
-  { text: "Vibey", size: 23, color: "hsl(252, 88%,  78%)" },
-  { text: "Sharp", size: 20, color: "hsl(128, 78%,  60%)" },
-  { text: "Student-First", size: 16, color: "hsl(352, 92%,  70%)" },
-  { text: "Kappish", size: 23, color: "hsl(52,  100%, 72%)" },
-  { text: "Entertaining", size: 17, color: "hsl(206, 88%,  72%)" },
-  { text: "Chill", size: 25, color: "hsl(166, 82%,  58%)" },
+  { text: "Relatable", size: 16, color: "hsl(46,  100%, 70%)" },
+  { text: "Funny", size: 20, color: "hsl(16,  100%, 67%)" },
+  { text: "Engaging", size: 14, color: "hsl(172, 88%,  58%)" },
+  { text: "Insightful", size: 13, color: "hsl(268, 88%,  78%)" },
+  { text: "Helpful", size: 17, color: "hsl(152, 88%,  60%)" },
+  { text: "Authentic", size: 14, color: "hsl(36,  100%, 66%)" },
+  { text: "Unfiltered", size: 15, color: "hsl(338, 92%,  70%)" },
+  { text: "Real", size: 24, color: "hsl(0,   0%,   95%)" },
+  { text: "Friendly", size: 14, color: "hsl(193, 92%,  65%)" },
+  { text: "Trendy", size: 16, color: "hsl(308, 88%,  72%)" },
+  { text: "Vibey", size: 18, color: "hsl(252, 88%,  78%)" },
+  { text: "Sharp", size: 16, color: "hsl(128, 78%,  60%)" },
+  { text: "Student-First", size: 12, color: "hsl(352, 92%,  70%)" },
+  { text: "Kappish", size: 18, color: "hsl(52,  100%, 72%)" },
+  { text: "Entertaining", size: 13, color: "hsl(206, 88%,  72%)" },
+  { text: "Chill", size: 20, color: "hsl(166, 82%,  58%)" },
 ];
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────

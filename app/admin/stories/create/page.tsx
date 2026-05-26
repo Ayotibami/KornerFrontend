@@ -2,13 +2,14 @@
 
 import Excerpt from "@/components/admincomponent/ui/Excerpt";
 import ReadTime from "@/components/admincomponent/ui/ReadTime";
-import SecondaryButton from "@/components/admincomponent/ui/SecondaryButton";
 import StoriContents from "@/components/admincomponent/ui/StoriContents";
 import SubsideTitle from "@/components/admincomponent/ui/SubTitle";
 import Title from "@/components/admincomponent/ui/Title";
 import StoriImage from "@/components/admincomponent/ui/StoriImage";
 import { BookCheck, Loader2, Pencil, Save } from "lucide-react";
 import { useCreateStori } from "@/context/CreateStoriContext";
+import { nunito } from "@/lib/font";
+import { primaryColor, secondaryColor } from "@/app/constants/color";
 
 export default function Create() {
   const {
@@ -22,162 +23,136 @@ export default function Create() {
     setExcerpt,
     readTime,
     setReadTime,
-    coverImage,
     setCoverImage,
     contentBlocks,
-    setContentBlocks,
     isDrafting,
     onuploadDraft,
-    appendBlock,
+    insertBlock,
     UpdateBlock,
     updateImageBlock,
     deleteBlock,
   } = useCreateStori();
-  console.log("====================================");
-  console.log(contentBlocks);
-  console.log("====================================");
+
   return (
     <div
       style={{
-        display: "flex",
-        flexDirection: "column",
-        gap: 20,
+        minHeight: "100vh",
+        backgroundColor: "#f1f5f9",
+        fontFamily: nunito.style.fontFamily,
       }}
     >
+      {/* ── FLOATING ACTION BUTTONS ─────────────────────────────────────────
+          top: calc(14vh + 16px) clears the fixed navbar (which is 14vh tall). */}
       <div
         style={{
           position: "fixed",
           zIndex: 100,
-          top: 20,
-          right: 20,
-
+          top: "calc(14vh + 16px)",
+          right: "clamp(12px, 3vw, 24px)",
           display: "flex",
           gap: 10,
           flexDirection: "column",
         }}
       >
+        {/* Draft button */}
         <div
           className="transition-all duration-300 hover:scale-95 active:scale-90"
           style={{
             padding: 10,
-            backgroundColor: "#B4CFF6",
-            color: "#0E3E87",
+            backgroundColor: secondaryColor,
+            color: primaryColor,
             borderRadius: 30,
-            width: 60,
+            width: 52,
+            height: 52,
             display: "flex",
-            height: 60,
             justifyContent: "center",
             alignItems: "center",
+            cursor: "pointer",
+            boxShadow: "0 2px 12px rgba(0,0,0,0.12)",
           }}
+          onClick={onuploadDraft}
         >
           {isDrafting ? (
-            <Loader2 className="h-4 w-4 animate-spin" />
+            <Loader2 size={20} className="animate-spin" />
           ) : (
-            <BookCheck
-              onClick={() => {
-                onuploadDraft();
-              }}
-            ></BookCheck>
+            <BookCheck size={20} />
           )}
         </div>
+
+        {/* Write / preview toggle */}
         <div
           className="transition-all duration-300 hover:scale-95 active:scale-90"
           style={{
             padding: 10,
-            backgroundColor: "#B4CFF6",
-            color: "#0E3E87",
+            backgroundColor: secondaryColor,
+            color: primaryColor,
             borderRadius: 30,
-            width: 60,
+            width: 52,
+            height: 52,
             display: "flex",
-            height: 60,
             justifyContent: "center",
             alignItems: "center",
+            cursor: "pointer",
+            boxShadow: "0 2px 12px rgba(0,0,0,0.12)",
           }}
+          onClick={() => setMode(mode === "write" ? "read" : "write")}
         >
-          {mode === "write" ? (
-            <Save onClick={() => setMode("read")}></Save>
-          ) : (
-            <Pencil onClick={() => setMode("write")}></Pencil>
-          )}
+          {mode === "write" ? <Save size={20} /> : <Pencil size={20} />}
         </div>
       </div>
-      <StoriImage updateImage={setCoverImage} mode={mode} />
-      <div
-        style={{
-          padding: 20,
-          gap: 20,
 
-          display: "flex",
-          flexDirection: "column",
-        }}
-      >
-        <Title
-          mode={mode}
-          placeholder="Title"
-          title={title}
-          setTitle={setTitle}
-        />
-        <SubsideTitle
-          mode={mode}
-          placeholder="Subtitle"
-          subTitle={subTitle}
-          setSubTitle={setSubTitle}
-        />
-        <Excerpt
-          mode={mode}
-          placeholder="Excerpt"
-          excerpt={excerpt}
-          setExcerpt={setExcerpt}
-        />
-        <ReadTime
-          mode={mode}
-          placeholder="Reading Time"
-          readTime={readTime}
-          setReadTime={setReadTime}
-        />
-      </div>
+      {/* ── PAGE CONTENT ──────────────────────────────────────────────────── */}
       <div
         style={{
+          maxWidth: 800,
+          margin: "0 auto",
+          padding: "clamp(16px, 4vw, 40px)",
           display: "flex",
           flexDirection: "column",
-          alignItems: "stretch",
-          gap: 30,
-          padding: 40,
+          gap: 24,
         }}
       >
+        {/* Cover image */}
+        <StoriImage updateImage={setCoverImage} mode={mode} />
+
+        {/* Story metadata */}
+        <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+          <Title
+            mode={mode}
+            placeholder="Story title…"
+            title={title}
+            setTitle={setTitle}
+          />
+          <SubsideTitle
+            mode={mode}
+            placeholder="Subtitle…"
+            subTitle={subTitle}
+            setSubTitle={setSubTitle}
+          />
+          <Excerpt
+            mode={mode}
+            placeholder="Short teaser — what is this story about?"
+            excerpt={excerpt}
+            setExcerpt={setExcerpt}
+          />
+          <ReadTime
+            mode={mode}
+            placeholder="e.g. 5 min read"
+            readTime={readTime}
+            setReadTime={setReadTime}
+          />
+        </div>
+
+        {/* Content blocks with inline insert rows */}
         <StoriContents
           contents={contentBlocks}
           mode={mode}
           editContent={UpdateBlock}
           deleteContent={deleteBlock}
           updateImage={updateImageBlock}
-        ></StoriContents>
+          onInsert={insertBlock}
+        />
       </div>
-
-      {mode === "write" && (
-        <div
-          style={{
-            padding: 40,
-            // backgroundColor: "red",
-            display: "flex",
-            flexDirection: "row",
-            justifyContent: "space-around",
-          }}
-        >
-          <SecondaryButton onClick={() => appendBlock("heading")}>
-            Heading
-          </SecondaryButton>
-          <SecondaryButton onClick={() => appendBlock("paragraph")}>
-            Paragraph
-          </SecondaryButton>
-          <SecondaryButton onClick={() => appendBlock("quote")}>
-            Quote
-          </SecondaryButton>
-          <SecondaryButton onClick={() => appendBlock("image")}>
-            Image
-          </SecondaryButton>
-        </div>
-      )}
     </div>
   );
 }

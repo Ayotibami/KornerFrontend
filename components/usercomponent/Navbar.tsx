@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import { nunito } from "@/lib/font";
 import {
   FaXTwitter,
@@ -51,17 +52,18 @@ export default function Navbar() {
           @media (max-width: 768px) { .nav-socials { display: none; } }
         `}</style>
 
-        <p
+        <Link
+          href="/"
           style={{
             fontFamily: nunito.style.fontFamily,
             fontSize: "clamp(1.1rem, 3vw, 1.4rem)",
             fontWeight: 800,
             color: "#fff",
-            margin: 0,
+            textDecoration: "none",
           }}
         >
           Korner
-        </p>
+        </Link>
 
         <div className="nav-socials" style={{ gap: 28, alignItems: "center" }}>
           {socials.map(({ icon: Icon, label }) => (

@@ -1,6 +1,5 @@
 import Image from "next/image";
 
-import React from "react";
 import { primaryColor, secondaryColor } from "@/app/constants/color";
 import { Clock } from "lucide-react";
 import { capitalize } from "@/lib/stringFormatting";
@@ -70,14 +69,24 @@ export default function StoriCard({ stori }) {
             overflow: "hidden",
             height: 300,
             borderRadius: 20,
+            backgroundColor: "#e2e8f0",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
           }}
         >
-          <Image
-            src={stori.cover_image}
-            alt="image"
-            fill
-            objectFit="cover"
-          ></Image>
+          {stori.cover_image ? (
+            <Image
+              src={stori.cover_image}
+              alt="cover image"
+              fill
+              style={{ objectFit: "cover" }}
+            />
+          ) : (
+            <p style={{ color: "#9CA3AF", fontSize: 13, margin: 0 }}>
+              No cover image
+            </p>
+          )}
         </div>
 
         <p

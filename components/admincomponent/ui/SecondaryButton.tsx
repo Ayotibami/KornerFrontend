@@ -1,5 +1,6 @@
 import React from "react";
 import { Plus } from "lucide-react";
+import { secondaryColor } from "@/app/constants/color";
 export default function SecondaryButton({
   children,
   onClick,
@@ -11,7 +12,7 @@ export default function SecondaryButton({
     <button
       className="transition-all duration-300 hover:scale-95 active:scale-90"
       style={{
-        backgroundColor: "#B4CFF6",
+        backgroundColor: secondaryColor,
         padding: "20px 20px",
         borderRadius: 44,
       }}

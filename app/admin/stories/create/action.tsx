@@ -1,7 +1,6 @@
 "use server";
 
-import { log } from "console";
-import { cookies } from "next/headers";
+import { fetchWithAuth } from "@/lib/fetchWithAuth";
 import { redirect } from "next/navigation";
 
 const CreateStori = async (
@@ -9,14 +8,17 @@ const CreateStori = async (
   subtitle: string,
   excerpt: string,
   reading_time: string,
-  cover_image: File | null | string,
-  stori_blocks: unknown[],
+  cover_image: string | null,
+  stori_blocks: {
+    block_type: string;
+    content: string;
+    image_url: string;
+    position: number;
+  }[],
 ) => {
   let success = false;
-  const cookieStore = await cookies();
-  const token = cookieStore.get("auth_token")?.value || "";
   try {
-    const res = await fetch("http://localhost:3000/api/v1/stories/create", {
+    const res = await fetchWithAuth("/stories/create", {
       method: "POST",
       body: JSON.stringify({
         title,
@@ -24,25 +26,22 @@ const CreateStori = async (
         excerpt,
         reading_time,
         cover_image,
-        stori_blocks,
+        stori_blocks: stori_blocks.map((b) => ({
+          blockType: b.block_type,
+          content: b.content,
+          imageUrl: b.image_url,
+          position: b.position,
+        })),
       }),
-      credentials: "include",
-      headers: {
-        Cookie: `session=${token}`,
-        "Content-Type": "application/json",
-      },
     });
     const data = await res.json();
+    console.log(data);
     if (data.success) {
       success = true;
-      console.log("====================================");
-      console.log("mf");
-      console.log("====================================");
     }
-    console.log("response", data);
   } catch (error) {
     success = false;
-    console.error("Create Story Error:", error);
+    console.log("Create Story Error:", error);
   }
   if (success) {
     redirect("/admin/home");

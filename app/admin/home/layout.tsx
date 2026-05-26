@@ -1,6 +1,5 @@
 import isAuthenticated from "@/lib/auth";
 import React from "react";
-import "../../globals.css";
 import Navbar from "@/components/admincomponent/Navbar";
 
 export default async function layout({

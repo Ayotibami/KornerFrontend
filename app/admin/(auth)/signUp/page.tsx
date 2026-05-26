@@ -1,48 +1,53 @@
 "use client";
+
+import { useState, useTransition } from "react";
+import Link from "next/link";
+import { Loader2 } from "lucide-react";
 import Button from "@/components/admincomponent/ui/Button";
 import Input from "@/components/admincomponent/ui/Input";
-import React, { useState, useTransition } from "react";
-import signUp from "./actions";
+import AvatarPicker from "@/components/admincomponent/ui/AvatarPicker";
+import { primaryColor } from "@/app/constants/color";
+import AuthBranding from "@/components/admincomponent/ui/AuthBranding";
+import AuthCard from "@/components/admincomponent/ui/AuthCard";
 import { validatePassword } from "@/lib/validation";
-import Link from "next/link";
-import Avatar from "@/components/admincomponent/ui/AvatarPicker";
+import signUp from "./actions";
 
 export default function Signup() {
   const [isPending, startTransition] = useTransition();
-  const [email, setEmail] = useState<string>("");
-  const [password, setPassword] = useState<string>("");
-  const [confirmPassword, setConfirmPassword] = useState<string>("");
-  const [name, setName] = useState<string>("");
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [avatarUrl, setAvatarUrl] = useState<File | null>(null);
-  const [error, setError] = useState<string>("");
+  const [error, setError] = useState("");
+
   const handleSubmit = (formdata: FormData) => {
-    const name = formdata.get("name");
-    const email = formdata.get("email");
-    const password = formdata.get("password");
-    const confirmPassword = formdata.get("confirmPassword");
-    formdata.append("avatar_url", avatarUrl as File);
     setError("");
-    if (!email || !password || !name) {
-      setError("Email, password and name are required abeg.");
+
+    if (!name || !email || !password) {
+      setError("Name, email and password are required.");
       return;
     }
-    if (password != confirmPassword) {
-      setError("Passwords do not match abeg.");
+    if (password !== confirmPassword) {
+      setError("Passwords do not match.");
       return;
     }
-    if (!validatePassword(password as string).isValid) {
-      setError(validatePassword(password as string).message);
+    const passwordCheck = validatePassword(password);
+    if (!passwordCheck.isValid) {
+      setError(passwordCheck.message);
       return;
     }
-    if (avatarUrl?.size == 0) {
-      setError("Avatar is required abeg.");
+    if (!avatarUrl) {
+      setError("Please select a profile picture.");
+      return;
+    }
+    if (!avatarUrl.type.startsWith("image/")) {
+      setError("Only image uploads are allowed.");
       return;
     }
 
-    if (avatarUrl?.type !== "image/jpeg") {
-      setError("Only image uploads are allowed");
-      return;
-    }
+    formdata.append("avatar_url", avatarUrl);
+
     startTransition(async () => {
       const res = await signUp(formdata);
       if (res?.error) {
@@ -50,99 +55,81 @@ export default function Signup() {
       }
     });
   };
-  return (
-    <div
-      style={{
-        backgroundColor: "red",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        // height: "100vh",
-        // width: "100vw",
-      }}
-    >
-      <form
-        action={handleSubmit}
-        style={{
-          padding: 10,
-          backgroundColor: "yellow",
-          justifyContent: "center",
-          alignItems: "center",
-          width: "50%",
-          gap: 30,
-          display: "flex",
-          flexDirection: "column",
-        }}
-      >
-        <h1
-          className="font-bold"
-          style={{
-            fontSize: 25,
-          }}
-        >
-          Sign up
-        </h1>
-        <p
-          style={{
-            color: "#dc2626",
-          }}
-        >
-          {error}
-        </p>
-        {/* <Avatar setAvatarUrl={setAvatarUrl}></Avatar> */}
-        <Input
-          name="name"
-          label="Name"
-          placeholder="werey"
-          value={name}
-          onChange={(e) => {
-            setName(e.target.value);
-          }}
-        ></Input>
-        <Input
-          label="Email"
-          name="email"
-          onChange={(e) => {
-            setEmail(e.target.value);
-          }}
-          value={email}
-          type="email"
-          placeholder="werey@gmail.com"
-        ></Input>
-        <Input
-          label="Password"
-          name="password"
-          type="text"
-          value={password}
-          onChange={(e) => {
-            setPassword(e.target.value);
-          }}
-        ></Input>
-        <Input
-          label="Confirm Password"
-          name="confirmPassword"
-          value={confirmPassword}
-          onChange={(e) => {
-            setConfirmPassword(e.target.value);
-          }}
-          type="text"
-        ></Input>
 
-        <Button type={"submit"} disabled={isPending}>
-          Shine like Werey
-        </Button>
-        <p>
-          Are you an admin?{" "}
-          <Link
-            href="/admin/login"
-            style={{
-              color: "#165ABF",
-            }}
-          >
-            Just login na
+  return (
+    <AuthCard>
+        <AuthBranding
+          title="Create Account"
+          subtitle="Join the Korner admin team"
+        />
+
+        {/* Avatar picker */}
+        <div style={{ display: "flex", justifyContent: "center" }}>
+          <AvatarPicker setAvatarUrl={setAvatarUrl} />
+        </div>
+
+        {/* Form */}
+        <form action={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+          {error && (
+            <p style={{ color: "#dc2626", fontSize: "0.875rem", margin: 0, textAlign: "center" }}>
+              {error}
+            </p>
+          )}
+
+          <Input
+            name="name"
+            label="Name"
+            placeholder="Your name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            disabled={isPending}
+          />
+          <Input
+            label="Email"
+            name="email"
+            type="email"
+            placeholder="your@email.com"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            disabled={isPending}
+          />
+          <Input
+            label="Password"
+            name="password"
+            type="password"
+            placeholder="••••••••"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            disabled={isPending}
+          />
+          <Input
+            label="Confirm Password"
+            name="confirmPassword"
+            type="password"
+            placeholder="••••••••"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            disabled={isPending}
+          />
+
+          <Button type="submit" disabled={isPending}>
+            {isPending ? (
+              <span style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
+                <Loader2 size={16} className="animate-spin" /> Creating account...
+              </span>
+            ) : (
+              "Sign up"
+            )}
+          </Button>
+        </form>
+
+        {/* Footer link */}
+        <p style={{ textAlign: "center", fontSize: "0.875rem", color: "#6B7280", margin: 0 }}>
+          Already an admin?{" "}
+          <Link href="/admin/login" style={{ color: primaryColor, fontWeight: 700 }}>
+            Login
           </Link>
         </p>
-      </form>
-    </div>
+    </AuthCard>
   );
 }

@@ -1,23 +1,12 @@
-import { cookies } from "next/headers";
+import { fetchWithAuth } from "@/lib/fetchWithAuth";
 
 const getProfile = async () => {
-  const cookieStore = await cookies();
-  const token = cookieStore.get("auth_token")?.value || "";
-
   try {
-    const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/v1/admin/profile`,
-      {
-        method: "GET",
-        headers: {
-          Cookie: `session=${token}`,
-        },
-      },
-    );
+    const res = await fetchWithAuth("/admin/profile");
     const { profile } = await res.json();
     return profile;
   } catch (error) {
-    console.log(error);
+    console.error("Failed to fetch profile:", error);
   }
 };
 

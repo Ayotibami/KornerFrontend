@@ -1,22 +1,20 @@
-import { cookies } from "next/headers";
-import React from "react";
+import { fetchWithAuth } from "@/lib/fetchWithAuth";
 import StoriCard from "./StoriCard";
-import { log } from "node:console";
 
 export default async function StoriesList() {
-  const cookieStore = await cookies();
-  const token = cookieStore.get("auth_token")?.value || "";
-  const res = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/api/v1/stories/adminstories`,
-    {
-      method: "GET",
-      headers: {
-        Cookie: `session=${token}`,
-      },
-    },
-  );
+  const res = await fetchWithAuth("/stories/adminstories");
   const data = await res.json();
-  const stories: any[] = data.stories ?? [];
+  type Stori = {
+    stori_id: string;
+    title: string;
+    subtitle: string;
+    excerpt: string;
+    cover_image: string;
+    reading_time: string;
+    status: string;
+    created_at: string;
+  };
+  const stories: Stori[] = data.stories ?? [];
 
   return (
     <div
@@ -29,7 +27,7 @@ export default async function StoriesList() {
         padding: 10,
       }}
     >
-      {stories.map((stori, index) => {
+      {stories.map((stori) => {
         return <StoriCard stori={stori} key={stori.stori_id}></StoriCard>;
       })}
     </div>
