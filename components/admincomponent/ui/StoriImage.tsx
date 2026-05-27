@@ -127,6 +127,7 @@ export default function StoriImage({
               alt="Story image"
               fill
               style={{ objectFit: "cover" }}
+              unoptimized
             />
           )}
           {isWrite && <UploadButton bottom={12} />}

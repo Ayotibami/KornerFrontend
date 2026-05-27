@@ -18,7 +18,7 @@ export default function Signup() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [avatarUrl, setAvatarUrl] = useState<File | null>(null);
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [error, setError] = useState("");
 
   const handleSubmit = (formdata: FormData) => {
@@ -39,10 +39,6 @@ export default function Signup() {
     }
     if (!avatarUrl) {
       setError("Please select a profile picture.");
-      return;
-    }
-    if (!avatarUrl.type.startsWith("image/")) {
-      setError("Only image uploads are allowed.");
       return;
     }
 

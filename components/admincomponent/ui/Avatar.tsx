@@ -16,7 +16,7 @@ export default function Avatar({ url }: { url?: string }) {
       }}
     >
       {url && (
-        <Image src={url} fill alt="Avatar" style={{ objectFit: "cover" }} />
+        <Image src={url} fill alt="Avatar" style={{ objectFit: "cover" }} unoptimized />
       )}
     </div>
   );

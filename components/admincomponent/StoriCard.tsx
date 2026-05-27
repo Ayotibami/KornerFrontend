@@ -81,6 +81,7 @@ export default function StoriCard({ stori }) {
               alt="cover image"
               fill
               style={{ objectFit: "cover" }}
+              unoptimized
             />
           ) : (
             <p style={{ color: "#9CA3AF", fontSize: 13, margin: 0 }}>

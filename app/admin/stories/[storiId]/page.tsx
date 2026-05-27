@@ -1,179 +1,275 @@
-import { fetchWithAuth } from "@/lib/fetchWithAuth";
-import Image from "next/image";
-import { Clock, QuoteIcon } from "lucide-react";
+"use client";
+
+import { useEffect, useState, useTransition } from "react";
+import { useParams } from "next/navigation";
+import { getStori, updateStori } from "./action";
+import { useCreateStori } from "@/context/CreateStoriContext";
+import StoriImage from "@/components/admincomponent/ui/StoriImage";
+import Title from "@/components/admincomponent/ui/Title";
+import SubsideTitle from "@/components/admincomponent/ui/SubTitle";
+import Excerpt from "@/components/admincomponent/ui/Excerpt";
+import ReadTime from "@/components/admincomponent/ui/ReadTime";
+import StoriContents from "@/components/admincomponent/ui/StoriContents";
+import { nunito } from "@/lib/font";
 import { primaryColor, secondaryColor } from "@/app/constants/color";
+import { ArrowLeft, BookCheck, Loader2, Pencil, Save } from "lucide-react";
+import Link from "next/link";
 
-export default async function page({
-  params,
-}: {
-  params: Promise<{ storiId: string }>;
-}) {
-  const { storiId } = await params;
+export default function StoriPage() {
+  const { storiId } = useParams<{ storiId: string }>();
+  const [loading, setLoading] = useState(true);
+  const [notFound, setNotFound] = useState(false);
+  const [status, setStatus] = useState("");
+  const [isUpdating, startUpdating] = useTransition();
 
-  const res = await fetchWithAuth(`/stories/adminstori/${storiId}`);
-  if (!res.ok) {
+  const {
+    mode,
+    setMode,
+    title,
+    setTitle,
+    subTitle,
+    setSubTitle,
+    excerpt,
+    setExcerpt,
+    readTime,
+    setReadTime,
+    coverImage,
+    setCoverImage,
+    contentBlocks,
+    setContentBlocks,
+    insertBlock,
+    UpdateBlock,
+    updateImageBlock,
+    deleteBlock,
+  } = useCreateStori();
+
+  useEffect(() => {
+    getStori(storiId).then((stori) => {
+      if (!stori) {
+        setNotFound(true);
+        setLoading(false);
+        return;
+      }
+
+      setMode("read");
+      setTitle(stori.title ?? "");
+      setSubTitle(stori.subtitle ?? "");
+      setExcerpt(stori.excerpt ?? "");
+      setReadTime(stori.readingTime ?? "");
+      setCoverImage(stori.coverImage ?? null);
+      setStatus(stori.status ?? "");
+      setContentBlocks(
+        (stori.blocks ?? [])
+          .sort((a, b) => a.position - b.position)
+          .map((b) => ({
+            block_type: b.blockType,
+            content: b.content ?? "",
+            image_url: b.image_url ?? "",
+            position: b.position,
+            id: b.blockId,
+          })),
+      );
+
+      setLoading(false);
+    });
+  }, [storiId]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const handleUpdate = () => {
+    startUpdating(async () => {
+      await updateStori(
+        storiId,
+        title,
+        subTitle,
+        excerpt,
+        readTime,
+        coverImage,
+        contentBlocks,
+      );
+    });
+  };
+
+  // ── LOADING ───────────────────────────────────────────────────────────────────
+
+  if (loading) {
     return (
-      <div style={{ padding: 40, textAlign: "center", color: "#6B7280" }}>
-        Story could not be loaded.
+      <div
+        style={{
+          minHeight: "100vh",
+          backgroundColor: "#f1f5f9",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <Loader2 size={36} color={primaryColor} className="animate-spin" />
       </div>
     );
   }
 
-  const data = await res.json();
-  const stori = data.stori;
+  // ── NOT FOUND ─────────────────────────────────────────────────────────────────
 
-  if (!stori) {
+  if (notFound) {
     return (
-      <div style={{ padding: 40, textAlign: "center", color: "#6B7280" }}>
-        Story not found.
+      <div
+        style={{
+          minHeight: "100vh",
+          backgroundColor: "#f1f5f9",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          fontFamily: nunito.style.fontFamily,
+        }}
+      >
+        <p style={{ color: "#6B7280", fontSize: 16, margin: 0 }}>
+          Story not found.
+        </p>
       </div>
     );
   }
+
+  // ── STORY VIEW / EDIT ─────────────────────────────────────────────────────────
+
+  const btnStyle: React.CSSProperties = {
+    padding: 10,
+    backgroundColor: secondaryColor,
+    color: primaryColor,
+    borderRadius: 30,
+    width: 52,
+    height: 52,
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    cursor: "pointer",
+    boxShadow: "0 2px 12px rgba(0,0,0,0.12)",
+  };
 
   return (
     <div
       style={{
-        display: "flex",
-        flexDirection: "column",
-        maxWidth: 800,
-        margin: "0 auto",
-        padding: "40px 20px",
-        gap: 24,
+        minHeight: "100vh",
+        backgroundColor: "#f1f5f9",
+        fontFamily: nunito.style.fontFamily,
       }}
     >
-      {stori.coverImage && (
-        <div
-          style={{
-            position: "relative",
-            width: "100%",
-            height: 400,
-            borderRadius: 20,
-            overflow: "hidden",
-          }}
-        >
-          <Image
-            src={stori.coverImage}
-            alt="Cover"
-            fill
-            style={{ objectFit: "cover" }}
-          />
-        </div>
-      )}
-
-      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-        <Clock size={14} color="#6B7280" />
-        <p style={{ fontSize: 13, color: "#6B7280", margin: 0 }}>
-          {stori.readingTme}
-        </p>
-        <span
-          style={{
-            marginLeft: 8,
-            padding: "3px 10px",
-            borderRadius: 12,
-            fontSize: 12,
-            backgroundColor: stori.status === "Draft" ? secondaryColor : primaryColor,
-            color: stori.status === "Draft" ? "#0E3E87" : "white",
-          }}
-        >
-          {stori.status}
-        </span>
+      {/* ── FLOATING ACTION BUTTONS ─────────────────────────────────────────── */}
+      <div
+        style={{
+          position: "fixed",
+          zIndex: 100,
+          top: "calc(14vh + 16px)",
+          right: "clamp(12px, 3vw, 24px)",
+          display: "flex",
+          flexDirection: "column",
+          gap: 10,
+        }}
+      >
+        {mode === "read" ? (
+          // Read mode — pencil only
+          <div
+            className="transition-all duration-300 hover:scale-95 active:scale-90"
+            style={btnStyle}
+            onClick={() => setMode("write")}
+          >
+            <Pencil size={20} />
+          </div>
+        ) : (
+          // Edit mode — save draft + back to read
+          <>
+            <div
+              className="transition-all duration-300 hover:scale-95 active:scale-90"
+              style={btnStyle}
+              onClick={handleUpdate}
+            >
+              {isUpdating ? (
+                <Loader2 size={20} className="animate-spin" />
+              ) : (
+                <BookCheck size={20} />
+              )}
+            </div>
+            <div
+              className="transition-all duration-300 hover:scale-95 active:scale-90"
+              style={btnStyle}
+              onClick={() => setMode("read")}
+            >
+              <Save size={20} />
+            </div>
+          </>
+        )}
       </div>
 
-      <h1 style={{ fontSize: 40, fontWeight: "bold", margin: 0 }}>
-        {stori.title}
-      </h1>
-
-      {stori.subtitle && (
-        <p style={{ fontSize: 18, color: "#6B7280", margin: 0 }}>
-          {stori.subtitle}
-        </p>
-      )}
-
-      {stori.excerpt && (
-        <p
+      {/* ── PAGE CONTENT ──────────────────────────────────────────────────────── */}
+      <div
+        style={{
+          maxWidth: 800,
+          margin: "0 auto",
+          padding: "clamp(16px, 4vw, 40px)",
+          display: "flex",
+          flexDirection: "column",
+          gap: 24,
+        }}
+      >
+        <Link
+          href="/admin/home"
           style={{
-            fontSize: 15,
-            fontStyle: "italic",
-            color: "#9CA3AF",
-            margin: 0,
+            display: "flex",
+            alignItems: "center",
+            gap: 6,
+            color: "#0f1e3d",
+            textDecoration: "none",
+            fontFamily: nunito.style.fontFamily,
+            fontWeight: 700,
+            fontSize: 14,
           }}
         >
-          {stori.excerpt}
-        </p>
-      )}
+          <ArrowLeft size={18} />
+          Go back
+        </Link>
 
-      <hr style={{ borderColor: "#E5E7EB" }} />
+        <StoriImage
+          updateImage={setCoverImage}
+          mode={mode}
+          existingUrl={coverImage ?? undefined}
+        />
 
-      <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
-        {(stori.blocks ?? []).sort((a: { position: number }, b: { position: number }) => a.position - b.position).map(
-          (
-            block: { blockId: string; blockType: string; content: string; imageUrl: string; position: number },
-            index: number,
-          ) => {
-            if (block.blockType === "heading") {
-              return (
-                <h2
-                  key={block.blockId ?? index}
-                  style={{ fontSize: 28, fontWeight: "bold", margin: 0 }}
-                >
-                  {block.content}
-                </h2>
-              );
-            }
-            if (block.blockType === "paragraph") {
-              return (
-                <p
-                  key={block.blockId ?? index}
-                  style={{
-                    fontSize: 16,
-                    lineHeight: 1.8,
-                    textAlign: "justify",
-                    margin: 0,
-                  }}
-                >
-                  {block.content}
-                </p>
-              );
-            }
-            if (block.blockType === "quote") {
-              return (
-                <div
-                  key={block.blockId ?? index}
-                  style={{ borderLeft: `4px solid ${primaryColor}`, paddingLeft: 20 }}
-                >
-                  <QuoteIcon size={24} color={primaryColor} />
-                  <p
-                    style={{ fontStyle: "italic", color: "#0E3E87", margin: 0 }}
-                  >
-                    {block.content}
-                  </p>
-                </div>
-              );
-            }
-            if (block.blockType === "image" && block.imageUrl) {
-              return (
-                <div
-                  key={block.blockId ?? index}
-                  style={{
-                    position: "relative",
-                    width: "100%",
-                    height: 400,
-                    borderRadius: 12,
-                    overflow: "hidden",
-                  }}
-                >
-                  <Image
-                    src={block.imageUrl}
-                    alt="Story image"
-                    fill
-                    style={{ objectFit: "contain" }}
-                  />
-                </div>
-              );
-            }
-            return null;
-          },
-        )}
+        <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+          <Title mode={mode} title={title} setTitle={setTitle} />
+          <SubsideTitle
+            mode={mode}
+            subTitle={subTitle}
+            setSubTitle={setSubTitle}
+          />
+          <Excerpt mode={mode} excerpt={excerpt} setExcerpt={setExcerpt} />
+          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+            <ReadTime
+              mode={mode}
+              readTime={readTime}
+              setReadTime={setReadTime}
+            />
+            <span
+              style={{
+                padding: "4px 14px",
+                backgroundColor:
+                  status === "Draft" ? secondaryColor : primaryColor,
+                color: status === "Draft" ? "#0E3E87" : "white",
+                borderRadius: 30,
+                fontSize: 12,
+                fontWeight: 700,
+                fontFamily: nunito.style.fontFamily,
+              }}
+            >
+              {status}
+            </span>
+          </div>
+        </div>
+
+        <StoriContents
+          contents={contentBlocks}
+          mode={mode}
+          editContent={UpdateBlock}
+          deleteContent={deleteBlock}
+          updateImage={updateImageBlock}
+          onInsert={insertBlock}
+        />
       </div>
     </div>
   );

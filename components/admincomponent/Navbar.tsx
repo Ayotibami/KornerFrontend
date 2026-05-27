@@ -7,6 +7,10 @@ import getProfile from "@/app/admin/home/action";
 export default async function Navbar() {
   const profile = await getProfile();
 
+  console.log("====================================");
+  console.log(profile);
+  console.log("====================================");
+
   return (
     <div
       style={{

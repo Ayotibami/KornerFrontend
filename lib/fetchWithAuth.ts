@@ -14,7 +14,7 @@ export async function fetchWithAuth(
     headers: {
       "Content-Type": "application/json",
       ...options.headers,
-      Cookie: `session=${token}`,
+      Authorization: `Bearer ${token}`,
     },
   });
 }

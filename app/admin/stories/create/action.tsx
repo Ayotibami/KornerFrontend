@@ -29,7 +29,7 @@ const CreateStori = async (
         stori_blocks: stori_blocks.map((b) => ({
           blockType: b.block_type,
           content: b.content,
-          imageUrl: b.image_url,
+          image_url: b.image_url,
           position: b.position,
         })),
       }),

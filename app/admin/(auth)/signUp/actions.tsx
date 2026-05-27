@@ -16,6 +16,7 @@ const signUp = async (formdata: FormData) => {
     });
 
     const data = await res.json();
+    console.log("omooo", data);
 
     if (!res.ok) {
       return { error: data.message || "Signup failed" };
