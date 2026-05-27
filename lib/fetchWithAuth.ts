@@ -9,7 +9,7 @@ export async function fetchWithAuth(
   const cookieStore = await cookies();
   const token = cookieStore.get("auth_token")?.value || "";
 
-  return fetch(`${process.env.NEXT_PUBLIC_API_URL}${path}`, {
+  return fetch(`${process.env.API_URL}${path}`, {
     ...options,
     headers: {
       "Content-Type": "application/json",

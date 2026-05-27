@@ -2,8 +2,8 @@
 
 import { redirect } from "next/navigation";
 
-const signUp = async (formdata: FormData) => {
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+export default async function signUp(formdata: FormData) {
+  const apiUrl = process.env.API_URL;
 
   if (!apiUrl) {
     return { error: "Server configuration error. Please try again later." };
@@ -28,6 +28,4 @@ const signUp = async (formdata: FormData) => {
   }
 
   redirect("/admin/login");
-};
-
-export default signUp;
+}

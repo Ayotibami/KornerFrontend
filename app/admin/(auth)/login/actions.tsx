@@ -3,11 +3,11 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
-const Login = async (formdata: FormData) => {
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+export default async function Login(formdata: FormData) {
+  const apiUrl = process.env.API_URL;
 
   if (!apiUrl) {
-    return { error: "Server configuration error. Please try again later." };
+    return { error: "Server error. Please try again later." };
   }
 
   const email = formdata.get("email");
@@ -21,7 +21,6 @@ const Login = async (formdata: FormData) => {
     const res = await fetch(`${apiUrl}/admin/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-
       body: JSON.stringify({ email, password }),
     });
 
@@ -44,7 +43,6 @@ const Login = async (formdata: FormData) => {
       maxAge: 86400,
       path: "/",
     });
-
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : "Unknown error";
     console.error("Login Error:", message);
@@ -52,6 +50,4 @@ const Login = async (formdata: FormData) => {
   }
 
   redirect("/admin/home");
-};
-
-export default Login;
+}
