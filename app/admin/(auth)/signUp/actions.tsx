@@ -12,8 +12,13 @@ export default async function signUp(formdata: FormData) {
   try {
     const res = await fetch(`${apiUrl}/admin/signup`, {
       method: "POST",
-      body: formdata,
       headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name: formdata.get("name"),
+        email: formdata.get("email"),
+        password: formdata.get("password"),
+        avatar_url: formdata.get("avatar_url"),
+      }),
     });
 
     const data = await res.json();
