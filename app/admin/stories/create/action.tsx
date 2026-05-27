@@ -3,7 +3,7 @@
 import { fetchWithAuth } from "@/lib/fetchWithAuth";
 import { redirect } from "next/navigation";
 
-const CreateStori = async (
+export default async function CreateStori(
   title: string,
   subtitle: string,
   excerpt: string,
@@ -15,7 +15,7 @@ const CreateStori = async (
     image_url: string;
     position: number;
   }[],
-) => {
+) {
   let success = false;
   try {
     const res = await fetchWithAuth("/stories/create", {
@@ -46,5 +46,4 @@ const CreateStori = async (
   if (success) {
     redirect("/admin/home");
   }
-};
-export default CreateStori;
+}
