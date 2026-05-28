@@ -2,6 +2,7 @@ import AdminGreeting from "./AdminGreeting";
 import Avatar from "./ui/Avatar";
 import CreateStoriBtn from "./ui/CreateStoriBtn";
 import UpdateAdmin from "./UpdateAdmin";
+import LogoutBtn from "./ui/LogoutBtn";
 import getProfile from "@/app/admin/home/action";
 
 export default async function Navbar() {
@@ -52,6 +53,7 @@ export default async function Navbar() {
       >
         <CreateStoriBtn />
         <UpdateAdmin />
+        <LogoutBtn />
       </div>
     </div>
   );

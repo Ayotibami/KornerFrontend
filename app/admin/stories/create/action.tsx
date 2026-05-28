@@ -15,8 +15,7 @@ export default async function CreateStori(
     image_url: string;
     position: number;
   }[],
-) {
-  let success = false;
+): Promise<{ error: string } | void> {
   try {
     const res = await fetchWithAuth("/stories/create", {
       method: "POST",
@@ -27,23 +26,22 @@ export default async function CreateStori(
         reading_time,
         cover_image,
         stori_blocks: stori_blocks.map((b) => ({
-          blockType: b.block_type,
+          block_type: b.block_type,
           content: b.content,
           image_url: b.image_url,
           position: b.position,
         })),
       }),
     });
-    const data = await res.json();
-    console.log(data);
-    if (data.success) {
-      success = true;
+
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}));
+      return { error: data?.message ?? `Request failed (${res.status})` };
     }
   } catch (error) {
-    success = false;
     console.log("Create Story Error:", error);
+    return { error: "Something went wrong. Please try again." };
   }
-  if (success) {
-    redirect("/admin/home");
-  }
+
+  redirect("/admin/home");
 }

@@ -2,6 +2,7 @@
 
 import CreateStori from "@/app/admin/stories/create/action";
 import React, { useState, useTransition, useContext } from "react";
+import { toast } from "sonner";
 
 export type ContentBlock = {
   block_type: string;
@@ -52,7 +53,10 @@ export default function CreateStoriProvider({
 
   const onuploadDraft = () => {
     startDrafting(async () => {
-      await CreateStori(title, subTitle, excerpt, readTime, coverImage, contentBlocks);
+      const result = await CreateStori(title, subTitle, excerpt, readTime, coverImage, contentBlocks);
+      if (result && "error" in result) {
+        toast.error(result.error);
+      }
     });
   };
 

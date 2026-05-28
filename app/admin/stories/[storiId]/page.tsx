@@ -200,7 +200,7 @@ export default function StoriPage() {
       {/* ── PAGE CONTENT ──────────────────────────────────────────────────────── */}
       <div
         style={{
-          maxWidth: 800,
+          maxWidth: 1100,
           margin: "0 auto",
           padding: "clamp(16px, 4vw, 40px)",
           display: "flex",

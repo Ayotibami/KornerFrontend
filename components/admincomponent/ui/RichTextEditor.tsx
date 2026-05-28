@@ -4,6 +4,7 @@ import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Underline from "@tiptap/extension-underline";
 import { Bold, Italic, Underline as UnderlineIcon, Strikethrough } from "lucide-react";
+import { useReducer } from "react";
 import { nunito } from "@/lib/font";
 import { primaryColor, secondaryColor } from "@/app/constants/color";
 
@@ -20,6 +21,9 @@ const EDITOR_CSS = `
     color: inherit;
     line-height: inherit;
     min-height: var(--rte-min-height, 100px);
+    overflow-wrap: break-word;
+    word-break: break-word;
+    white-space: pre-wrap;
   }
   .rte-box .ProseMirror p            { margin: 0; }
   .rte-box .ProseMirror p + p        { margin-top: 0.5em; }
@@ -91,6 +95,8 @@ export default function RichTextEditor({
   color?: string;
   fontStyle?: string;
 }) {
+  const [, forceUpdate] = useReducer((x) => x + 1, 0);
+
   const editor = useEditor({
     extensions: [
       // StarterKit already includes: Bold, Italic, Strike, History (undo/redo).
@@ -115,10 +121,9 @@ export default function RichTextEditor({
     },
     onUpdate: ({ editor }) => {
       const html = editor.getHTML();
-      // Treat a completely empty editor as an empty string so the
-      // context doesn't store the bare "<p></p>" Tiptap default.
       onChange(html === "<p></p>" ? "" : html);
     },
+    onTransaction: () => forceUpdate(),
   });
 
   return (

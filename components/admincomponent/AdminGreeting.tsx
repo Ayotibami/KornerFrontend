@@ -1,12 +1,16 @@
 "use client";
 
-import { useRef } from "react";
+import { useState, useEffect } from "react";
 import { nunito } from "@/lib/font";
 
 const GREETINGS = ["Hello", "Wassup", "How far", "Hi", "Halo", "Konnichiwa"];
 
 export default function AdminGreeting({ name }: { name?: string }) {
-  const greeting = useRef(GREETINGS[Math.floor(Math.random() * GREETINGS.length)]);
+  const [greeting, setGreeting] = useState("Hi");
+
+  useEffect(() => {
+    setGreeting(GREETINGS[Math.floor(Math.random() * GREETINGS.length)]);
+  }, []);
 
   return (
     <p
@@ -20,7 +24,7 @@ export default function AdminGreeting({ name }: { name?: string }) {
         textOverflow: "ellipsis",
       }}
     >
-      {greeting.current}, {name ?? "Admin"}
+      {greeting}, {name ?? "Admin"}
       <span style={{ fontSize: "clamp(18px, 3vw, 26px)" }} className="custom-shake">
         👋
       </span>
