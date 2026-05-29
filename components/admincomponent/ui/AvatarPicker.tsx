@@ -2,6 +2,7 @@
 
 import { primaryColor } from "@/app/constants/color";
 import { Loader2, Plus, User } from "lucide-react";
+import { toast } from "sonner";
 import { useRef, useState } from "react";
 
 const uploadToCloudinary = async (file: File): Promise<string | null> => {
@@ -22,20 +23,28 @@ const uploadToCloudinary = async (file: File): Promise<string | null> => {
 
 export default function AvatarPicker({
   setAvatarUrl,
+  onUploadingChange,
 }: {
   setAvatarUrl: (url: string) => void;
+  onUploadingChange?: (uploading: boolean) => void;
 }) {
   const fileRef = useRef<HTMLInputElement>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
 
   const handleFile = async (file: File) => {
-    // Show preview immediately so the user gets feedback
     setPreviewUrl(URL.createObjectURL(file));
     setUploading(true);
+    onUploadingChange?.(true);
     const url = await uploadToCloudinary(file);
     setUploading(false);
-    if (url) setAvatarUrl(url);
+    onUploadingChange?.(false);
+    if (!url) {
+      setPreviewUrl(null);
+      toast.error("Image upload failed. Please try again.");
+      return;
+    }
+    setAvatarUrl(url);
   };
 
   return (

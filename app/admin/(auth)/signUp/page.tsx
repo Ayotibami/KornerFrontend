@@ -19,6 +19,7 @@ export default function Signup() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const [avatarUploading, setAvatarUploading] = useState(false);
   const [error, setError] = useState("");
 
   const handleSubmit = (formdata: FormData) => {
@@ -61,7 +62,7 @@ export default function Signup() {
 
         {/* Avatar picker */}
         <div style={{ display: "flex", justifyContent: "center" }}>
-          <AvatarPicker setAvatarUrl={setAvatarUrl} />
+          <AvatarPicker setAvatarUrl={setAvatarUrl} onUploadingChange={setAvatarUploading} />
         </div>
 
         {/* Form */}
@@ -108,7 +109,7 @@ export default function Signup() {
             disabled={isPending}
           />
 
-          <Button type="submit" disabled={isPending}>
+          <Button type="submit" disabled={isPending || avatarUploading}>
             {isPending ? (
               <span style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
                 <Loader2 size={16} className="animate-spin" /> Creating account...

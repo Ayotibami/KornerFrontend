@@ -26,6 +26,7 @@ export default function Create() {
     setCoverImage,
     contentBlocks,
     isDrafting,
+    uploadingCount,
     onuploadDraft,
     insertBlock,
     UpdateBlock,
@@ -67,12 +68,13 @@ export default function Create() {
             display: "flex",
             justifyContent: "center",
             alignItems: "center",
-            cursor: "pointer",
+            cursor: isDrafting || uploadingCount > 0 ? "not-allowed" : "pointer",
+            opacity: isDrafting || uploadingCount > 0 ? 0.6 : 1,
             boxShadow: "0 2px 12px rgba(0,0,0,0.12)",
           }}
-          onClick={onuploadDraft}
+          onClick={() => { if (!isDrafting && uploadingCount === 0) onuploadDraft(); }}
         >
-          {isDrafting ? (
+          {isDrafting || uploadingCount > 0 ? (
             <Loader2 size={20} className="animate-spin" />
           ) : (
             <BookCheck size={20} />
@@ -92,10 +94,11 @@ export default function Create() {
             display: "flex",
             justifyContent: "center",
             alignItems: "center",
-            cursor: "pointer",
+            cursor: uploadingCount > 0 ? "not-allowed" : "pointer",
+            opacity: uploadingCount > 0 ? 0.6 : 1,
             boxShadow: "0 2px 12px rgba(0,0,0,0.12)",
           }}
-          onClick={() => setMode(mode === "write" ? "read" : "write")}
+          onClick={() => { if (uploadingCount === 0) setMode(mode === "write" ? "read" : "write"); }}
         >
           {mode === "write" ? <Save size={20} /> : <Pencil size={20} />}
         </div>

@@ -2,6 +2,8 @@
 
 import Image from "next/image";
 import { useRef, useState } from "react";
+import { useCreateStori } from "@/context/CreateStoriContext";
+import { toast } from "sonner";
 
 const uploadToCloudinary = async (file: File): Promise<string | null> => {
   const formData = new FormData();
@@ -33,6 +35,7 @@ export default function StoriImage({
   const [previewUrl, setPreviewUrl] = useState<string | null>(existingUrl ?? null);
   const [uploading, setUploading] = useState(false);
   const ref = useRef<HTMLInputElement>(null);
+  const { incrementUploading, decrementUploading } = useCreateStori();
 
   const isCover = content === null;
   const isWrite = mode === "write";
@@ -40,9 +43,15 @@ export default function StoriImage({
   const handleFile = async (file: File) => {
     setPreviewUrl(URL.createObjectURL(file));
     setUploading(true);
+    incrementUploading();
     const url = await uploadToCloudinary(file);
     setUploading(false);
-    if (!url) return;
+    decrementUploading();
+    if (!url) {
+      setPreviewUrl(null);
+      toast.error("Image upload failed. Please try again.");
+      return;
+    }
     if (content) {
       updateImage(content.position, url);
     } else {

@@ -124,10 +124,15 @@ function EmptyState() {
   );
 }
 
-export default async function StoriesList() {
+export default async function StoriesList({ status }: { status?: string }) {
   const res = await fetchWithAuth("/stories/adminstories");
   const data = await res.json();
-  const stories: Stori[] = data.stories ?? [];
+  const allStories: Stori[] = data.stories ?? [];
+
+  // filter client-side — no extra API call needed
+  const stories = status
+    ? allStories.filter((s) => s.status === status)
+    : allStories;
 
   if (stories.length === 0) return <EmptyState />;
 

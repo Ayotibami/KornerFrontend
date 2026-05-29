@@ -33,6 +33,9 @@ type CreateStoriContextType = {
   UpdateBlock: (pos: number, value: string) => void;
   updateImageBlock: (pos: number, url: string) => void;
   deleteBlock: (pos: number) => void;
+  uploadingCount: number;
+  incrementUploading: () => void;
+  decrementUploading: () => void;
 };
 
 const CreateStoriContext = React.createContext<CreateStoriContextType>({} as CreateStoriContextType);
@@ -44,6 +47,9 @@ export default function CreateStoriProvider({
 }) {
   const [isDrafting, startDrafting] = useTransition();
   const [coverImage, setCoverImage] = React.useState<string | null>(null);
+  const [uploadingCount, setUploadingCount] = React.useState(0);
+  const incrementUploading = () => setUploadingCount((c) => c + 1);
+  const decrementUploading = () => setUploadingCount((c) => Math.max(0, c - 1));
   const [mode, setMode] = useState<"write" | "read">("write");
   const [title, setTitle] = React.useState("");
   const [subTitle, setSubTitle] = React.useState("");
@@ -129,6 +135,9 @@ export default function CreateStoriProvider({
         UpdateBlock,
         updateImageBlock,
         deleteBlock,
+        uploadingCount,
+        incrementUploading,
+        decrementUploading,
       }}
     >
       {children}

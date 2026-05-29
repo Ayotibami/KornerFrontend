@@ -41,6 +41,7 @@ export default function StoriPage() {
     UpdateBlock,
     updateImageBlock,
     deleteBlock,
+    uploadingCount,
   } = useCreateStori();
 
   useEffect(() => {
@@ -167,8 +168,12 @@ export default function StoriPage() {
           // Read mode — pencil only
           <div
             className="transition-all duration-300 hover:scale-95 active:scale-90"
-            style={btnStyle}
-            onClick={() => setMode("write")}
+            style={{
+              ...btnStyle,
+              cursor: uploadingCount > 0 ? "not-allowed" : "pointer",
+              opacity: uploadingCount > 0 ? 0.6 : 1,
+            }}
+            onClick={() => { if (uploadingCount === 0) setMode("write"); }}
           >
             <Pencil size={20} />
           </div>
@@ -177,10 +182,14 @@ export default function StoriPage() {
           <>
             <div
               className="transition-all duration-300 hover:scale-95 active:scale-90"
-              style={btnStyle}
-              onClick={handleUpdate}
+              style={{
+                ...btnStyle,
+                cursor: isUpdating || uploadingCount > 0 ? "not-allowed" : "pointer",
+                opacity: isUpdating || uploadingCount > 0 ? 0.6 : 1,
+              }}
+              onClick={() => { if (!isUpdating && uploadingCount === 0) handleUpdate(); }}
             >
-              {isUpdating ? (
+              {isUpdating || uploadingCount > 0 ? (
                 <Loader2 size={20} className="animate-spin" />
               ) : (
                 <BookCheck size={20} />
@@ -188,8 +197,12 @@ export default function StoriPage() {
             </div>
             <div
               className="transition-all duration-300 hover:scale-95 active:scale-90"
-              style={btnStyle}
-              onClick={() => setMode("read")}
+              style={{
+                ...btnStyle,
+                cursor: uploadingCount > 0 ? "not-allowed" : "pointer",
+                opacity: uploadingCount > 0 ? 0.6 : 1,
+              }}
+              onClick={() => { if (uploadingCount === 0) setMode("read"); }}
             >
               <Save size={20} />
             </div>

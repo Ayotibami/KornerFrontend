@@ -1,21 +1,25 @@
 import StoriesList from "@/components/admincomponent/StoriesList";
-import Button from "@/components/admincomponent/ui/Button";
-// import { useRouter } from "next/navigation";
-import React from "react";
+import FilterBar from "@/components/admincomponent/FilterBar";
+import { Suspense } from "react";
 
-export default function Page() {
-  // const router = useRouter();
+export default async function Page({
+  searchParams,
+}: {
+  searchParams: Promise<{ status?: string }>;
+}) {
+  const { status } = await searchParams;
+
   return (
-    <div
-      style={{
-        display: "flex",
+    <div style={{ display: "flex", flexDirection: "column" }}>
+      {/* FilterBar is a client component — wrap in Suspense because useSearchParams needs it */}
+      <Suspense>
+        <FilterBar />
+      </Suspense>
 
-        flexDirection: "column",
-
-        alignItems: "flex-start",
-      }}
-    >
-      <StoriesList></StoriesList>
+      {/* Extra paddingTop so stories start below the filter bar (~60px tall) */}
+      <div style={{ paddingTop: 60 }}>
+        <StoriesList status={status} />
+      </div>
     </div>
   );
 }
