@@ -7,7 +7,9 @@ import StoryCard from "./StoryCard";
 import type { Story } from "@/types/story";
 import Link from "next/link";
 
-function EmptyState() {
+function EmptyState({ status }: { status?: string }) {
+  const isPublished = status === "Published";
+
   return (
     <div className="flex flex-col items-center justify-center w-full gap-6 py-[clamp(40px,10vw,80px)] px-6">
       <svg
@@ -52,13 +54,19 @@ function EmptyState() {
 
       <div className="text-center flex flex-col gap-2 font-nunito">
         <p className="text-[clamp(1.1rem,2.5vw,1.35rem)] font-extrabold text-[#0f1e3d] dark:text-gray-50">
-          You have no stories yet
+          {isPublished ? "You have no published stories yet" : "You have no stories yet"}
         </p>
         <p className="text-[clamp(0.85rem,2vw,1rem)] font-medium text-gray-500 dark:text-gray-400">
-          Go ahead and{" "}
-          <Link href="/admin/stories/create" className="text-primary font-bold no-underline">
-            create one
-          </Link>
+          {isPublished ? (
+            "Publish a draft to see it here"
+          ) : (
+            <>
+              Go ahead and{" "}
+              <Link href="/admin/stories/create" className="text-primary font-bold no-underline">
+                create one
+              </Link>
+            </>
+          )}
         </p>
       </div>
     </div>
@@ -74,7 +82,7 @@ export default async function StoriesList({ status }: { status?: string }) {
     ? allStories.filter((s) => s.status === status)
     : allStories;
 
-  if (stories.length === 0) return <EmptyState />;
+  if (stories.length === 0) return <EmptyState status={status} />;
 
   return (
     <div
