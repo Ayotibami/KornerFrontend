@@ -1,108 +1,81 @@
 "use client";
 
+// Login page — the entry point for the admin panel.
+// Uses useTransition to call the login server action without a full page reload.
+// Error messages are displayed inline above the form.
+//
+// The form uses `action={handleSubmit}` (a function, not a URL string) so Next.js
+// routes the submit through the client handler instead of the default browser POST.
+
 import { useState, useTransition } from "react";
 import Link from "next/link";
 import { Loader2 } from "lucide-react";
-import Button from "@/components/admincomponent/ui/Button";
-import Input from "@/components/admincomponent/ui/Input";
-import { primaryColor } from "@/app/constants/color";
-import AuthBranding from "@/components/admincomponent/ui/AuthBranding";
-import AuthCard from "@/components/admincomponent/ui/AuthCard";
-import Login from "./actions";
+import Button from "@/components/admin/ui/Button";
+import Input from "@/components/admin/ui/Input";
+import AuthBranding from "@/components/admin/ui/AuthBranding";
+import AuthCard from "@/components/admin/ui/AuthCard";
+import login from "./actions";
 
-export default function Page() {
+export default function LoginPage() {
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
 
-  const formSubmit = (formdata: FormData) => {
+  const handleSubmit = (formData: FormData) => {
     setError(null);
     startTransition(async () => {
-      const res = await Login(formdata);
-      if (res?.error) {
-        setError(res.error);
+      const result = await login(formData);
+      if (!result.ok) {
+        setError(result.message);
       }
+      // On success, the server action redirects — no client-side navigation needed.
     });
   };
 
   return (
     <AuthCard>
-        <AuthBranding
-          title="Korner Admin"
-          subtitle="Howfar? You don land for admin corner!"
+      <AuthBranding
+        title="Korner Admin"
+        subtitle="Howfar? You don land for admin corner!"
+      />
+
+      <form action={handleSubmit} className="flex flex-col gap-5">
+        {error && (
+          <p className="text-red-600 text-sm text-center">{error}</p>
+        )}
+
+        <Input
+          label="Email"
+          name="email"
+          type="email"
+          placeholder="your@email.com"
+          disabled={isPending}
+        />
+        <Input
+          label="Password"
+          name="password"
+          type="password"
+          placeholder="••••••••"
+          disabled={isPending}
         />
 
-        {/* Form */}
-        <form
-          action={formSubmit}
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            gap: 20,
-          }}
-        >
-          {error && (
-            <p
-              style={{
-                color: "#dc2626",
-                fontSize: "0.875rem",
-                margin: 0,
-                textAlign: "center",
-              }}
-            >
-              {error}
-            </p>
+        <Button type="submit" disabled={isPending}>
+          {isPending ? (
+            <span className="flex items-center justify-center gap-2">
+              <Loader2 size={16} className="animate-spin" /> Logging in...
+            </span>
+          ) : (
+            "Login"
           )}
+        </Button>
+      </form>
 
-          <Input
-            label="Email"
-            name="email"
-            type="email"
-            placeholder="your@email.com"
-            disabled={isPending}
-          />
-          <Input
-            label="Password"
-            name="password"
-            type="password"
-            placeholder="••••••••"
-            disabled={isPending}
-          />
-
-          <Button type="submit" disabled={isPending}>
-            {isPending ? (
-              <span
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  gap: 8,
-                }}
-              >
-                <Loader2 size={16} className="animate-spin" /> Logging in...
-              </span>
-            ) : (
-              "Login"
-            )}
-          </Button>
-        </form>
-
-        {/* Footer link */}
-        <p
-          style={{
-            textAlign: "center",
-            fontSize: "0.875rem",
-            color: "#6B7280",
-            margin: 0,
-          }}
-        >
-          Not a Werey??{" "}
-          <Link
-            href="/admin/signUp"
-            style={{ color: primaryColor, fontWeight: 700 }}
-          >
-            Sign up
-          </Link>
-        </p>
+      <p className="text-center text-sm text-gray-500">
+        Not a Werey??{" "}
+        {/* Note: /admin/signUp — capital S matches the folder name */}
+        <Link href="/admin/signUp" className="text-primary font-bold">
+          Sign up
+        </Link>
+      </p>
     </AuthCard>
   );
 }

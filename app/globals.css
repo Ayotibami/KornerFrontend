@@ -1,4 +1,42 @@
 @import "tailwindcss";
+
+/* Enable class-based dark mode in Tailwind v4.
+   Add the `dark` class to <html> to activate dark theme.
+   The ThemeToggle component and the anti-FOUC script in layout.tsx manage this. */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* Scan the full project root, not just the app/ directory where this file lives.
+   Without this, Tailwind misses components/ and context/ when detecting class names. */
+@source "../";
+
+@theme {
+  --color-primary: #165ABF;
+  --color-secondary: #B4CFF6;
+  --font-nunito: var(--font-nunito);
+}
+
+/* Explicit fallback definitions — guarantee custom utilities exist
+   even if @theme scanning is incomplete in the Turbopack pipeline. */
+:root {
+  --color-primary: #165ABF;
+  --color-secondary: #B4CFF6;
+}
+
+/* Tell the browser to use dark chrome (scrollbars, form controls) in dark mode */
+.dark {
+  color-scheme: dark;
+}
+
+@layer utilities {
+  .bg-primary    { background-color: var(--color-primary); }
+  .bg-secondary  { background-color: var(--color-secondary); }
+  .text-primary  { color: var(--color-primary); }
+  .text-secondary { color: var(--color-secondary); }
+  .border-primary   { border-color: var(--color-primary); }
+  .border-secondary { border-color: var(--color-secondary); }
+  .font-nunito   { font-family: var(--font-nunito, sans-serif); }
+}
+
 input:focus {
   outline: none;
 }
@@ -14,7 +52,6 @@ p {
   overflow-wrap: break-word;
 }
 
-/* Add this at the very bottom of globals.css */
 @keyframes shake-logic {
   0%,
   90%,
@@ -37,5 +74,5 @@ p {
 
 .custom-shake {
   animation: shake-logic 3s ease-in-out infinite;
-  display: inline-block; /* Crucial: transform doesn't work on 'inline' elements like <span> */
+  display: inline-block;
 }

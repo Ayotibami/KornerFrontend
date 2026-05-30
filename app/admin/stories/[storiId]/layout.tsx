@@ -1,11 +1,10 @@
-import CreateStoriProvider from "@/context/CreateStoriContext";
-import isAuthenticated from "@/lib/auth";
+// Layout for the edit story page.
+// Same as create/layout.tsx — wraps the page in StoryEditorProvider so
+// EditStoryEditor and all editor sub-components share the same context state.
 
-export default async function layout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-  await isAuthenticated();
-  return <CreateStoriProvider>{children}</CreateStoriProvider>;
+import StoryEditorProvider from "@/context/StoryEditorContext";
+import type { ReactNode } from "react";
+
+export default function StoriLayout({ children }: { children: ReactNode }) {
+  return <StoryEditorProvider>{children}</StoryEditorProvider>;
 }

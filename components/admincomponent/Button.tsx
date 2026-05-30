@@ -1,7 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import { nunito } from "@/lib/font";
-import { secondaryColor } from "@/app/constants/color";
+import { SECONDARY as secondaryColor } from "@/constants/theme";
 
 // Jagged torn line running roughly through the middle of the button
 const tornLine: [number, number][] = [

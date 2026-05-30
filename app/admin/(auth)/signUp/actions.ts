@@ -1,12 +1,5 @@
 "use server";
 
-// Signup server action — creates a new admin account.
-// On success, redirects to the login page so the new admin logs in with their credentials.
-// Does NOT log them in automatically (no cookie set here) — that's a deliberate choice
-// so the admin confirms their credentials work before entering the panel.
-//
-// Why redirect() is outside try/catch: see login/actions.tsx for the full explanation.
-
 import { redirect } from "next/navigation";
 import type { ApiResult } from "@/types/api";
 
@@ -25,7 +18,7 @@ export default async function signUp(formData: FormData): Promise<ApiResult<void
         name: formData.get("name"),
         email: formData.get("email"),
         password: formData.get("password"),
-        avatar_url: formData.get("avatar_url"), // Cloudinary URL, appended by the page before calling this
+        avatar_url: formData.get("avatar_url"),
       }),
     });
 
@@ -38,6 +31,6 @@ export default async function signUp(formData: FormData): Promise<ApiResult<void
     return { ok: false, status: 503, message: "Could not connect to server. Check your connection." };
   }
 
-  // redirect() must be outside try/catch — see login/actions.tsx for explanation.
+  // redirect() throws internally — must be outside try/catch
   redirect("/admin/login");
 }

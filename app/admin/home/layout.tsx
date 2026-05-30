@@ -1,22 +1,16 @@
-import isAuthenticated from "@/lib/auth";
-import React from "react";
-import Navbar from "@/components/admincomponent/Navbar";
+// Layout for all admin pages that show the Navbar.
+// Sets the page background here so all admin routes (home, create, edit)
+// inherit the correct light/dark background without each page setting it.
+// pt-[14vh] offsets content below the fixed Navbar.
 
-export default async function layout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-  await isAuthenticated();
+import type { ReactNode } from "react";
+import Navbar from "@/components/admin/Navbar";
+
+export default function AdminHomeLayout({ children }: { children: ReactNode }) {
   return (
-    <div>
-      <Navbar></Navbar>
-      <div
-        style={{
-          paddingTop: "14vh",
-          paddingBottom: "20px",
-        }}
-      >
+    <div className="min-h-screen bg-slate-100 dark:bg-[#0f1117]">
+      <Navbar />
+      <div className="pt-[14vh] pb-5">
         {children}
       </div>
     </div>
