@@ -49,16 +49,24 @@ export default async function login(formData: FormData): Promise<ApiResult<void>
       return { ok: false, status: res.status, message: data.message || "Login failed." };
     }
 
-    const token = data.data?.token;
-    if (!token) {
+    const accessToken = data.data?.accessToken;
+    const refreshToken = data.data?.refreshToken;
+
+    if (!accessToken || !refreshToken) {
       return { ok: false, status: 500, message: "No token received from server." };
     }
 
     const cookieStore = await cookies();
-    cookieStore.set("auth_token", token, {
-      httpOnly: true,                                    // inaccessible to browser JS
-      secure: process.env.NODE_ENV === "production",     // HTTPS-only in production
-      maxAge: 86400,                                     // 24 hours
+    cookieStore.set("auth_token", accessToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      maxAge: 900,       // 15 minutes — matches JWT expiry so cookie disappears when token expires
+      path: "/",
+    });
+    cookieStore.set("refresh_token", refreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      maxAge: 604800,    // 7 days
       path: "/",
     });
   } catch {

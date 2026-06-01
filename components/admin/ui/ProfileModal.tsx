@@ -1,24 +1,13 @@
 "use client";
 
-// Profile modal — opened by clicking the avatar or profile icon in the Navbar.
-//
-// Two internal modes controlled by `isEdit`:
-//   View mode — shows avatar, name, email, bio. Pencil icon switches to edit.
-//   Edit mode — AvatarPicker, name input, bio textarea, Save button.
-//
-// State is seeded from the `profile` prop on mount. Because the modal is
-// conditionally rendered ({open && <ProfileModal />}), it unmounts on close and
-// resets to fresh profile data the next time it opens.
-//
-// Save does nothing yet — no update-profile API exists. The button switches
-// back to view mode so the UI feels responsive. Wire up the API call here
-// when the endpoint is ready.
-
 import Image from "next/image";
 import { Pencil, X } from "lucide-react";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { createPortal } from "react-dom";
+import { toast } from "sonner";
 import AvatarPicker from "./AvatarPicker";
+import { updateProfile } from "@/app/admin/home/action";
 import type { AdminProfile } from "@/types/admin";
 
 const inputClass =
@@ -34,10 +23,29 @@ export default function ProfileModal({
   const [isEdit, setIsEdit] = useState(false);
   const [localName, setLocalName] = useState(profile?.admin_name ?? "");
   const [localBio, setLocalBio] = useState(profile?.bio ?? "");
-  const [localAvatarUrl, setLocalAvatarUrl] = useState<string | null>(
-    profile?.avatar_url ?? null,
+  const [localAvatarUrl, setLocalAvatarUrl] = useState<string>(
+    profile?.avatar_url ?? "",
   );
   const [avatarUploading, setAvatarUploading] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const router = useRouter();
+
+  const handleSave = async () => {
+    if (!localName.trim()) {
+      toast.error("Name is required.");
+      return;
+    }
+    setSaving(true);
+    const result = await updateProfile(localName, localBio, localAvatarUrl);
+    setSaving(false);
+    if (!result.ok) {
+      toast.error(result.message);
+      return;
+    }
+    toast.success("Profile updated.");
+    setIsEdit(false);
+    router.refresh();
+  };
 
   return createPortal(
     <div
@@ -73,6 +81,18 @@ export default function ProfileModal({
               />
             </div>
 
+            {/* Email — read-only */}
+            <div className="flex flex-col gap-1.5 mb-4">
+              <label className="font-semibold text-sm text-[#374151] dark:text-gray-300">
+                Email
+              </label>
+              <p
+                className={`${inputClass} opacity-60 cursor-default select-all`}
+              >
+                {profile?.email ?? "—"}
+              </p>
+            </div>
+
             {/* Name input */}
             <div className="flex flex-col gap-1.5 mb-4">
               <label className="font-semibold text-sm text-[#374151] dark:text-gray-300">
@@ -100,13 +120,16 @@ export default function ProfileModal({
               />
             </div>
 
-            {/* Save button — switches back to view mode. No API call yet. */}
             <button
-              disabled={avatarUploading}
-              onClick={() => setIsEdit(false)}
+              disabled={avatarUploading || saving}
+              onClick={handleSave}
               className="w-full py-2.5 rounded-full bg-primary text-white font-bold text-sm cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed transition-transform hover:scale-[0.98] active:scale-95"
             >
-              {avatarUploading ? "Uploading…" : "Save changes"}
+              {avatarUploading
+                ? "Uploading…"
+                : saving
+                  ? "Saving…"
+                  : "Save changes"}
             </button>
           </>
         ) : (
@@ -158,10 +181,15 @@ export default function ProfileModal({
             </div>
 
             {/* Bio */}
-            <div className="bg-[#F0F5FF] dark:bg-[#1e2a3a] rounded-xl px-4 py-3">
-              <p className="text-sm text-[#374151] dark:text-gray-300 leading-relaxed">
-                {localBio || "No bio yet."}
+            <div className="flex flex-col gap-1.5">
+              <p className="font-semibold text-sm text-[#374151] dark:text-gray-300">
+                Bio
               </p>
+              <div className="bg-[#F0F5FF] dark:bg-[#1e2a3a] rounded-xl px-4 py-3">
+                <p className="text-sm text-[#374151] dark:text-gray-300 leading-relaxed">
+                  {localBio || "No bio yet."}
+                </p>
+              </div>
             </div>
           </>
         )}

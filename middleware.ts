@@ -1,37 +1,60 @@
 import { NextRequest, NextResponse } from "next/server";
 
-// /admin routes that don't require a session token.
-// Every other /admin/* path needs auth_token — unauthenticated requests are redirected to login.
-const PUBLIC_ADMIN_PATHS = ["/admin/login", "/admin/signUp"];
+const BASE_URL = process.env.API_URL ?? "";
 
-export function middleware(request: NextRequest) {
-  const { pathname } = request.nextUrl;
+// Runs before every request matched by the config below.
+//
+// Flow:
+//   1. auth_token cookie present → let through (token still valid)
+//   2. auth_token missing, refresh_token present → call POST /admin/refresh
+//        success → set new auth_token cookie, let through
+//        failure → redirect to login
+//   3. neither cookie → redirect to login
+//
+// The matcher excludes /admin/login and /admin/signUp so this never
+// runs on the auth pages and there's no redirect loop.
 
-  // Non-admin routes are public — skip all checks.
-  if (!pathname.startsWith("/admin")) {
+export async function middleware(request: NextRequest) {
+  const accessToken = request.cookies.get("auth_token")?.value;
+  const refreshToken = request.cookies.get("refresh_token")?.value;
+
+  if (accessToken) {
     return NextResponse.next();
   }
 
-  // Login and signup are always accessible — they are the unauthenticated entry points.
-  if (PUBLIC_ADMIN_PATHS.some((p) => pathname.startsWith(p))) {
-    return NextResponse.next();
+  if (refreshToken) {
+    try {
+      const res = await fetch(`${BASE_URL}/admin/refresh`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ refreshToken }),
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        const newAccessToken = data.data?.accessToken;
+
+        if (newAccessToken) {
+          const response = NextResponse.next();
+          response.cookies.set("auth_token", newAccessToken, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            maxAge: 900,
+            path: "/",
+          });
+          return response;
+        }
+      }
+    } catch {
+      // Network error — fall through to redirect
+    }
   }
 
-  const token = request.cookies.get("auth_token")?.value;
-
-  // No token = not logged in. Redirect to login.
-  // The AuthLayout (/admin/(auth)/layout.tsx) handles the reverse:
-  // redirecting already-logged-in users away from the auth pages.
-  if (!token) {
-    return NextResponse.redirect(new URL("/admin/login", request.url));
-  }
-
-  return NextResponse.next();
+  const loginUrl = new URL("/admin/login", request.url);
+  return NextResponse.redirect(loginUrl);
 }
 
 export const config = {
-  // Run middleware on every route except Next.js internal paths and static files.
-  // Without this matcher, the middleware would intercept _next/static requests
-  // and break asset loading.
-  matcher: ["/((?!_next/static|_next/image|favicon.ico).*)"],
+  // Runs on all /admin routes except login and signUp
+  matcher: ["/admin/((?!login|signUp).*)"],
 };

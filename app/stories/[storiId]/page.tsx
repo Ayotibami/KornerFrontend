@@ -58,6 +58,7 @@ export default async function StoriPage() {
           display: "flex",
           padding: 20,
           flexDirection: "column",
+          backgroundColor: "white",
           alignItems: "center",
           gap: 20,
         }}
