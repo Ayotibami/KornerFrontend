@@ -16,7 +16,7 @@ const getProfile = async (): Promise<AdminProfile | null> => {
   try {
     const res = await apiRequest("/admin/profile");
     const { profile } = await res.json();
-    console.log(profile, "tor");
+
     return profile ?? null;
   } catch {
     return null;

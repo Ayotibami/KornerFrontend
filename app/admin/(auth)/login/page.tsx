@@ -8,8 +8,10 @@
 // routes the submit through the client handler instead of the default browser POST.
 
 import { useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Loader2 } from "lucide-react";
+import { toast } from "sonner";
 import Button from "@/components/admin/ui/Button";
 import Input from "@/components/admin/ui/Input";
 import AuthBranding from "@/components/admin/ui/AuthBranding";
@@ -17,6 +19,7 @@ import AuthCard from "@/components/admin/ui/AuthCard";
 import login from "./actions";
 
 export default function LoginPage() {
+  const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
 
@@ -26,8 +29,10 @@ export default function LoginPage() {
       const result = await login(formData);
       if (!result.ok) {
         setError(result.message);
+        return;
       }
-      // On success, the server action redirects — no client-side navigation needed.
+      toast.success("Welcome back!");
+      router.push("/admin/home");
     });
   };
 
@@ -69,13 +74,21 @@ export default function LoginPage() {
         </Button>
       </form>
 
-      <p className="text-center text-sm text-gray-500">
-        Not a Werey??{" "}
-        {/* Note: /admin/signUp — capital S matches the folder name */}
-        <Link href="/admin/signUp" className="text-primary font-bold">
-          Sign up
+      <div className="flex flex-col items-center gap-2">
+        <p className="text-center text-sm text-gray-500">
+          Not a Werey??{" "}
+          {/* Note: /admin/signUp — capital S matches the folder name */}
+          <Link href="/admin/signUp" className="text-primary font-bold">
+            Sign up
+          </Link>
+        </p>
+        <Link
+          href="/admin/forgot-password"
+          className="text-sm text-primary dark:text-[#93b8f0] font-semibold hover:opacity-70 transition-opacity"
+        >
+          Forgot password?
         </Link>
-      </p>
+      </div>
     </AuthCard>
   );
 }

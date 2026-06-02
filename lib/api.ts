@@ -54,7 +54,7 @@ export async function apiRequest(
   const token = cookieStore.get("auth_token")?.value ?? "";
 
   const res = await fetchWithToken(path, options, token);
-
+  console.log("api request", res.status);
   if (res.status === 401) {
     const refreshToken = cookieStore.get("refresh_token")?.value;
 

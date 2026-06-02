@@ -55,6 +55,6 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  // Runs on all /admin routes except login and signUp
-  matcher: ["/admin/((?!login|signUp).*)"],
+  // Runs on all /admin routes except the unauthenticated auth pages
+  matcher: ["/admin/((?!login|signUp|forgot-password|reset-password).*)"],
 };

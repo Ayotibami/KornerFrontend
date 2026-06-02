@@ -7,7 +7,6 @@
 //
 // Why redirect() is outside try/catch: see login/actions.tsx for the full explanation.
 
-import { redirect } from "next/navigation";
 import type { ApiResult } from "@/types/api";
 
 export default async function signUp(formData: FormData): Promise<ApiResult<void>> {
@@ -38,6 +37,5 @@ export default async function signUp(formData: FormData): Promise<ApiResult<void
     return { ok: false, status: 503, message: "Could not connect to server. Check your connection." };
   }
 
-  // redirect() must be outside try/catch — see login/actions.tsx for explanation.
-  redirect("/admin/login");
+  return { ok: true, data: undefined };
 }

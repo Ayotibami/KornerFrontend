@@ -15,7 +15,9 @@
 // (avatarUploading === true) to prevent submitting with a null avatar.
 
 import { useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 import Button from "@/components/admin/ui/Button";
 import Input from "@/components/admin/ui/Input";
@@ -26,6 +28,7 @@ import { validatePassword } from "@/lib/validation";
 import signUp from "./actions";
 
 export default function SignupPage() {
+  const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -64,8 +67,10 @@ export default function SignupPage() {
       const result = await signUp(formData);
       if (!result.ok) {
         setError(result.message);
+        return;
       }
-      // On success, the server action redirects to login.
+      toast.success("Account created! Please log in.");
+      router.push("/admin/login");
     });
   };
 
