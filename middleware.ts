@@ -11,7 +11,7 @@ const BASE_URL = process.env.API_URL ?? "";
 //        failure → redirect to login
 //   3. neither cookie → redirect to login
 //
-// The matcher excludes /admin/login and /admin/signUp so this never
+// The matcher excludes /admin/login and /admin/signup so this never
 // runs on the auth pages and there's no redirect loop.
 
 export async function middleware(request: NextRequest) {
@@ -56,5 +56,5 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   // Runs on all /admin routes except the unauthenticated auth pages
-  matcher: ["/admin/((?!login|signUp|forgot-password|reset-password).*)"],
+  matcher: ["/admin/((?!login|signup|forgot-password|reset-password).*)"],
 };

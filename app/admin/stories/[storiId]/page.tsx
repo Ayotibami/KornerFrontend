@@ -20,6 +20,7 @@ export default async function StoriPage({
 }) {
   const { storiId } = await params;
   const stori = await getStori(storiId);
+  console.log(stori?.blocks, "from backend");
 
   // getStori returns null on 404 — notFound() renders the nearest not-found.tsx.
   if (!stori) notFound();

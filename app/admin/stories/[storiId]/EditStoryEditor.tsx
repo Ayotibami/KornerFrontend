@@ -28,7 +28,12 @@ import { toast } from "sonner";
 import { useStoryEditor } from "@/context/StoryEditorContext";
 import CoverImage from "@/components/admin/editor/CoverImage";
 import StoryEditor from "@/components/admin/editor/StoryEditor";
-import { TitleField, SubTitleField, ExcerptField, ReadTimeField } from "@/components/admin/editor/MetaFields";
+import {
+  TitleField,
+  SubTitleField,
+  ExcerptField,
+  ReadTimeField,
+} from "@/components/admin/editor/MetaFields";
 import { updateStory, type StoriDetail } from "./action";
 import type { BlockType } from "@/types/story";
 
@@ -43,13 +48,20 @@ export default function EditStoryEditor({
   storiId: string;
 }) {
   const {
-    mode, setMode,
-    title, setTitle,
-    subTitle, setSubTitle,
-    excerpt, setExcerpt,
-    readTime, setReadTime,
-    coverImage, setCoverImage,
-    blocks, setBlocks,
+    mode,
+    setMode,
+    title,
+    setTitle,
+    subTitle,
+    setSubTitle,
+    excerpt,
+    setExcerpt,
+    readTime,
+    setReadTime,
+    coverImage,
+    setCoverImage,
+    blocks,
+    setBlocks,
     uploadingCount,
     incrementUploading,
     decrementUploading,
@@ -76,7 +88,7 @@ export default function EditStoryEditor({
       (stori.blocks ?? [])
         .sort((a, b) => a.position - b.position)
         .map((b) => ({
-          id: b.blockId,                    // blockId from API becomes the React key
+          id: b.blockId, // blockId from API becomes the React key
           block_type: b.blockType as BlockType,
           content: b.content ?? "",
           image_url: b.image_url ?? "",
@@ -98,11 +110,18 @@ export default function EditStoryEditor({
 
   const [isUpdating, startUpdating] = useTransition();
   const busy = isUpdating || uploadingCount > 0;
+  console.log(blocks, "omo debug sha ");
 
   const handleUpdate = () => {
     startUpdating(async () => {
       const result = await updateStory(
-        storiId, title, subTitle, excerpt, readTime, coverImage, blocks,
+        storiId,
+        title,
+        subTitle,
+        excerpt,
+        readTime,
+        coverImage,
+        blocks,
       );
       if (result.ok) toast.success("Story updated.");
       else toast.error(result.message);
@@ -132,17 +151,22 @@ export default function EditStoryEditor({
             <button
               title="Save as draft"
               className={`${FAB} ${busy ? "opacity-60 cursor-not-allowed" : "cursor-pointer"}`}
-              onClick={() => { if (!busy) handleUpdate(); }}
+              onClick={() => {
+                if (!busy) handleUpdate();
+              }}
             >
-              {busy
-                ? <Loader2 size={20} className="animate-spin" />
-                : <BookCheck size={20} />
-              }
+              {busy ? (
+                <Loader2 size={20} className="animate-spin" />
+              ) : (
+                <BookCheck size={20} />
+              )}
             </button>
             <button
               title="Preview story"
               className={`${FAB} ${uploadingCount > 0 ? "opacity-60 cursor-not-allowed" : "cursor-pointer"}`}
-              onClick={() => { if (uploadingCount === 0) setMode("read"); }}
+              onClick={() => {
+                if (uploadingCount === 0) setMode("read");
+              }}
             >
               <Eye size={20} />
             </button>
@@ -176,7 +200,11 @@ export default function EditStoryEditor({
           <SubTitleField mode={mode} value={subTitle} onChange={setSubTitle} />
           <ExcerptField mode={mode} value={excerpt} onChange={setExcerpt} />
           <div className="flex items-center gap-3">
-            <ReadTimeField mode={mode} value={readTime} onChange={setReadTime} />
+            <ReadTimeField
+              mode={mode}
+              value={readTime}
+              onChange={setReadTime}
+            />
             {/* Status badge — shows the current publish state from when the page loaded.
                 It doesn't update if the story is published while the page is open,
                 but that's acceptable since publishing is done via the backend/dashboard. */}

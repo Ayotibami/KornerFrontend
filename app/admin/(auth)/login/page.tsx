@@ -77,8 +77,7 @@ export default function LoginPage() {
       <div className="flex flex-col items-center gap-2">
         <p className="text-center text-sm text-gray-500">
           Not a Werey??{" "}
-          {/* Note: /admin/signUp — capital S matches the folder name */}
-          <Link href="/admin/signUp" className="text-primary font-bold">
+          <Link href="/admin/signup" className="text-primary font-bold">
             Sign up
           </Link>
         </p>
