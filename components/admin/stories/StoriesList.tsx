@@ -54,11 +54,13 @@ function EmptyState({ status }: { status?: string }) {
 
       <div className="text-center flex flex-col gap-2 font-nunito">
         <p className="text-[clamp(1.1rem,2.5vw,1.35rem)] font-extrabold text-[#0f1e3d] dark:text-gray-50">
-          {isPublished ? "You have no published stories yet" : "You have no stories yet"}
+          {isPublished ? "You have no published stories yet" : status === "Pending" ? "You have no pending stories yet" : "You have no stories yet"}
         </p>
         <p className="text-[clamp(0.85rem,2vw,1rem)] font-medium text-gray-500 dark:text-gray-400">
           {isPublished ? (
             "Publish a draft to see it here"
+          ) : status === "Pending" ? (
+            "Stories submitted for review will appear here"
           ) : (
             <>
               Go ahead and{" "}

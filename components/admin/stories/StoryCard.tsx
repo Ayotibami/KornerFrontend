@@ -15,6 +15,7 @@ import { PRIMARY } from "@/constants/theme";
 
 export default function StoryCard({ story }: { story: Story }) {
   const isDraft = story.status === "Draft";
+  const isPending = story.status === "Pending";
 
   return (
     <Link href={`/admin/stories/${story.stori_id}`} className="block">
@@ -30,7 +31,9 @@ export default function StoryCard({ story }: { story: Story }) {
             className={`text-xs px-2.5 py-1 rounded-xl font-semibold ${
               isDraft
                 ? "bg-secondary text-[#0E3E87] dark:bg-[#1e3a5f] dark:text-white"
-                : "bg-primary text-white"
+                : isPending
+                  ? "bg-[#FEF3C7] text-[#92400E] dark:bg-[#422006] dark:text-[#FDE68A]"
+                  : "bg-primary text-white"
             }`}
           >
             {capitalize(story.status)}

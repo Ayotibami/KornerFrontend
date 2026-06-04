@@ -12,7 +12,7 @@
 
 import { useSearchParams, useRouter } from "next/navigation";
 
-const FILTERS = ["Draft", "Published"] as const;
+const FILTERS = ["Draft", "Pending", "Published"] as const;
 
 export default function FilterBar() {
   const searchParams = useSearchParams();

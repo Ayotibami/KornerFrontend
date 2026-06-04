@@ -16,7 +16,6 @@
 
 import AdminGreeting from "./AdminGreeting";
 import ProfileTrigger from "./ui/ProfileTrigger";
-import CreateStoryButton from "./ui/CreateStoryButton";
 import LogoutButton from "./ui/LogoutButton";
 import ThemeToggle from "./ui/ThemeToggle";
 import getProfile from "@/app/admin/home/action";
@@ -36,8 +35,6 @@ export default async function Navbar() {
 
       {/* Right: action buttons — flex-shrink-0 prevents compression on narrow screens */}
       <div className="flex items-center gap-2 sm:gap-2.5 flex-shrink-0">
-        <CreateStoryButton />
-        <ProfileTrigger profile={profile} variant="icon" />
         <ThemeToggle />
         <LogoutButton />
       </div>

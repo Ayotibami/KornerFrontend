@@ -8,6 +8,7 @@
 //   This separate type reflects the actual shape the backend returns for this endpoint.
 //   Note: `image_url` in StoriBlock stays snake_case — that's what the backend sends.
 
+import { revalidatePath } from "next/cache";
 import { apiRequest } from "@/lib/api";
 import type { ApiResult } from "@/types/api";
 import type { EditorBlock } from "@/context/StoryEditorContext";
@@ -75,6 +76,7 @@ export async function updateStory(
         })),
       }),
     });
+    revalidatePath("/admin/home");
     return { ok: true, data: undefined };
   } catch (err: unknown) {
     const status = (err as { status?: number }).status ?? 500;
