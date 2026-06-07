@@ -9,6 +9,7 @@
 //   Note: `image_url` in StoriBlock stays snake_case — that's what the backend sends.
 
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 import { apiRequest } from "@/lib/api";
 import type { ApiResult } from "@/types/api";
 import type { EditorBlock } from "@/context/StoryEditorContext";
@@ -83,4 +84,16 @@ export async function updateStory(
     const message = err instanceof Error ? err.message : "Something went wrong.";
     return { ok: false, status, message };
   }
+}
+
+export async function submitStoryForReview(storiId: string): Promise<ApiResult<void>> {
+  try {
+    await apiRequest(`/stories/submit/${storiId}`, { method: "PATCH" });
+  } catch (err: unknown) {
+    const status = (err as { status?: number }).status ?? 500;
+    const message = err instanceof Error ? err.message : "Failed to submit for review.";
+    return { ok: false, status, message };
+  }
+
+  redirect("/admin/home");
 }

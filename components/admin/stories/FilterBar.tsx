@@ -24,11 +24,17 @@ export default function FilterBar() {
     router.push(`/admin/home?status=${status}`);
   };
 
+  const ACTIVE_STYLES: Record<string, string> = {
+    Draft:     "bg-[#DBEAFE] text-[#1e40af] dark:bg-[#1e3a5f] dark:text-[#93c5fd]",
+    Pending:   "bg-[#FEF3C7] text-[#92400E] dark:bg-[#422006] dark:text-[#FDE68A]",
+    Published: "bg-[#D1FAE5] text-[#065F46] dark:bg-[#022C22] dark:text-[#6EE7B7]",
+  };
+
   const btnClass = (status: string) =>
     `px-6 sm:px-8 py-2 sm:py-2.5 rounded-full font-bold text-sm font-nunito transition-colors duration-200 ${
       active === status
-        ? "bg-primary text-white shadow-md cursor-default"
-        : "bg-secondary text-primary cursor-pointer dark:bg-[#1e3a5f] dark:text-[#93b8f0]"
+        ? `${ACTIVE_STYLES[status]} shadow-md cursor-default`
+        : "bg-slate-200 text-slate-500 cursor-pointer dark:bg-[#1e2130] dark:text-slate-400"
     }`;
 
   return (

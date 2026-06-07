@@ -27,7 +27,8 @@ export type Story = {
   cover_image: string;
   reading_time: string;
   status: "Draft" | "Pending" | "Published";
-  created_at: string; // ISO date string — formatted via formatDate() in lib/utils
+  created_at: string;
+  updated_at: string;
 };
 
 // Shape returned when fetching a single story for editing (/stories/adminstori/:id).

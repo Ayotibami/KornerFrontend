@@ -17,17 +17,20 @@
 // FAB position: `top: calc(14vh + 16px)` places it just below the fixed Navbar.
 
 import { useTransition } from "react";
-import { BookCheck, Eye, Loader2, Pencil } from "lucide-react";
+import { BookCheck, Eye, Loader2, Pencil, SendHorizonal } from "lucide-react";
 import { toast } from "sonner";
 import { useStoryEditor } from "@/context/StoryEditorContext";
 import CoverImage from "@/components/admin/editor/CoverImage";
 import StoryEditor from "@/components/admin/editor/StoryEditor";
 import { TitleField, SubTitleField, ExcerptField, ReadTimeField } from "@/components/admin/editor/MetaFields";
 import createStory from "./action";
+import submitForReview from "./submitForReview";
 
-// Shared class for the floating action buttons
-const FAB =
-  "w-[52px] h-[52px] flex items-center justify-center rounded-full bg-secondary dark:bg-[#1e3a5f] text-primary dark:text-[#93b8f0] shadow-[0_2px_12px_rgba(0,0,0,0.12)] dark:shadow-[0_2px_12px_rgba(0,0,0,0.4)] transition-transform duration-300 hover:scale-95 active:scale-90";
+const FAB_BASE = "w-[52px] h-[52px] flex items-center justify-center rounded-full shadow-[0_2px_12px_rgba(0,0,0,0.12)] dark:shadow-[0_2px_12px_rgba(0,0,0,0.4)] transition-transform duration-300 hover:scale-95 active:scale-90";
+const FAB_AMBER  = `${FAB_BASE} bg-[#FEF3C7] dark:bg-[#422006]  text-[#92400E] dark:text-[#FDE68A]`; // submit for review
+const FAB_TEAL   = `${FAB_BASE} bg-[#CCFBF1] dark:bg-[#022C22]  text-[#065F46] dark:text-[#6EE7B7]`; // save as draft
+const FAB_VIOLET = `${FAB_BASE} bg-[#EDE9FE] dark:bg-[#2E1065]  text-[#5B21B6] dark:text-[#C4B5FD]`; // preview
+const FAB_BLUE   = `${FAB_BASE} bg-secondary dark:bg-[#1e3a5f]  text-primary   dark:text-[#93b8f0]`; // edit
 
 export default function CreatePage() {
   const {
@@ -48,6 +51,7 @@ export default function CreatePage() {
   } = useStoryEditor();
 
   const [isDrafting, startDrafting] = useTransition();
+  const [isSubmitting, startSubmitting] = useTransition();
   const busy = isDrafting || uploadingCount > 0;
 
   const handleDraft = () => {
@@ -65,22 +69,44 @@ export default function CreatePage() {
         className="fixed z-[100] flex flex-col gap-2.5"
         style={{ top: "calc(14vh + 16px)", right: "clamp(12px, 3vw, 24px)" }}
       >
-        {/* Save as draft */}
-        <button
-          title="Save as draft"
-          className={`${FAB} ${busy ? "opacity-60 cursor-not-allowed" : "cursor-pointer"}`}
-          onClick={() => { if (!busy) handleDraft(); }}
-        >
-          {busy
-            ? <Loader2 size={20} className="animate-spin" />
-            : <BookCheck size={20} />
-          }
-        </button>
+        {mode === "read" && (
+          <>
+            {/* Submit for review */}
+            <button
+              title="Submit for review"
+              className={`${FAB_AMBER} ${isSubmitting || uploadingCount > 0 ? "opacity-60 cursor-not-allowed" : "cursor-pointer"}`}
+              onClick={() => {
+                if (isSubmitting || uploadingCount > 0) return;
+                startSubmitting(async () => {
+                  const result = await submitForReview(title, subTitle, excerpt, readTime, coverImage, blocks);
+                  if (!result.ok) toast.error(result.message);
+                });
+              }}
+            >
+              {isSubmitting
+                ? <Loader2 size={20} className="animate-spin" />
+                : <SendHorizonal size={20} />
+              }
+            </button>
 
-        {/* Toggle write ↔ read mode — disabled while images are uploading */}
+            {/* Save as draft */}
+            <button
+              title="Save as draft"
+              className={`${FAB_TEAL} ${busy ? "opacity-60 cursor-not-allowed" : "cursor-pointer"}`}
+              onClick={() => { if (!busy) handleDraft(); }}
+            >
+              {busy
+                ? <Loader2 size={20} className="animate-spin" />
+                : <BookCheck size={20} />
+              }
+            </button>
+          </>
+        )}
+
+        {/* Toggle write ↔ read mode — violet in write (preview), blue in read (edit) */}
         <button
           title={mode === "write" ? "Preview story" : "Edit story"}
-          className={`${FAB} ${uploadingCount > 0 ? "opacity-60 cursor-not-allowed" : "cursor-pointer"}`}
+          className={`${mode === "write" ? FAB_VIOLET : FAB_BLUE} ${uploadingCount > 0 ? "opacity-60 cursor-not-allowed" : "cursor-pointer"}`}
           onClick={() => { if (uploadingCount === 0) setMode(mode === "write" ? "read" : "write"); }}
         >
           {mode === "write" ? <Eye size={20} /> : <Pencil size={20} />}

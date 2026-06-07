@@ -1,10 +1,13 @@
-import { formatDistanceToNow } from "date-fns";
+import { format, formatDistanceToNow } from "date-fns";
 
-// Converts a date string or Date object to a human-readable relative string.
-// Example: "3 days ago", "about 2 hours ago".
-// Used on story cards to display when a story was created.
+// Converts a date to a relative string. Example: "3 days ago".
 export function formatDate(date: string | Date): string {
   return formatDistanceToNow(new Date(date), { addSuffix: true });
+}
+
+// Converts a date to a full readable string. Example: "Jun 7, 2026".
+export function formatFullDate(date: string | Date): string {
+  return format(new Date(date), "MMM d, yyyy");
 }
 
 // Capitalizes just the first character of a string.

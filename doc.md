@@ -862,8 +862,42 @@ Key differences from the create page:
 - Opens in **read mode** by default (preview the story first)
 - Has a "Go back" link to the home page
 - Shows a **status badge** (Draft/Published) next to the read time
+- **Save button only appears when `isDirty`** — see below
 - **Save shows a success toast** instead of redirecting — admin stays on the page
 - Wider content area (`maxWidth: 1100px` vs create's `800px`)
+
+#### isDirty — change detection
+
+The save button is hidden until the admin actually changes something. This prevents accidental no-op saves.
+
+**How it works:**
+
+On mount, the seeding `useEffect` snapshots the story's initial values into `useRef` variables (one per field). Refs are used instead of state because reading them never triggers a re-render — they're a silent reference point.
+
+On every render, `isDirty` is recomputed by comparing the current context values against the snapshot:
+
+```ts
+// Simple string fields — plain !== comparison
+const simpleFieldsChanged =
+  title !== initialTitleRef.current ||
+  subTitle !== initialSubTitleRef.current ||
+  // ... etc
+
+// Blocks — JSON.stringify comparison (arrays can't be compared with ===)
+// The `id` field is stripped before comparing because it's a client-only UUID
+// (not content). Without stripping, adding then deleting a block would leave
+// a different UUID and falsely mark the story dirty.
+const blocksChanged =
+  JSON.stringify(blocks.map(blockWithoutId)) !==
+  JSON.stringify(initialBlocksRef.current.map(blockWithoutId));
+
+const isDirty = simpleFieldsChanged || blocksChanged;
+```
+
+The save FAB renders only when `isDirty === true`:
+```tsx
+{isDirty && <button ...>Save</button>}
+```
 
 ---
 
