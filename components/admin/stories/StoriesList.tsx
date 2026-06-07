@@ -7,8 +7,50 @@ import StoryCard from "./StoryCard";
 import type { Story } from "@/types/story";
 import Link from "next/link";
 
-function EmptyState({ status }: { status?: string }) {
-  const isPublished = status === "Published";
+function EmptyState({ status, hasAnyStories }: { status?: string; hasAnyStories: boolean }) {
+  // Derive the heading and sub-text based on two things:
+  //   1. Which filter is active (status)
+  //   2. Whether any stories exist at all (hasAnyStories)
+  //
+  // Why we need hasAnyStories:
+  //   When the Draft filter is active and there are no drafts, `stories` (the filtered
+  //   list) is empty — but there may be published or pending stories that DO exist.
+  //   Without this flag, the Draft empty state would say "You have no stories yet"
+  //   even when the admin has published stories. We use hasAnyStories to distinguish
+  //   "no stories at all" from "no stories matching this filter".
+
+  let heading: string;
+  let subText: React.ReactNode;
+
+  if (status === "Published") {
+    heading = "No published stories yet";
+    subText = "Publish a draft to see it here";
+  } else if (status === "Pending") {
+    heading = "No pending stories";
+    subText = "Stories submitted for review will appear here";
+  } else if (hasAnyStories) {
+    // Stories exist but none are drafts
+    heading = "No drafts yet";
+    subText = (
+      <>
+        Go ahead and{" "}
+        <Link href="/admin/stories/create" className="text-primary font-bold no-underline">
+          create a new draft
+        </Link>
+      </>
+    );
+  } else {
+    // Truly no stories at all
+    heading = "You have no stories yet";
+    subText = (
+      <>
+        Go ahead and{" "}
+        <Link href="/admin/stories/create" className="text-primary font-bold no-underline">
+          create one
+        </Link>
+      </>
+    );
+  }
 
   return (
     <div className="flex flex-col items-center justify-center w-full gap-6 py-[clamp(40px,10vw,80px)] px-6">
@@ -54,21 +96,10 @@ function EmptyState({ status }: { status?: string }) {
 
       <div className="text-center flex flex-col gap-2 font-nunito">
         <p className="text-[clamp(1.1rem,2.5vw,1.35rem)] font-extrabold text-[#0f1e3d] dark:text-gray-50">
-          {isPublished ? "You have no published stories yet" : status === "Pending" ? "You have no pending stories yet" : "You have no stories yet"}
+          {heading}
         </p>
         <p className="text-[clamp(0.85rem,2vw,1rem)] font-medium text-gray-500 dark:text-gray-400">
-          {isPublished ? (
-            "Publish a draft to see it here"
-          ) : status === "Pending" ? (
-            "Stories submitted for review will appear here"
-          ) : (
-            <>
-              Go ahead and{" "}
-              <Link href="/admin/stories/create" className="text-primary font-bold no-underline">
-                create one
-              </Link>
-            </>
-          )}
+          {subText}
         </p>
       </div>
     </div>
@@ -84,7 +115,7 @@ export default async function StoriesList({ status }: { status?: string }) {
     ? allStories.filter((s) => s.status === status)
     : allStories;
 
-  if (stories.length === 0) return <EmptyState status={status} />;
+  if (stories.length === 0) return <EmptyState status={status} hasAnyStories={allStories.length > 0} />;
 
   return (
     <div

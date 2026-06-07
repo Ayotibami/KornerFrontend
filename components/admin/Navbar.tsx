@@ -18,6 +18,7 @@ import AdminGreeting from "./AdminGreeting";
 import ProfileTrigger from "./ui/ProfileTrigger";
 import LogoutButton from "./ui/LogoutButton";
 import ThemeToggle from "./ui/ThemeToggle";
+import HelpTrigger from "./ui/HelpTrigger";
 import getProfile from "@/app/admin/home/action";
 
 export default async function Navbar() {
@@ -35,6 +36,7 @@ export default async function Navbar() {
 
       {/* Right: action buttons — flex-shrink-0 prevents compression on narrow screens */}
       <div className="flex items-center gap-2 sm:gap-2.5 flex-shrink-0">
+        <HelpTrigger />
         <ThemeToggle />
         <LogoutButton />
       </div>

@@ -15,7 +15,7 @@ import Link from "next/link";
 import { Clock, Loader2, RotateCcw, SendHorizonal } from "lucide-react";
 import { toast } from "sonner";
 import { capitalize, formatDate, formatFullDate } from "@/lib/utils";
-import { submitStoryForReview, updateStory } from "@/app/admin/stories/[storiId]/action";
+import { submitStoryForReviewFromCard, updateStory } from "@/app/admin/stories/[storiId]/action";
 import type { Story } from "@/types/story";
 import { PRIMARY } from "@/constants/theme";
 
@@ -42,8 +42,9 @@ export default function StoryCard({ story }: { story: Story }) {
     e.stopPropagation();
     if (isSubmitting) return;
     startSubmitting(async () => {
-      const result = await submitStoryForReview(story.stori_id);
-      if (!result.ok) toast.error(result.message);
+      const result = await submitStoryForReviewFromCard(story.stori_id);
+      if (result.ok) toast.success("Submitted for review.");
+      else toast.error(result.message);
     });
   };
 
@@ -91,9 +92,9 @@ export default function StoryCard({ story }: { story: Story }) {
         <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 line-clamp-2">{story.excerpt}</p>
 
         {/* Dates + action */}
-        <div className="flex justify-between items-end mt-auto">
+        <div className="flex justify-between items-end mt-3">
           <div className="flex flex-col gap-1">
-            <p className="text-sm font-semibold text-gray-500 dark:text-gray-400">{formatDate(story.updated_at)}</p>
+            <p className="text-sm font-semibold text-gray-500 dark:text-gray-400">Last updated {formatDate(story.updated_at)}</p>
             <p className="text-[11px] text-gray-400 dark:text-gray-500">Created {formatFullDate(story.created_at)}</p>
           </div>
           {isDraft && (

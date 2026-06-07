@@ -11,19 +11,20 @@
 2. [Tech Stack](#2-tech-stack)
 3. [Folder Structure](#3-folder-structure)
 4. [Styling System](#4-styling-system)
-5. [Authentication & Middleware](#5-authentication--middleware)
-6. [Data Types](#6-data-types)
-7. [API Layer](#7-api-layer)
-8. [Image Uploads (Cloudinary)](#8-image-uploads-cloudinary)
-9. [Utility Functions](#9-utility-functions)
-10. [Story Editor Context](#10-story-editor-context)
-11. [UI Components](#11-ui-components)
-12. [Admin Components](#12-admin-components)
-13. [Editor Components](#13-editor-components)
-14. [Routes & Pages](#14-routes--pages)
-15. [Server Actions Pattern](#15-server-actions-pattern)
-16. [Public Pages](#16-public-pages)
-17. [Key Patterns & Decisions](#17-key-patterns--decisions)
+5. [Color System](#5-color-system)
+6. [Authentication & Middleware](#6-authentication--middleware)
+7. [Data Types](#7-data-types)
+8. [API Layer](#8-api-layer)
+9. [Image Uploads (Cloudinary)](#9-image-uploads-cloudinary)
+10. [Utility Functions](#10-utility-functions)
+11. [Story Editor Context](#11-story-editor-context)
+12. [UI Components](#12-ui-components)
+13. [Admin Components](#13-admin-components)
+14. [Editor Components](#14-editor-components)
+15. [Routes & Pages](#15-routes--pages)
+16. [Server Actions Pattern](#16-server-actions-pattern)
+17. [Public Pages](#17-public-pages)
+18. [Key Patterns & Decisions](#18-key-patterns--decisions)
 
 ---
 
@@ -34,10 +35,14 @@
 The public-facing site (where readers see stories) also lives in this repo under `app/` and `components/usercomponent/`.
 
 **What the admin panel does:**
-- Login / signup for admin accounts
-- View stories in a grid — Draft view by default, toggle to Published
+- Login / signup / forgot-password / reset-password for admin accounts
+- View stories in a grid filtered by status — Draft (default), Pending, Published
 - Create a new story with a rich block-based editor
-- Edit an existing story
+- Edit an existing story (with dirty-state detection so Save only appears when something changed)
+- Submit a draft for review (from the editor FAB or directly from the story card)
+- Revert a pending story back to draft (from the story card)
+- Profile management — update name, bio, avatar
+- Help modal accessible from the `?` icon in the navbar
 - Logout
 
 ---
@@ -53,7 +58,7 @@ The public-facing site (where readers see stories) also lives in this repo under
 | TipTap | 2.x | Rich text editor (built on ProseMirror) |
 | Cloudinary | (direct API) | Image hosting and CDN |
 | Sonner | latest | Toast notifications |
-| date-fns | latest | Relative date formatting |
+| date-fns | latest | Relative and formatted date output |
 | Lucide React | latest | Icon library |
 | react-icons/fa | latest | `FaQuoteLeft` (Lucide has no quote icon) |
 
@@ -65,82 +70,98 @@ The public-facing site (where readers see stories) also lives in this repo under
 kornerfrontend/
 ├── app/
 │   ├── admin/
-│   │   ├── (auth)/                  # Auth route group — login & signup
-│   │   │   ├── layout.tsx           # Redirects logged-in users away from auth pages
+│   │   ├── (auth)/                       # Auth route group — login, signup, password reset
+│   │   │   ├── layout.tsx                # Redirects logged-in users away from auth pages
 │   │   │   ├── login/
-│   │   │   │   ├── page.tsx         # Login form (client component)
-│   │   │   │   └── actions.tsx      # login() server action
-│   │   │   └── signUp/
-│   │   │       ├── page.tsx         # Signup form (client component)
-│   │   │       └── actions.tsx      # signUp() server action
+│   │   │   │   ├── page.tsx              # Login form (client component)
+│   │   │   │   └── actions.tsx           # login() server action
+│   │   │   ├── signup/
+│   │   │   │   ├── page.tsx              # Signup form (client component)
+│   │   │   │   └── actions.tsx           # signUp() server action
+│   │   │   ├── forgot-password/
+│   │   │   │   ├── page.tsx              # Forgot password form — requests OTP
+│   │   │   │   └── action.ts             # requestOtp() server action
+│   │   │   └── reset-password/
+│   │   │       ├── page.tsx              # Server shell — reads ?email from searchParams
+│   │   │       ├── ResetPasswordForm.tsx # Client form — OTP input + new password
+│   │   │       └── action.ts             # resetPassword() server action
 │   │   ├── home/
-│   │   │   ├── layout.tsx           # Wraps all home content with Navbar
-│   │   │   ├── page.tsx             # Stories grid — Draft by default, toggles to Published
-│   │   │   ├── action.tsx           # getProfile() — fetches admin profile for Navbar
-│   │   │   ├── loading.tsx          # Loading skeleton
-│   │   │   └── error.tsx            # Error boundary for this route
+│   │   │   ├── layout.tsx                # Wraps all home content with Navbar
+│   │   │   ├── page.tsx                  # Stories grid — Draft by default, toggle to Pending/Published
+│   │   │   ├── action.tsx                # getProfile() + updateProfile() server actions
+│   │   │   ├── loading.tsx               # Loading skeleton
+│   │   │   └── error.tsx                 # Error boundary for this route
 │   │   ├── logout/
-│   │   │   └── action.ts            # logout() — deletes cookie, redirects to login
+│   │   │   └── action.ts                 # logout() — deletes cookie, redirects to login
 │   │   └── stories/
 │   │       ├── create/
-│   │       │   ├── layout.tsx       # Wraps page in StoryEditorProvider
-│   │       │   ├── page.tsx         # Create story page (client component)
-│   │       │   └── action.tsx       # createStory() server action
+│   │       │   ├── layout.tsx            # Wraps page in StoryEditorProvider
+│   │       │   ├── page.tsx              # Create story editor (client component)
+│   │       │   ├── action.tsx            # createStory() server action
+│   │       │   └── submitForReview.tsx   # submitForReview() — create then submit in one action
 │   │       └── [storiId]/
-│   │           ├── layout.tsx       # Wraps page in StoryEditorProvider
-│   │           ├── page.tsx         # Edit story page (server component — fetches data)
-│   │           ├── EditStoryEditor.tsx  # Edit story UI (client component)
-│   │           └── action.tsx       # getStori(), updateStory() server actions
-│   ├── stories/                     # Public story listing (user-facing)
-│   ├── layout.tsx                   # Root layout (fonts, Toaster)
-│   └── globals.css                  # Tailwind v4 theme + custom utilities
+│   │           ├── layout.tsx            # Wraps page in StoryEditorProvider
+│   │           ├── page.tsx              # Edit story (server component — fetches data)
+│   │           ├── EditStoryEditor.tsx   # Edit story UI (client component)
+│   │           └── action.tsx            # getStori(), updateStory(), submitStoryForReview(),
+│   │                                     # submitStoryForReviewFromCard()
+│   ├── stories/                          # Public story listing (user-facing)
+│   ├── layout.tsx                        # Root layout (fonts, Toaster)
+│   └── globals.css                       # Tailwind v4 theme + custom utilities
 ├── components/
-│   ├── admin/                       # Admin-specific components
-│   │   ├── ui/                      # Reusable UI primitives
-│   │   │   ├── Button.tsx
-│   │   │   ├── Input.tsx
-│   │   │   ├── AuthCard.tsx
-│   │   │   ├── AuthBranding.tsx
-│   │   │   ├── AvatarPicker.tsx
-│   │   │   ├── Avatar.tsx
-│   │   │   ├── LogoutButton.tsx
-│   │   │   └── CreateStoryButton.tsx
-│   │   ├── editor/                  # Story editor building blocks
-│   │   │   ├── RichTextEditor.tsx   # TipTap wrapper
-│   │   │   ├── CoverImage.tsx       # Full-width cover image with upload
-│   │   │   ├── ImageUploader.tsx    # Inline image block with upload
-│   │   │   ├── EditorBlock.tsx      # Renders one block (routes by block_type)
-│   │   │   ├── BlockControls.tsx    # Insert row between blocks
-│   │   │   ├── StoryEditor.tsx      # Full block list (write + read mode)
-│   │   │   └── MetaFields.tsx       # Title, SubTitle, Excerpt, ReadTime inputs
-│   │   ├── stories/                 # Stories grid components
-│   │   │   ├── StoryCard.tsx        # Individual story card
-│   │   │   ├── StoriesList.tsx      # Grid of story cards (server component)
-│   │   │   └── FilterBar.tsx        # Draft / Published filter buttons
-│   │   ├── AdminGreeting.tsx        # "Hi, [name]" greeting in Navbar
-│   │   └── Navbar.tsx               # Fixed top navigation bar
-│   ├── admincomponent/              # LEGACY — kept for public pages only
-│   │   ├── Button.tsx               # Used by app/page.tsx and stories/page.tsx
-│   │   ├── HeroText.tsx             # Used by app/stories/page.tsx
-│   │   ├── Tornsection.tsx          # Used by app/stories/page.tsx
-│   │   └── FloatingCards.tsx        # Used by usercomponent/HeroSection.tsx
-│   └── usercomponent/               # Public-facing page components
+│   ├── admin/                            # Admin-specific components
+│   │   ├── ui/                           # Reusable UI primitives
+│   │   │   ├── Button.tsx                # Full-width pill button (primary / secondary variants)
+│   │   │   ├── Input.tsx                 # Styled form input with eye toggle for passwords
+│   │   │   ├── AuthCard.tsx              # White rounded card centering auth forms
+│   │   │   ├── AuthBranding.tsx          # Logo + title + subtitle at top of auth pages
+│   │   │   ├── AvatarPicker.tsx          # Circle avatar with + upload button
+│   │   │   ├── Avatar.tsx                # Read-only circle avatar (Navbar)
+│   │   │   ├── OtpInput.tsx              # 6-box OTP input for password reset
+│   │   │   ├── LogoutButton.tsx          # Red icon button — calls logout() via useTransition
+│   │   │   ├── ThemeToggle.tsx           # Light/dark mode toggle button (Navbar)
+│   │   │   ├── ThemedToaster.tsx         # Sonner Toaster wired to the active theme
+│   │   │   ├── ProfileTrigger.tsx        # Avatar circle / User icon that opens ProfileModal
+│   │   │   ├── ProfileModal.tsx          # View + edit admin profile modal
+│   │   │   ├── HelpTrigger.tsx           # ? icon button that opens HelpModal
+│   │   │   ├── HelpModal.tsx             # Guided help overlay with Pidgin/Gen-Z tone
+│   │   │   └── CreateStoryButton.tsx     # Feather icon link — navigates to /stories/create
+│   │   ├── editor/                       # Story editor building blocks
+│   │   │   ├── RichTextEditor.tsx        # TipTap wrapper (bold, italic, underline, strike)
+│   │   │   ├── CoverImage.tsx            # Full-width cover image with upload
+│   │   │   ├── ImageUploader.tsx         # Inline image block with upload (16:9)
+│   │   │   ├── EditorBlock.tsx           # Routes to correct sub-component by block_type
+│   │   │   ├── BlockControls.tsx         # Insert row between blocks (+) in write mode
+│   │   │   ├── StoryEditor.tsx           # Full block list — write mode has trash + controls
+│   │   │   └── MetaFields.tsx            # Title, SubTitle, Excerpt, ReadTime inputs
+│   │   ├── stories/                      # Stories grid components
+│   │   │   ├── StoryCard.tsx             # Individual story card (client component)
+│   │   │   ├── StoriesList.tsx           # Grid of story cards (server component)
+│   │   │   └── FilterBar.tsx             # Draft / Pending / Published filter buttons
+│   │   ├── AdminGreeting.tsx             # "Hi, [name]" greeting in Navbar
+│   │   └── Navbar.tsx                    # Fixed top navigation bar (server component)
+│   ├── admincomponent/                   # LEGACY — kept for public pages only
+│   │   ├── Button.tsx                    # Used by app/page.tsx and stories/page.tsx
+│   │   ├── HeroText.tsx                  # Used by app/stories/page.tsx
+│   │   ├── Tornsection.tsx               # Used by app/stories/page.tsx
+│   │   └── FloatingCards.tsx             # Used by usercomponent/HeroSection.tsx
+│   └── usercomponent/                    # Public-facing page components
 ├── context/
-│   └── StoryEditorContext.tsx       # Shared state for the story editor
+│   └── StoryEditorContext.tsx            # Shared state for the story editor
 ├── constants/
-│   └── theme.ts                     # PRIMARY and SECONDARY hex color values
+│   └── theme.ts                          # PRIMARY and SECONDARY hex color values
 ├── lib/
-│   ├── api.ts                       # apiRequest() — central authenticated fetch
-│   ├── cloudinary.ts                # uploadToCloudinary() — direct browser upload
-│   ├── font.ts                      # Nunito font definition
-│   ├── utils.ts                     # formatDate(), capitalize()
-│   └── validation.ts                # validatePassword()
-├── middleware.ts                    # Route protection for /admin/*
+│   ├── api.ts                            # apiRequest() — central authenticated fetch
+│   ├── cloudinary.ts                     # uploadToCloudinary() — direct browser upload
+│   ├── font.ts                           # Nunito font definition
+│   ├── utils.ts                          # formatDate(), formatFullDate(), capitalize()
+│   └── validation.ts                     # validatePassword()
+├── middleware.ts                         # Route protection for /admin/*
 ├── types/
-│   ├── story.ts                     # Block, Story, StoryDetail types
-│   ├── api.ts                       # ApiResult<T> discriminated union
-│   └── admin.ts                     # AdminProfile type
-└── doc.md                           # ← You are here
+│   ├── story.ts                          # BlockType, Block, Story, StoryDetail types
+│   ├── api.ts                            # ApiResult<T> discriminated union
+│   └── admin.ts                          # AdminProfile type
+└── doc.md                                # ← You are here
 ```
 
 ---
@@ -149,21 +170,18 @@ kornerfrontend/
 
 ### Tailwind CSS v4
 
-This project uses **Tailwind v4**, which is configured entirely in CSS — there is no `tailwind.config.ts`.
+This project uses **Tailwind v4**, configured entirely in CSS — there is no `tailwind.config.ts`.
 
 All configuration lives in [`app/globals.css`](app/globals.css):
 
 ```css
 @import "tailwindcss";
 
-/* Overrides Tailwind's default dark mode (prefers-color-scheme) with class-based dark mode.
-   This makes all `dark:` classes activate when the `dark` class is on <html>.
-   MUST use @custom-variant (not @variant) — @variant does not override the dark strategy. */
+/* Class-based dark mode — `dark:` classes activate when <html> has the `dark` class.
+   MUST use @custom-variant (not @variant) to override Tailwind's default strategy. */
 @custom-variant dark (&:where(.dark, .dark *));
 
-/* Tells Tailwind to scan the full project root for class names.
-   Without this, Tailwind only scans the app/ directory (where globals.css lives)
-   and misses all classes used in components/, context/, etc. */
+/* Scan from project root so Tailwind picks up classes in components/, context/, etc. */
 @source "../";
 
 @theme {
@@ -173,7 +191,7 @@ All configuration lives in [`app/globals.css`](app/globals.css):
 }
 ```
 
-The `@layer utilities` block below it provides **explicit fallback definitions** for the custom color utilities. This guarantees `bg-primary`, `text-primary`, etc. always work — even if Tailwind's scan misses a file:
+An `@layer utilities` block provides explicit fallback definitions for custom color utilities:
 
 ```css
 @layer utilities {
@@ -187,6 +205,24 @@ The `@layer utilities` block below it provides **explicit fallback definitions**
 }
 ```
 
+### Typography
+
+The project uses the **Nunito** font loaded in `lib/font.ts` via `next/font/google`. Apply it with the `font-nunito` utility. The font variable is exposed as `--font-nunito` in CSS.
+
+### Responsive Sizing
+
+Font sizes and spacing that need to scale smoothly use `clamp()`:
+
+```css
+font-size: clamp(min, preferred-viewport-unit, max)
+```
+
+This replaces breakpoint-based responsive classes for typography.
+
+---
+
+## 5. Color System
+
 ### Brand Colors
 
 | Name | Hex | Usage |
@@ -194,89 +230,87 @@ The `@layer utilities` block below it provides **explicit fallback definitions**
 | `primary` | `#165ABF` | Main blue — buttons, borders, text, icons |
 | `secondary` | `#B4CFF6` | Light blue — backgrounds, badges, inputs |
 
-**Rule:** Always use Tailwind classes (`bg-primary`, `text-secondary`, etc.) for colors in JSX.
-Only use the raw hex values from `constants/theme.ts` where Tailwind classes won't work — SVG `fill` attributes and Lucide `color` props.
+**Rule:** Always use Tailwind classes (`bg-primary`, `text-secondary`) in JSX. Only use the raw hex values from `constants/theme.ts` for SVG `fill` attributes and Lucide `color` props where Tailwind classes can't reach.
 
-### constants/theme.ts
+### Story Status Colors
 
-```ts
-export const PRIMARY = "#165ABF";
-export const SECONDARY = "#B4CFF6";
-```
+Every place that shows a story's status uses the same three color families. This applies to: status badges on cards, the status badges in FilterBar, the quick-action buttons on cards, and the FAB buttons on editor pages.
 
-Use these constants only for SVG/icon color props. For everything else, use the Tailwind classes.
+| Status | Light bg | Light text | Dark bg | Dark text |
+|---|---|---|---|---|
+| Draft | `#DBEAFE` | `#1e40af` | `#1e3a5f` | `#93c5fd` |
+| Pending | `#FEF3C7` | `#92400E` | `#422006` | `#FDE68A` |
+| Published | `#D1FAE5` | `#065F46` | `#022C22` | `#6EE7B7` |
 
-### Typography
+### FAB Colors (Editor Pages)
 
-The project uses the **Nunito** font loaded in `lib/font.ts` via `next/font/google`.
-Apply it with the `font-nunito` Tailwind utility class.
-The font variable is exposed as `--font-nunito` in the CSS.
+The four floating action buttons on the create and edit pages use consistent colors:
 
-### Responsive Sizing
-
-All font sizes and spacing that need to scale smoothly use `clamp()`:
-
-```css
-font-size: clamp(min, preferred-viewport-unit, max)
-/* Example: clamp(1.5rem, 4vw, 2.5rem) */
-```
-
-This replaces breakpoint-based responsive classes for typography — the size grows continuously between min and max as the viewport widens.
+| Button | Color family | Light bg | Dark bg | Usage |
+|---|---|---|---|---|
+| Submit for review | Amber | `#FEF3C7` | `#422006` | Send draft to Pending |
+| Save as draft | Teal | `#CCFBF1` | `#022C22` | Save without submitting |
+| Edit story | Blue (brand) | `secondary` | `#1e3a5f` | Enter write mode |
+| Preview story | Violet | `#EDE9FE` | `#2E1065` | Enter read/preview mode |
 
 ---
 
-## 5. Authentication & Middleware
+## 6. Authentication & Middleware
 
 ### How authentication works
 
 1. Admin submits login form → `login()` server action POSTs to backend
 2. Backend returns a JWT token
 3. The action stores the token as an **httpOnly cookie** named `auth_token`
-   - `httpOnly: true` — browser JavaScript cannot read this cookie (XSS protection)
+   - `httpOnly: true` — browser JS cannot read it (XSS protection)
    - `secure: true` in production — only sent over HTTPS
    - `maxAge: 86400` — expires after 24 hours
 4. Every subsequent request to the backend includes this token via `apiRequest()`
 
 ### middleware.ts
 
-Runs on **every request** (except `_next/static`, `_next/image`, `favicon.ico`).
+Runs on every request (except `_next/static`, `_next/image`, `favicon.ico`).
 
-Logic:
-- Non-admin routes → pass through (public pages are open)
-- `/admin/login` and `/admin/signUp` → pass through (these are the unauthenticated entry points)
-- Any other `/admin/*` route without `auth_token` cookie → redirect to `/admin/login`
+- Non-admin routes → pass through
+- `/admin/login` and `/admin/signup` → pass through (unauthenticated entry points)
+- Any other `/admin/*` route without `auth_token` → redirect to `/admin/login`
 
 ### Auth Layout (`app/admin/(auth)/layout.tsx`)
 
-The **inverse** of middleware:
-- Middleware protects admin pages from unauthenticated users
-- Auth layout protects the login/signup pages from **already authenticated** users
-- If a logged-in admin navigates to `/admin/login`, they're redirected to `/admin/home`
+The inverse of middleware: if a logged-in admin navigates to `/admin/login`, they're redirected to `/admin/home`.
+
+### Forgot Password / Reset Password
+
+Two-step flow:
+
+1. `/admin/forgot-password` — admin enters email → `requestOtp()` POSTs to backend → backend emails a 6-digit OTP → page redirects to `/admin/reset-password?email=...`
+2. `/admin/reset-password` — admin enters OTP + new password → `resetPassword()` POSTs to backend → on success, redirect to login
+
+The reset page is a server component that reads `?email` from `searchParams` and passes it as a prop to `ResetPasswordForm` (client component). The form includes a 60-second resend cooldown timer (countdown managed with `useEffect` + `setTimeout`).
 
 ### Logout (`app/admin/logout/action.ts`)
 
 Server action that:
-1. Deletes the `auth_token` httpOnly cookie (only server code can delete httpOnly cookies)
+1. Deletes the `auth_token` httpOnly cookie
 2. Redirects to `/admin/login`
 
 ---
 
-## 6. Data Types
+## 7. Data Types
 
-All types live in the `types/` folder. Never define types inline in components.
+All types live in `types/`. Never define types inline in components.
 
 ### `types/story.ts`
 
 ```ts
 type BlockType = "heading" | "paragraph" | "quote" | "image"
 ```
-The four block types supported by the story editor. Maps to the database values.
 
 ```ts
 type Block = {
   id: string
   block_type: BlockType
-  content: string      // HTML string for text blocks; empty string for image blocks
+  content: string      // HTML for text blocks; empty string for image blocks
   image_url: string    // Cloudinary URL for image blocks; empty string otherwise
   position: number     // 1-based, controls rendering order
 }
@@ -290,16 +324,17 @@ type Story = {
   excerpt: string
   cover_image: string
   reading_time: string
-  status: "Draft" | "Published"
+  status: "Draft" | "Pending" | "Published"
   created_at: string   // ISO date string
+  updated_at: string   // ISO date string
 }
 ```
-Shape returned by `GET /stories/adminstories` (the list endpoint).
+Shape returned by `GET /stories/adminstories`. Used to render story cards.
 
 ```ts
 type StoryDetail = Story & { stori_blocks: Block[] }
 ```
-Shape returned by `GET /stories/adminstori/:id` (single story for editing).
+Shape returned by `GET /stories/adminstori/:id`. Used on the edit page.
 
 ### `types/api.ts`
 
@@ -309,16 +344,7 @@ type ApiError = { ok: false; status: number; message: string }
 type ApiResult<T = void> = ApiSuccess<T> | ApiError
 ```
 
-Every server action returns `ApiResult<T>`. Callers check `result.ok` to get TypeScript's discriminated union narrowing:
-
-```ts
-const result = await someAction()
-if (!result.ok) {
-  toast.error(result.message)  // TypeScript knows result is ApiError
-  return
-}
-// TypeScript now knows result is ApiSuccess<T>
-```
+Every server action returns `ApiResult<T>`. Callers check `result.ok` for TypeScript discriminated union narrowing.
 
 ### `types/admin.ts`
 
@@ -326,14 +352,14 @@ if (!result.ok) {
 type AdminProfile = {
   admin_name: string
   email: string
-  avatar_url?: string  // optional — admin may not have a profile picture
+  bio?: string
+  avatar_url?: string
 }
 ```
-Shape returned by `GET /admin/profile`. Used in the Navbar.
 
 ### `StoriDetail` (local type in `[storiId]/action.tsx`)
 
-The single-story edit endpoint returns camelCase field names, unlike the list endpoint which uses snake_case. A local type captures this:
+The single-story edit endpoint returns camelCase field names, unlike the list endpoint's snake_case. A local type captures this shape:
 
 ```ts
 type StoriBlock = {
@@ -349,7 +375,7 @@ type StoriDetail = {
   subtitle: string
   excerpt: string
   readingTime: string    // camelCase
-  coverImage?: string | null  // camelCase
+  coverImage?: string | null
   status: string
   blocks: StoriBlock[]
 }
@@ -357,48 +383,36 @@ type StoriDetail = {
 
 ---
 
-## 7. API Layer
+## 8. API Layer
 
 ### `lib/api.ts` — `apiRequest()`
 
-Central authenticated fetch function. All requests to the backend go through this.
+Central authenticated fetch. All requests to the backend go through this.
 
 ```ts
 apiRequest(path: string, options?: RequestInit): Promise<Response>
 ```
 
 What it does:
-1. Reads the `auth_token` cookie from `next/headers`
-2. Merges it into the request headers as `Authorization: Bearer <token>`
-3. Sets `Content-Type: application/json` by default (overridable via `options.headers`)
+1. Reads `auth_token` from `next/headers`
+2. Merges it into `Authorization: Bearer <token>`
+3. Sets `Content-Type: application/json` by default
 4. **Throws `ApiRequestError`** if the response is not 2xx
 
-**Important:** This file has NO `"use server"` directive. It is a server-side utility that runs on the server because it imports from `next/headers`. `"use server"` is only for Server Action files (callable from client). This distinction matters — adding `"use server"` to this file would break it because the file exports a class (`ApiRequestError`), and `"use server"` files can only export async functions.
+**Important:** No `"use server"` directive here — it runs on the server because it imports from `next/headers`, but `"use server"` is only for Server Action files. Adding it here would break the file because `"use server"` files can only export async functions (not classes like `ApiRequestError`).
 
-### `ApiRequestError`
+### Error handling per caller type
 
-```ts
-class ApiRequestError extends Error {
-  status: number
-}
-```
-
-Thrown by `apiRequest()` on non-2xx responses. Carries the HTTP status code so callers can:
-- Distinguish 401 (unauthorized) from 500 (server error)
-- Check for 404 specifically (e.g., `getStori()` returns `null` on 404, re-throws everything else)
-
-### How different callers handle errors
-
-| Caller type | Error handling strategy |
+| Caller type | Strategy |
 |---|---|
-| Server component | Let it throw — Next.js routes it to the nearest `error.tsx` |
-| Server action | Catch it, return `{ ok: false, status, message }` |
-| `getProfile()` | Catch all errors, return `null` (Navbar shows fallback instead of crashing) |
-| `getStori()` | Catch 404 → return `null`, re-throw everything else |
+| Server component | Let it throw → goes to nearest `error.tsx` |
+| Server action | Catch → return `{ ok: false, status, message }` |
+| `getProfile()` | Catch all → return `null` (Navbar shows fallback) |
+| `getStori()` | Catch 404 → return `null`; re-throw everything else |
 
 ---
 
-## 8. Image Uploads (Cloudinary)
+## 9. Image Uploads (Cloudinary)
 
 ### `lib/cloudinary.ts` — `uploadToCloudinary()`
 
@@ -406,52 +420,46 @@ Thrown by `apiRequest()` on non-2xx responses. Carries the HTTP status code so c
 uploadToCloudinary(file: File): Promise<string>
 ```
 
-Uploads directly from the browser to Cloudinary using an **unsigned upload preset**. Returns the permanent CDN URL. Throws on failure.
+Uploads directly from the browser to Cloudinary using an unsigned upload preset. Returns the permanent CDN URL. Throws on failure.
 
-**Why unsigned?** Signed uploads require a server-side signing step. Unsigned presets (configured in the Cloudinary dashboard) allow direct browser-to-Cloudinary uploads without an extra server round-trip.
-
-### Upload flow (used in CoverImage, ImageUploader, AvatarPicker)
-
-All three image upload components follow the same pattern:
+### Upload flow (CoverImage, ImageUploader, AvatarPicker)
 
 ```
 1. User selects file
 2. Create local blob URL → show as optimistic preview immediately
 3. setUploading(true) + onUploadStart() [increments uploadingCount in context]
 4. try: upload to Cloudinary
-5.   success → onChange(permanentUrl) [update context with real Cloudinary URL]
+5.   success → onChange(permanentUrl)
 6.   failure → revert preview to original URL + toast.error()
 7. finally: setUploading(false) + onUploadEnd() [always runs, even on error]
 ```
 
-The `finally` block is critical — it guarantees `uploadingCount` decrements back to zero even if the upload throws. Without it, the save button could stay permanently disabled after a failed upload.
+The `finally` block is critical — it guarantees `uploadingCount` decrements back to zero even on upload failure.
 
 ### Why uploadingCount matters
 
-When a user is in the middle of uploading an image, the block's `image_url` is a temporary **blob URL** (like `blob://...`). If the admin saves at this moment:
-- The blob URL would be sent to the backend
-- Blob URLs are local to the browser session — the backend can't access them
-- The saved story would have a broken image
-
-`uploadingCount > 0` keeps the save button disabled until all uploads complete.
+While a user is uploading, the block's `image_url` is a temporary `blob://` URL local to the browser session. If saved at this moment, the backend would receive a URL it can't access. `uploadingCount > 0` keeps all save/submit buttons disabled until all uploads complete.
 
 ---
 
-## 9. Utility Functions
+## 10. Utility Functions
 
 ### `lib/utils.ts`
 
 ```ts
 formatDate(date: string | Date): string
 ```
-Returns a human-readable relative string like `"3 days ago"`, `"about 2 hours ago"`.
-Uses `date-fns`'s `formatDistanceToNow`. Used on story cards.
+Returns a relative string like `"3 days ago"`, `"about 2 hours ago"`. Uses `date-fns` `formatDistanceToNow`. Shown as "Last updated X ago" on story cards.
+
+```ts
+formatFullDate(date: string | Date): string
+```
+Returns a full date string like `"Jun 7, 2026"`. Uses `date-fns` `format`. Shown as "Created Jun 7, 2026" on story cards below the relative date.
 
 ```ts
 capitalize(s: string): string
 ```
-Capitalizes the first character. Used to normalize story status from the API
-(e.g., `"draft"` → `"Draft"`).
+Capitalizes the first character. Used to normalize API status values (`"draft"` → `"Draft"`).
 
 ### `lib/validation.ts`
 
@@ -459,21 +467,19 @@ Capitalizes the first character. Used to normalize story status from the API
 validatePassword(password: string): { isValid: boolean; message: string }
 ```
 
-Client-side password validation (purely for UX — the server also validates).
-Rules: minimum 8 characters, at least one uppercase letter, at least one number.
-Special character rule is commented out — uncomment to enforce it.
+Client-side password validation. Rules: minimum 8 characters, at least one uppercase letter, at least one number.
 
 ---
 
-## 10. Story Editor Context
+## 11. Story Editor Context
 
 ### `context/StoryEditorContext.tsx`
 
-The story editor is spread across many deeply nested components (MetaFields, EditorBlock, CoverImage, etc.). Rather than prop-drilling every piece of state down 4–5 levels, all editor state lives in a single React context.
+The story editor spans many deeply nested components (MetaFields, EditorBlock, CoverImage, etc.). All editor state lives in a single React context instead of being prop-drilled 4–5 levels deep.
 
-**This context is intentionally state-only.** No API calls happen inside it. The create page and edit page each make their own API calls and update context state as needed.
+**This context is state-only.** No API calls happen inside it.
 
-The provider (`StoryEditorProvider`) is mounted in the layout files for both create and edit pages, so the context wraps the entire page tree.
+The provider (`StoryEditorProvider`) is mounted in the layout files for both the create and edit pages.
 
 ### State fields
 
@@ -486,7 +492,7 @@ The provider (`StoryEditorProvider`) is mounted in the layout files for both cre
 | `readTime` | `string` | Estimated reading time (e.g., "5 min read") |
 | `coverImage` | `string \| null` | Cloudinary URL of the cover image |
 | `blocks` | `EditorBlock[]` | Ordered array of content blocks |
-| `uploadingCount` | `number` | Number of image uploads currently in progress |
+| `uploadingCount` | `number` | Number of in-progress image uploads |
 
 ### EditorBlock type
 
@@ -503,60 +509,37 @@ type EditorBlock = {
 ### Context functions
 
 **`insertBlock(type, atPosition)`**
-Inserts a new block at `atPosition`, shifting all existing blocks at or after that position up by 1.
-
-Uses the **functional updater pattern** `setBlocks((prev) => ...)` instead of reading `blocks` from the closure. This prevents stale closure bugs when multiple state updates happen in the same render cycle.
+Inserts a new block at `atPosition`, shifting all existing blocks at or after that position up by 1. Uses the functional updater `setBlocks((prev) => ...)` to avoid stale closure bugs when multiple state updates fire in the same render cycle.
 
 **`updateBlock(pos, value)`**
-Updates the text content (HTML) of a block at a given position. Skips image blocks.
+Updates the HTML content of a block at a given position. Skips image blocks.
 
 **`updateImageBlock(pos, url)`**
-Updates the Cloudinary URL of an image block. Separate from `updateBlock` because image blocks have no `content`.
+Updates the Cloudinary URL of an image block at a given position.
 
 **`deleteBlock(pos)`**
-Removes a block and renumbers all remaining blocks so positions stay sequential (1, 2, 3…). Without renumbering, the position gaps would break `insertBlock`'s shift arithmetic.
+Removes a block and renumbers all remaining blocks so positions stay sequential (1, 2, 3…). Without renumbering, position gaps would break `insertBlock`'s shift arithmetic.
 
 **`incrementUploading()` / `decrementUploading()`**
-Increment/decrement `uploadingCount`. `decrementUploading` uses `Math.max(0, c - 1)` to prevent going below zero.
+Track in-flight Cloudinary uploads. `decrementUploading` uses `Math.max(0, c - 1)` to prevent going below zero.
 
 ### Seeding the context (edit page)
 
-On the edit page, `EditStoryEditor` seeds the context with server-fetched data in a `useEffect` with an empty dependency array.
-
-**Why the seeding effect has a cleanup:**
-`StoryEditorProvider` lives in `[storiId]/layout.tsx`. Next.js App Router preserves layouts when navigating between routes that share the same layout segment — so navigating from `/stories/1` to `/stories/2` keeps the same provider instance with story 1's state. When story 2's `EditStoryEditor` mounts, it briefly renders with story 1's stale `blocks` before the seeding `useEffect` fires. The cleanup function resets all context fields to neutral values on unmount, so the next story's first render always sees a clean slate.
-
-**Why CoverImage needs a sync `useEffect`:**
-`CoverImage` initialises its local `previewUrl` state with `useState(url)` — which only runs once on mount. On the edit page, `CoverImage` mounts before the seeding `useEffect` fires (because `coverImage` in context starts as `null`). Without a sync effect, `previewUrl` would stay `null` even after the context is seeded with the real URL. `CoverImage` therefore has `useEffect(() => setPreviewUrl(url), [url])` to pick up the prop change after seeding.
-
-```ts
-useEffect(() => {
-  setMode("read")
-  setTitle(stori.title)
-  setBlocks(stori.blocks.map(...))
-  // ...
-}, []) // intentionally empty — seed once on mount
-```
-
-The empty deps array with `eslint-disable` is intentional. We only want to seed once when the component mounts. Re-running the effect on every render would reset any edits the admin made.
+On the edit page, `EditStoryEditor` seeds the context with server-fetched data in a `useEffect` with an empty dependency array (fires once on mount). A cleanup function resets all context fields on unmount so the next story's first render always sees a clean slate — critical because `StoryEditorProvider` lives in the layout and persists across `[storiId]` navigations.
 
 ---
 
-## 11. UI Components
+## 12. UI Components
 
 All in `components/admin/ui/`.
 
 ### Button
 
 ```tsx
-<Button variant="primary" | "secondary" type="submit" disabled={...}>
-  Label
-</Button>
+<Button variant="primary" | "secondary" type="submit" disabled={...}>Label</Button>
 ```
 
-Full-width pill button. Used on the auth pages (login, signup).
-- `primary` — solid blue, main CTA
-- `secondary` — light blue, secondary actions
+Full-width pill button. Used on auth pages. `primary` = solid blue; `secondary` = light blue.
 
 ### Input
 
@@ -564,113 +547,158 @@ Full-width pill button. Used on the auth pages (login, signup).
 <Input label="Email" name="email" type="email" placeholder="..." disabled={...} />
 ```
 
-Styled form input with a floating eye toggle for password fields.
-Uses Tailwind's `peer` class: `peer-focus:text-primary` on the eye icon makes it turn blue when the input is focused (without any JS).
+Styled form input. Password type gets a floating eye toggle. Uses Tailwind `peer` to turn the eye icon blue on focus without JS.
 
-### AuthCard
+### AuthCard / AuthBranding
 
-A white rounded card that centers the auth form vertically and horizontally on the screen. Max width 460px.
+`AuthCard` — white rounded card centering the auth form. Max width 460px.
+`AuthBranding` — Kampos logo, page title, subtitle tagline. Top of all auth pages.
 
-### AuthBranding
+### OtpInput
 
-Shows the Kampos logo in a blue circle, the page title (e.g., "Korner Admin"), and a subtitle tagline. Used at the top of both auth pages.
+6-box OTP input for the password reset form. Handles auto-focus-next-box on each keystroke and backspace-to-previous-box deletion. Accepts `value`, `onChange`, and `disabled` props. Used in `ResetPasswordForm`.
 
 ### AvatarPicker
 
-Circle avatar with a `+` button in the bottom-right corner. Used on the signup page.
-Follows the standard upload flow (blob preview → Cloudinary → final URL).
-Notifies the parent when uploading starts/ends via `onUploadingChange` so the signup button can be disabled.
+Circle avatar with a `+` button in the bottom-right corner. Used on the signup page and in ProfileModal (edit mode). Follows the standard upload flow. Notifies the parent when uploading starts/ends via `onUploadingChange`.
 
 ### Avatar
 
-Simple circle that shows the admin's profile picture. Used in the Navbar.
-Fallback: empty circle with `bg-secondary` background (no broken image).
+Read-only circle showing the admin's profile picture. Fallback: empty circle with `bg-secondary` background. Used in Navbar.
+
+### ThemeToggle
+
+Icon button in the Navbar that toggles the `dark` class on `<html>`. Persists preference to localStorage.
+
+### ThemedToaster
+
+Wraps Sonner's `<Toaster>` and passes the current theme so toasts match light/dark mode.
 
 ### ProfileTrigger (`components/admin/ui/ProfileTrigger.tsx`)
 
-Client component used in two places in the Navbar — `variant="avatar"` on the left (the 50px circle) and `variant="icon"` on the right (the User icon). Each instance holds its own `open` state and renders `ProfileModal` when open.
+Client component. Used twice in the Navbar — `variant="avatar"` on the left (50px circle) and `variant="icon"` on the right (User icon). Each holds its own `open` state and renders `ProfileModal` when open.
 
 ### ProfileModal (`components/admin/ui/ProfileModal.tsx`)
 
-Centred overlay modal for viewing and editing the admin profile. Conditionally rendered (`{open && <ProfileModal />}`) so it unmounts on close and resets state on next open.
+Centred overlay modal for viewing and editing the admin profile. Rendered via `createPortal` into `document.body`.
 
-**View mode:** large avatar, name, email, bio (or "No bio yet."), pencil icon to enter edit mode, X to close.
+**View mode:** avatar, name, email, bio (or "No bio yet."), pencil icon → edit mode, X → close.
 
-**Edit mode:** `AvatarPicker` (pre-filled with existing avatar via `initialUrl`), name input, bio textarea, Save button. Save currently just returns to view mode — no API call yet. Wire up `updateProfile()` here when the endpoint is ready.
+**Edit mode:** `AvatarPicker` (pre-filled), read-only email, name input, bio textarea, Save button (calls `updateProfile()` server action, shows success toast on success).
 
 **State fields:**
 
 | Field | Seeded from |
 |---|---|
 | `localName` | `profile.admin_name` |
-| `localBio` | `profile.bio` (null until API supports it) |
+| `localBio` | `profile.bio` |
 | `localAvatarUrl` | `profile.avatar_url` |
 | `avatarUploading` | from `AvatarPicker.onUploadingChange` — disables Save |
 
+### HelpTrigger (`components/admin/ui/HelpTrigger.tsx`)
+
+Client component. `HelpCircle` icon button in the Navbar. Manages `open` state and renders `HelpModal` when open.
+
+```tsx
+{open && <HelpModal onClose={() => setOpen(false)} />}
+```
+
+### HelpModal (`components/admin/ui/HelpModal.tsx`)
+
+Guided help overlay rendered via `createPortal`. Written in Pidgin/Gen-Z tone consistent with Korner's brand voice. Sticky header, scrollable body.
+
+Seven sections:
+1. **How to born a story** — numbered steps for creating a story (entry point: the floating `FeatherIcon` at `bottom-8 right-8` on the home page)
+2. **Write vs Read mode** — explains the two editor modes
+3. **Floating buttons** — describes all 4 FABs with their colors and purpose
+4. **Story levels** — Draft → Pending → Published explained with colored badges
+5. **Card shortcuts** — amber submit button on Draft cards, blue revert button on Pending cards
+6. **Filter bar** — the three filter buttons with their colors
+7. **Tips** — isDirty save button, image upload patience, profile, dark mode
+
 ### LogoutButton
 
-Red icon button in the Navbar. Calls the `logout()` server action via `useTransition` to show a spinner while the server deletes the cookie.
-
-### CreateStoryButton
-
-Feather icon link to `/admin/stories/create`. The feather (✒) icon visually suggests writing.
+Red icon button in the Navbar. Calls `logout()` via `useTransition` to show a spinner while the cookie is deleted server-side.
 
 ---
 
-## 12. Admin Components
+## 13. Admin Components
 
 ### AdminGreeting (`components/admin/AdminGreeting.tsx`)
 
-Shows a greeting like "Wassup, Victor 👋" in the Navbar.
-Randomly picks from `["Hello", "Wassup", "How far", "Hi", "Halo", "Konnichiwa"]` on each load.
+Shows `"Wassup, Victor 👋"` in the Navbar. Randomly picks from `["Hello", "Wassup", "How far", "Hi", "Halo", "Konnichiwa"]` on each load.
 
-**Hydration-safe pattern:** The server renders `"Hi"` (a fixed value). After hydration, `useEffect` randomizes it on the client. Without this, the server and client would render different greetings, causing React hydration mismatch errors.
+**Hydration-safe pattern:** Server renders `"Hi"` (fixed). After hydration, `useEffect` randomizes it. Without this, server and client would render different values, causing React hydration mismatch errors.
 
-The 👋 emoji uses the `custom-shake` CSS class (defined in `globals.css`) — a gentle side-to-side wave animation.
+The 👋 emoji uses the `custom-shake` CSS animation defined in `globals.css`.
 
 ### Navbar (`components/admin/Navbar.tsx`)
 
-Fixed top bar on all admin pages that use the home layout. It's a **server component** — it fetches the admin profile on the server so the name and avatar appear immediately without a loading flash.
+Fixed top bar on all admin pages under the home layout. **Server component** — fetches the admin profile server-side so name and avatar appear immediately.
 
-Layout: Avatar + Greeting (left) | CreateStory + UpdateProfile + Logout (right)
+**Layout:**
+- Left: Avatar circle (opens ProfileModal) + AdminGreeting
+- Right: HelpTrigger (`?` icon) + ThemeToggle + LogoutButton
 
 Height: `h-[14vh]`. All pages below it use `pt-[14vh]` to push content below it.
 
-The `getProfile()` call returns `null` on error instead of throwing — the Navbar shows fallback values and doesn't crash.
+`getProfile()` returns `null` on error — the Navbar shows fallback values and doesn't crash.
 
 ### FilterBar (`components/admin/stories/FilterBar.tsx`)
 
-Two toggle buttons — **Draft** and **Published** — one is always active. There is no "show all" state.
+Three toggle buttons — **Draft**, **Pending**, **Published** — one is always active. No "show all" state.
 
-- Clicking the inactive button switches to it
-- Clicking the already-active button does nothing (`cursor-default`)
-- Initial / default state is **Draft** (controlled by the home page defaulting to `"Draft"` when no `?status` param exists)
+- Active button gets its status-family color (blue/amber/green) with `shadow-md cursor-default`
+- Inactive button is neutral gray (`bg-slate-200 text-slate-500 dark:bg-[#1e2130] dark:text-slate-400`)
+- Clicking the active button does nothing
+- Updates `?status=` in the URL — filter survives page refresh and Back navigation
+- Default (no `?status` param) → Draft
 
-Updates the URL query string (`?status=Draft` / `?status=Published`). Using the URL means the filter survives page refreshes and is preserved when the admin clicks Back after editing a story.
+Wrapped in `<Suspense>` by the home page because `useSearchParams()` requires it.
+
+Position: `fixed top-[14vh]` — sits just below the Navbar. Home page content has `pt-[60px]` to avoid being hidden behind it.
 
 ### StoryCard (`components/admin/stories/StoryCard.tsx`)
 
-Card for a single story in the grid. Fixed height `500px` keeps the grid visually consistent regardless of content length. The entire card is a Next.js `<Link>` — clicking anywhere navigates to the edit page.
+**Client component.** Card for a single story. The entire card is a Next.js `<Link>` to the edit page.
 
-Status badge:
-- **Draft** — `bg-secondary` (light blue) + dark blue text
-- **Published** — `bg-primary` (brand blue) + white text
+**Visual structure (top to bottom):**
+1. Reading time + status badge (status-family color)
+2. Cover image — `h-[200px] sm:h-[240px]`, "No cover image" placeholder if none
+3. Title — `text-lg sm:text-xl`, `line-clamp-1`
+4. Subtitle — italic, `text-sm sm:text-base`, `line-clamp-1`
+5. Excerpt — `text-xs sm:text-sm`, `line-clamp-2`
+6. Bottom row: dates on the left + quick-action button on the right
 
-`line-clamp-1` / `line-clamp-2` on title, subtitle, excerpt prevents overflow. Date pushed to the bottom with `mt-auto`.
+**Date display (bottom-left):**
+- `"Last updated X ago"` — relative, `text-sm font-semibold` (more prominent)
+- `"Created Jun 7, 2026"` — full date, `text-[11px]` (subtler, hierarchy)
+
+**Quick-action buttons (bottom-right):**
+- **Draft card** — amber `SendHorizonal` button → `submitStoryForReviewFromCard()` → success toast
+- **Pending card** — blue `RotateCcw` button → `updateStory(..., [])` with empty blocks → reverts to draft → success toast
+- **Published card** — no quick-action button
+
+Both button handlers use `e.preventDefault()` + `e.stopPropagation()` to prevent the card's `<Link>` from navigating when the button is clicked.
 
 ### StoriesList (`components/admin/stories/StoriesList.tsx`)
 
-Server component. Fetches all stories from `GET /stories/adminstories`, then filters by the `status` prop passed from the home page. Always receives a status value (never undefined) because the home page defaults to `"Draft"`.
+**Server component.** Fetches all stories from `GET /stories/adminstories`, then filters by the `status` prop.
 
-`apiRequest()` throws on non-2xx — errors propagate to `error.tsx` automatically.
+**EmptyState logic:** Accepts `status` and `hasAnyStories: boolean`. The `hasAnyStories` flag distinguishes "this filter is empty but other stories exist" from "no stories at all":
 
-Grid uses CSS `auto-fill` with `minmax(350px, 1fr)` — adapts from 1 column on mobile to 2–3 on desktop without media queries.
+| Condition | Heading | Sub-text |
+|---|---|---|
+| `status === "Published"` | "No published stories yet" | "Publish a draft to see it here" |
+| `status === "Pending"` | "No pending stories" | "Stories submitted for review will appear here" |
+| Filter empty but `hasAnyStories` | "No drafts yet" | "create a new draft" link |
+| Truly no stories | "You have no stories yet" | "create one" link |
 
-Shows `EmptyState` (inline SVG illustration + "create one" link) when no stories match.
+Grid: CSS `auto-fill` with `minmax(350px, 1fr)` — adapts from 1 column on mobile to 2–3 on desktop without media queries.
 
 ---
 
-## 13. Editor Components
+## 14. Editor Components
 
 ### The Write/Read Mode System
 
@@ -679,214 +707,172 @@ Every editor component accepts a `mode: "write" | "read"` prop.
 - **Write mode** — interactive inputs, upload buttons, insert/delete controls
 - **Read mode** — clean rendered HTML, looks like a finished article
 
-The admin can toggle between modes using the floating action buttons on the editor pages.
-
----
+Admins toggle between modes using the FABs on the editor pages.
 
 ### MetaFields (`components/admin/editor/MetaFields.tsx`)
 
-Four exported components for the story's metadata:
+Four components for story metadata:
 
 | Component | Write mode | Read mode |
 |---|---|---|
-| `TitleField` | Transparent input with bottom border | `<h1>` tag |
-| `SubTitleField` | Transparent input with bottom border | `<p>` tag |
+| `TitleField` | Transparent input with bottom border | `<h1>` |
+| `SubTitleField` | Transparent input with bottom border | `<p>` |
 | `ExcerptField` | Italic textarea with bottom border | Light blue card (`bg-[#F0F5FF]`) |
 | `ReadTimeField` | Clock icon + text input | Clock icon + text |
 
-Write mode uses `border-b-2 border-secondary` (no box, no background) — the input feels like typing directly onto the page.
-
-All font sizes use `clamp()` for fluid responsive scaling.
-
----
+Write mode uses `border-b-2 border-secondary` — feels like typing directly on the page.
 
 ### CoverImage (`components/admin/editor/CoverImage.tsx`)
 
-Full-width rounded image at the top of the story. Height uses `clamp(320px, 55vw, 480px)`.
-
-Uses CSS `background-image` (not `<img>`) so it can use `background-size: cover` without a fixed aspect ratio.
-
-In write mode: shows "Upload Image" / "Change Image" / "Uploading…" button at the bottom of the image.
-
-Follows the standard upload flow.
-
----
+Full-width rounded image at the top of the story. Height: `clamp(320px, 55vw, 480px)`. Uses CSS `background-image` (not `<img>`) for `background-size: cover`. In write mode: shows "Upload / Change / Uploading…" button.
 
 ### ImageUploader (`components/admin/editor/ImageUploader.tsx`)
 
-Inline image block for images within the story body. Uses a 16:9 aspect ratio (`aspect-video`).
-
-Uses Next.js `<Image fill>` (not CSS background) because:
-- Inline body images benefit from Next.js lazy loading and srcset optimisation
-- `unoptimized` is set because images come from Cloudinary which has its own CDN
-
----
+Inline image block (16:9 `aspect-video`). Uses Next.js `<Image fill>` with `unoptimized` (images are from Cloudinary which has its own CDN).
 
 ### RichTextEditor (`components/admin/editor/RichTextEditor.tsx`)
 
-TipTap-based rich text editor. Used for paragraph and quote blocks.
+TipTap-based rich text editor for paragraph and quote blocks. Toolbar: Bold, Italic, Underline, Strikethrough.
 
-**Toolbar:** Bold, Italic, Underline, Strikethrough
-
-**Why `onMouseDown` + `e.preventDefault()` on toolbar buttons:**
-Normally, clicking a button blurs the editor first, then fires `onClick`. The blur clears TipTap's selection, so toggling bold would have nothing to toggle. Using `onMouseDown` + `preventDefault` keeps the editor focused through the click.
-
-**Why a `<style>` tag instead of Tailwind for ProseMirror CSS:**
-Tailwind classes can only target elements directly in your template. TipTap's ProseMirror generates internal DOM nodes (`.ProseMirror p`, etc.) that Tailwind can't reach. Scoped CSS via the `rte-box` wrapper class is the only clean solution.
-
-**Why `forceUpdate` via `useReducer`:**
-TipTap's `isActive("bold")` state changes inside ProseMirror but doesn't trigger a React re-render on its own. Calling `forceUpdate()` in `onTransaction` keeps the toolbar buttons in sync with the actual editor state.
-
-**Normalizing empty output:**
-TipTap outputs `"<p></p>"` for an empty editor. This is normalized to `""` in `onChange` so the context doesn't store meaningless markup.
-
-**Accepted props:**
-
-| Prop | Default | Purpose |
-|---|---|---|
-| `content` | — | Initial HTML content |
-| `onChange` | — | Called with new HTML on every keystroke |
-| `placeholder` | — | Shown when editor is empty |
-| `minHeight` | `100` | Minimum editor height in px |
-| `fontSize` | `clamp(0.95rem, 2vw, 1.05rem)` | Font size (inherited by editor) |
-| `fontWeight` | `500` | Font weight |
-| `color` | `#374151` | Text color |
-| `fontStyle` | `"normal"` | Normal or italic |
-
----
+Key details:
+- **`onMouseDown` + `e.preventDefault()` on toolbar buttons** — prevents editor blur before the formatting toggle fires
+- **Scoped CSS via `<style>` tag** — Tailwind can't reach TipTap's internal ProseMirror DOM nodes; a `rte-box` wrapper class + `<style>` is the only clean solution
+- **`forceUpdate` via `useReducer`** — TipTap's `isActive("bold")` state changes inside ProseMirror without triggering a React re-render; `forceUpdate()` in `onTransaction` keeps the toolbar in sync
+- **Empty output normalization** — TipTap's `"<p></p>"` is normalized to `""` in `onChange`
 
 ### EditorBlock (`components/admin/editor/EditorBlock.tsx`)
 
-Routes to the correct block sub-component based on `block.block_type`:
+Routes to the correct sub-component by `block.block_type`:
 
 | block_type | Write mode | Read mode |
 |---|---|---|
 | `heading` | `<input type="text">` | `<h2>` |
 | `paragraph` | `RichTextEditor` | `dangerouslySetInnerHTML` |
-| `quote` | `FaQuoteLeft` icon + `RichTextEditor` (italic) | Large `FaQuoteLeft` + `dangerouslySetInnerHTML` |
-| `image` | `ImageUploader` | `ImageUploader` (read mode, no button) |
+| `quote` | `FaQuoteLeft` + `RichTextEditor` (italic) | Large `FaQuoteLeft` + `dangerouslySetInnerHTML` |
+| `image` | `ImageUploader` | `ImageUploader` (read mode, no upload button) |
 
-**Why `dangerouslySetInnerHTML`:**
-Paragraph and quote blocks store HTML strings (produced by TipTap). To render that HTML, `dangerouslySetInnerHTML` is required. This is safe here because the content is created by the admin themselves, never by public users.
-
-**Why `FaQuoteLeft` from react-icons:**
-Lucide React does not have a quote icon. `react-icons/fa` provides `FaQuoteLeft`.
-
----
+`dangerouslySetInnerHTML` is safe here because content is only ever authored by the admin, never by public users.
 
 ### BlockControls (`components/admin/editor/BlockControls.tsx`)
 
-The insert row between blocks in write mode.
+Insert row between blocks in write mode.
+- **Collapsed** — thin horizontal line with `+` icon, 35% opacity, full opacity on hover
+- **Expanded** — pill buttons for Heading, Paragraph, Quote, Image + Cancel
 
-**Collapsed state:** A thin horizontal line with a `+` icon in the centre. Opacity 35% normally, 100% on hover — visually subtle until the admin wants to use it.
-
-**Expanded state:** Pill buttons for each block type (Heading, Paragraph, Quote, Image) + a Cancel button. Clicking a type calls `onInsert(type)` and collapses back.
-
-One `BlockControls` is placed before the first block and after every block, allowing insertion at any position.
-
----
+One `BlockControls` appears before the first block and after every block, allowing insertion at any position.
 
 ### StoryEditor (`components/admin/editor/StoryEditor.tsx`)
 
-Renders the full list of blocks. Behaviour depends on mode:
+Renders the full block list.
 
-**Read mode:** `flex-col gap-6` stack of `EditorBlock` components — clean, no controls.
+**Read mode:** `flex-col gap-6` stack of `EditorBlock` components.
 
-**Write mode:** Each block is wrapped in a flex row:
-```
-[  EditorBlock (flex-1)  ] [  🗑 Trash icon  ]
-```
-With a `BlockControls` row before the first block and after every block.
+**Write mode:** Each block is wrapped in a flex row with a trash icon. `BlockControls` rows are inserted before the first block and after every block.
 
 ---
 
-## 14. Routes & Pages
+## 15. Routes & Pages
 
 ### `app/admin/(auth)/login/page.tsx`
 
-Client component. Renders the login form inside `AuthCard`.
+Client component. Login form inside `AuthCard`. Uses `useTransition` → `login()` server action. On success the server action redirects. Link to `/admin/signup` and `/admin/forgot-password`.
 
-- Uses `useTransition` to call `login()` without blocking the UI
-- Error messages displayed inline above the form
-- On success, the server action redirects — no client-side navigation needed
-- Link to `/admin/signUp` (capital S — matches the folder name exactly)
+### `app/admin/(auth)/signup/page.tsx`
 
-### `app/admin/(auth)/signUp/page.tsx`
-
-Client component. Renders the signup form.
-
-Client-side validation order:
-1. Name, email, password are not empty
+Client component. Signup form. Client-side validation order:
+1. Name, email, password not empty
 2. Passwords match
 3. `validatePassword()` passes
-4. `avatarUrl` is not null (avatar must be uploaded)
+4. `avatarUrl` is not null
 
-The avatar URL is managed as separate state (not in the form) because `AvatarPicker` uploads asynchronously. The URL is appended to `FormData` just before calling `signUp()`.
+Avatar URL is managed as separate state (not in the form) because `AvatarPicker` uploads asynchronously. The URL is appended to `FormData` just before calling `signUp()`.
 
-Submit button is disabled while `avatarUploading === true` to prevent submitting with a null `avatar_url`.
+### `app/admin/(auth)/forgot-password/page.tsx`
+
+Client component. Admin enters email → `requestOtp()` → toast + redirect to `/admin/reset-password?email=...`.
+
+### `app/admin/(auth)/reset-password/page.tsx` + `ResetPasswordForm.tsx`
+
+Server component shell reads `?email` from `searchParams`, passes it to `ResetPasswordForm` (client component). Form collects OTP (via `OtpInput`) + new password → `resetPassword()` → toast + redirect to login. 60-second resend cooldown for OTP.
 
 ### `app/admin/home/page.tsx`
 
-Server component. Reads `status` from `searchParams` and passes it to `StoriesList`.
-Defaults to `"Draft"` when no query param is present — so the first thing an admin sees after login is their drafts.
-
-`FilterBar` is wrapped in `<Suspense>` because it uses `useSearchParams()` — Next.js requires `Suspense` for this in server-rendered pages to avoid blocking.
+Server component. Reads `?status` from `searchParams` (defaults to `"Draft"`). Renders `FilterBar` (in `<Suspense>`) and `StoriesList`. The floating `FeatherIcon` link at `fixed bottom-8 right-8` is the entry point for creating stories.
 
 ### `app/admin/home/layout.tsx`
 
-Renders the `Navbar` and offsets content below it with `pt-[14vh]`.
+Renders `Navbar` and offsets content below it with `pt-[14vh]`.
 
 ### `app/admin/stories/create/page.tsx`
 
-Client component. Reads all state from `useStoryEditor()`.
+Client component. Reads all state from `useStoryEditor()`. Two independent `useTransition` hooks — one for drafting (`isDrafting`), one for submitting (`isSubmitting`).
 
-**Floating Action Buttons (FABs):**
-- **Top**: Save as draft (BookCheck icon) — calls `createStory()`, redirects to home on success
-- **Bottom**: Toggle write/read mode (Pencil ↔ Save icon)
+**Floating Action Buttons (right side, only in read mode):**
+- **Amber** — Submit for review (`SendHorizonal` icon): calls `submitForReview()`, redirects on success
+- **Teal** — Save as draft (`BookCheck` icon): calls `createStory()`, redirects on success
+- **Violet** (write mode) / **Blue** (read mode) — Toggle mode (`Eye` ↔ `Pencil`)
 
-Both buttons show a spinner while `busy` (isDrafting or uploadingCount > 0).
+The violet/blue toggle button is always visible. Submit and save only show in read mode (preview first, then act).
+
+`busy = isDrafting || uploadingCount > 0` — disables Save while action is in flight or images are uploading.
+
+### `app/admin/stories/create/action.tsx` — `createStory()`
+
+Server action. POSTs to `/stories/create`. The client-only `id` field is stripped from blocks before sending. On success: `redirect("/admin/home")`. On failure: returns `ApiResult<void>` with `ok: false`.
+
+### `app/admin/stories/create/submitForReview.tsx` — `submitForReview()`
+
+Server action for the amber FAB on the create page. Two-step:
+1. POST `/stories/create` → extract `storiId` from `{ data: "uuid" }` response
+2. PATCH `/stories/submit/:storiId`
+3. `redirect("/admin/home")`
+
+Both steps have their own try/catch so the error message correctly identifies which step failed.
 
 ### `app/admin/stories/[storiId]/page.tsx`
 
-**Server component.** Fetches the story on the server with `getStori(storiId)`.
-- If null (404): calls `notFound()` → renders `not-found.tsx`
-- Otherwise: passes the story data as props to `EditStoryEditor`
-
-This pattern eliminates client-side loading states and lets Next.js handle the 404 natively.
+**Server component.** Fetches the story with `getStori(storiId)`:
+- Returns `null` on 404 → calls `notFound()` → renders `not-found.tsx`
+- Otherwise passes the data to `EditStoryEditor` as props
 
 ### `app/admin/stories/[storiId]/EditStoryEditor.tsx`
 
-**Client component.** Receives the server-fetched story as props, seeds the context in `useEffect`, and handles all user interactions.
+**Client component.** Receives server-fetched story as props, seeds context on mount.
 
 Key differences from the create page:
-- Opens in **read mode** by default (preview the story first)
+- Opens in **read mode** by default
 - Has a "Go back" link to the home page
-- Shows a **status badge** (Draft/Published) next to the read time
-- **Save button only appears when `isDirty`** — see below
-- **Save shows a success toast** instead of redirecting — admin stays on the page
+- Shows a **status badge** (Draft / Published) next to ReadTimeField
+- **Submit for review FAB** — amber, only shown when `stori.status === "Draft"`
+- **Save FAB** — teal, only shown when `isDirty === true`
+- **Edit FAB** — blue, enters write mode
 - Wider content area (`maxWidth: 1100px` vs create's `800px`)
+- Save shows a success toast and stays on the page (doesn't redirect)
 
 #### isDirty — change detection
 
-The save button is hidden until the admin actually changes something. This prevents accidental no-op saves.
+The save button is hidden until the admin actually changes something. Prevents no-op saves.
 
 **How it works:**
 
-On mount, the seeding `useEffect` snapshots the story's initial values into `useRef` variables (one per field). Refs are used instead of state because reading them never triggers a re-render — they're a silent reference point.
+On mount, the seeding `useEffect` snapshots the story's initial values into `useRef` variables (one per field). Refs don't trigger re-renders — they're a silent reference point.
 
-On every render, `isDirty` is recomputed by comparing the current context values against the snapshot:
+On every render, `isDirty` is recomputed:
 
 ```ts
-// Simple string fields — plain !== comparison
+// Simple string fields — direct comparison
 const simpleFieldsChanged =
-  title !== initialTitleRef.current ||
-  subTitle !== initialSubTitleRef.current ||
-  // ... etc
+  title     !== initialTitleRef.current    ||
+  subTitle  !== initialSubTitleRef.current ||
+  excerpt   !== initialExcerptRef.current  ||
+  readTime  !== initialReadTimeRef.current ||
+  coverImage !== initialCoverRef.current;
 
-// Blocks — JSON.stringify comparison (arrays can't be compared with ===)
-// The `id` field is stripped before comparing because it's a client-only UUID
-// (not content). Without stripping, adding then deleting a block would leave
-// a different UUID and falsely mark the story dirty.
+// Blocks — JSON.stringify comparison (arrays can't be === compared)
+// The `id` field is stripped before comparison — it's a client-only UUID.
+// Without stripping, adding then deleting a block would change UUIDs and
+// falsely mark the story dirty even though content is identical.
+const blockWithoutId = ({ id: _id, ...rest }: EditorBlock) => rest;
 const blocksChanged =
   JSON.stringify(blocks.map(blockWithoutId)) !==
   JSON.stringify(initialBlocksRef.current.map(blockWithoutId));
@@ -894,18 +880,30 @@ const blocksChanged =
 const isDirty = simpleFieldsChanged || blocksChanged;
 ```
 
-The save FAB renders only when `isDirty === true`:
+The save FAB renders only when `isDirty`:
 ```tsx
 {isDirty && <button ...>Save</button>}
 ```
 
+### `app/admin/stories/[storiId]/action.tsx`
+
+Four server actions:
+
+**`getStori(storiId)`** — Fetches a single story. Returns `null` on 404, re-throws everything else.
+
+**`updateStory(storiId, ...fields, blocks)`** — PATCH `/stories/:storiId`. Returns `ApiResult<void>`. Also calls `revalidatePath("/admin/home")`. Used by the edit page (toast on success) and by the card's revert button (passing `[]` for blocks signals the backend to reset to draft).
+
+**`submitStoryForReview(storiId)`** — Called from the edit page. PATCH `/stories/submit/:storiId`, then `redirect("/admin/home")`. Appropriate for the edit page context (admin is done and leaves).
+
+**`submitStoryForReviewFromCard(storiId)`** — Called from the story card on the home page. PATCH `/stories/submit/:storiId`, then `revalidatePath("/admin/home")`, returns `{ ok: true }`. Uses `revalidatePath` instead of `redirect` because the admin is already on `/admin/home` — returning `ok: true` lets the client show a success toast.
+
 ---
 
-## 15. Server Actions Pattern
+## 16. Server Actions Pattern
 
 ### What a server action is
 
-A server action is an `async function` in a file marked with `"use server"` at the top. It runs on the server but can be called directly from client components.
+An `async function` in a file marked `"use server"` at the top. Runs on the server but callable directly from client components.
 
 ### The standard pattern
 
@@ -921,27 +919,25 @@ export async function someAction(data: ...): Promise<ApiResult<void>> {
     return { ok: false, status, message }
   }
 
-  // redirect() must be OUTSIDE try/catch because it works by throwing
-  // an internal Next.js exception — if inside catch, it gets swallowed
+  // redirect() must be OUTSIDE try/catch — it throws internally.
+  // If inside catch, the catch intercepts and swallows it.
   redirect("/admin/home")
 }
 ```
 
-### Calling from client components
+### When to use redirect vs revalidatePath
 
-```ts
-const result = await someAction(data)
-if (!result.ok) {
-  toast.error(result.message)
-  return
-}
-// success — result.ok is true
-```
+| Context | Use |
+|---|---|
+| Editor pages (create/edit) | `redirect("/admin/home")` — navigate admin away |
+| Story card quick actions | `revalidatePath("/admin/home")` + return `{ ok: true }` — stay on page, show toast |
 
-Use `useTransition` to avoid blocking the UI:
+### Calling from client components with useTransition
+
 ```ts
 const [isPending, startTransition] = useTransition()
-const handleSubmit = () => {
+
+const handleClick = () => {
   startTransition(async () => {
     const result = await someAction(data)
     if (!result.ok) toast.error(result.message)
@@ -949,28 +945,24 @@ const handleSubmit = () => {
 }
 ```
 
-### Why redirect() must be outside try/catch
-
-`redirect()` in Next.js works by throwing a special internal error (`NEXT_REDIRECT`). If you place it inside a `try/catch`, the `catch` block intercepts it as a regular error and the redirect never happens. Always structure actions as: do all async work inside try/catch → call redirect() after the catch block.
-
 ---
 
-## 16. Public Pages
+## 17. Public Pages
 
 The `components/admincomponent/` folder still exists but is **only used by public user-facing pages**. These four files must never be deleted:
 
 | File | Used by |
 |---|---|
-| `Button.tsx` | `app/page.tsx`, `app/stories/page.tsx`, and usercomponent files |
+| `Button.tsx` | `app/page.tsx`, `app/stories/page.tsx`, usercomponent files |
 | `HeroText.tsx` | `app/stories/page.tsx`, `usercomponent/HeroSection.tsx` |
 | `Tornsection.tsx` | `app/stories/page.tsx`, `usercomponent/PeepSection.tsx` |
 | `FloatingCards.tsx` | `usercomponent/HeroSection.tsx` |
 
-These are **not** part of the admin panel. They are legacy components from before the admin rewrite that serve the public-facing site.
+These are not part of the admin panel. They are legacy components from before the admin rewrite that serve the public-facing site.
 
 ---
 
-## 17. Key Patterns & Decisions
+## 18. Key Patterns & Decisions
 
 ### Functional updater for setBlocks
 
@@ -982,57 +974,57 @@ setBlocks([...blocks, newBlock])
 setBlocks((prev) => [...prev, newBlock])
 ```
 
-Used in `insertBlock` and `deleteBlock` because these functions can be called multiple times in rapid succession.
+Used in `insertBlock` and `deleteBlock` to prevent lost updates when multiple state changes fire in the same render cycle.
 
-### onMouseDown instead of onClick for toolbar buttons
+### Card button inside Link
 
-```tsx
-<button
-  onMouseDown={(e) => {
-    e.preventDefault()  // prevents editor blur
-    onClick()
-  }}
->
+Story card quick-action buttons sit inside a Next.js `<Link>`. Without stopping propagation, clicking the button would also trigger the link navigation.
+
+```ts
+const handleSubmit = (e: React.MouseEvent) => {
+  e.preventDefault()       // stop link navigation
+  e.stopPropagation()      // stop event from reaching the Link
+  // ... call server action
+}
 ```
 
-Prevents the editor from losing focus when a formatting button is clicked.
+### submitStoryForReview vs submitStoryForReviewFromCard
+
+Same endpoint (`PATCH /stories/submit/:storiId`), different post-action behavior:
+- From edit page → `redirect()` (admin leaves page)
+- From card → `revalidatePath()` + return `ok: true` (admin stays, toast shows)
+
+This split is necessary because `redirect()` throws internally and never returns to the client — so the client could never receive `ok: true` and show a toast.
+
+### isDirty without false positives
+
+The `blockWithoutId` helper strips the client-only `id` UUID from blocks before the `JSON.stringify` comparison. Without this, adding a block and then deleting it would produce a different UUID array even though the content is identical — a false dirty signal.
+
+### Server component + client component split (edit page)
+
+```
+page.tsx (server)             EditStoryEditor.tsx (client)
+    │                                 │
+    ├── getStori()                     ├── useStoryEditor() (reads context)
+    ├── notFound() if null             ├── useEffect() seeds context once
+    └── <EditStoryEditor               └── useTransition() for save/submit
+         stori={data}
+         storiId={id} />
+```
+
+Server fetches cleanly, hands data to the client as props. Client handles all interactivity.
 
 ### Hydration-safe random values
 
 ```ts
-const [greeting, setGreeting] = useState("Hi")  // fixed initial value
+const [greeting, setGreeting] = useState("Hi")  // fixed server-side value
 
 useEffect(() => {
   setGreeting(randomPick(GREETINGS))  // randomize after hydration
 }, [])
 ```
 
-Server and client must render the same HTML initially. Randomize in `useEffect` after hydration.
-
-### Server component + client component split for edit page
-
-```
-page.tsx (server)          EditStoryEditor.tsx (client)
-    │                               │
-    ├── getStori()                  ├── useStoryEditor() (reads context)
-    ├── notFound() if null          ├── useEffect() seeds context
-    └── <EditStoryEditor            └── useTransition() for save action
-         stori={data}
-         storiId={id} />
-```
-
-The server fetches data cleanly, hands it to the client component as props. The client handles all interactivity.
-
-### Error handling hierarchy
-
-```
-apiRequest throws ApiRequestError
-    │
-    ├── Server component caller: let it throw → goes to error.tsx
-    ├── Server action caller: catch → return { ok: false, ... }
-    ├── getProfile(): catch all → return null (Navbar fallback)
-    └── getStori(): catch 404 → return null; re-throw others
-```
+Server and client must match on first render. Randomize in `useEffect` after hydration.
 
 ### @source "../" in globals.css
 
@@ -1040,9 +1032,30 @@ apiRequest throws ApiRequestError
 @source "../";
 ```
 
-Without this, Tailwind v4 only scans the `app/` directory (where `globals.css` lives). Classes like `bg-primary` used in `components/admin/` would be missing from the generated CSS. This directive tells Tailwind to scan from the project root.
+Without this, Tailwind v4 only scans `app/` (where `globals.css` lives). Classes used in `components/admin/` would be missing from the generated CSS.
+
+### onMouseDown instead of onClick for RichText toolbar
+
+```tsx
+<button
+  onMouseDown={(e) => {
+    e.preventDefault()  // prevents editor blur
+    editor.chain().focus().toggleBold().run()
+  }}
+>
+```
+
+Clicking normally blurs the editor first, clearing the selection. `onMouseDown` + `preventDefault` keeps focus through the click so formatting toggles have something to act on.
+
+### Turbopack stale cache fix
+
+If the dev server throws "Failed to load chunk" errors after significant changes:
+
+```powershell
+Remove-Item -Recurse -Force .next; npm run dev
+```
 
 ---
 
-*Last updated: 2026-05-30*
-*Updated by: Admin codebase deep review — bugs fixed, comprehensive comments added to all files. Dark mode added to create and edit story pages (page background, FAB buttons, Go back link).*
+*Last updated: 2026-06-07*
+*Updated by: Full codebase review — added Pending status, three-filter bar, card quick-action buttons (submit/revert), isDirty save logic, submitForReview on create page, submitStoryForReviewFromCard, formatFullDate, date display on cards, HelpModal, HelpTrigger, OtpInput, forgot-password and reset-password flows, ProfileModal updateProfile wiring, ThemeToggle, ThemedToaster, dark mode across all pages, FAB color system.*

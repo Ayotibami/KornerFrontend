@@ -86,6 +86,7 @@ export async function updateStory(
   }
 }
 
+// Called from the edit page — redirects back to home on success.
 export async function submitStoryForReview(storiId: string): Promise<ApiResult<void>> {
   try {
     await apiRequest(`/stories/submit/${storiId}`, { method: "PATCH" });
@@ -96,4 +97,18 @@ export async function submitStoryForReview(storiId: string): Promise<ApiResult<v
   }
 
   redirect("/admin/home");
+}
+
+// Called from the story card on the home page — revalidates instead of redirecting
+// (we're already on /admin/home) so the client gets ok:true back and can show a toast.
+export async function submitStoryForReviewFromCard(storiId: string): Promise<ApiResult<void>> {
+  try {
+    await apiRequest(`/stories/submit/${storiId}`, { method: "PATCH" });
+    revalidatePath("/admin/home");
+    return { ok: true, data: undefined };
+  } catch (err: unknown) {
+    const status = (err as { status?: number }).status ?? 500;
+    const message = err instanceof Error ? err.message : "Failed to submit for review.";
+    return { ok: false, status, message };
+  }
 }
