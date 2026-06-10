@@ -39,8 +39,8 @@
 //   This means isDirty only becomes true when the actual block content/type/position
 //   changes, not just because UUIDs were regenerated.
 
-import { useEffect, useRef, useTransition } from "react";
-import { ArrowLeft, BookCheck, Eye, Loader2, Pencil, SendHorizonal } from "lucide-react";
+import { useEffect, useRef, useState, useTransition } from "react";
+import { ArrowLeft, BookCheck, Eye, Loader2, Mail, Pencil, SendHorizonal } from "lucide-react";
 import Link from "next/link";
 import { toast } from "sonner";
 import { useStoryEditor } from "@/context/StoryEditorContext";
@@ -53,6 +53,7 @@ import {
   ReadTimeField,
 } from "@/components/admin/editor/MetaFields";
 import { updateStory, submitStoryForReview, type StoriDetail } from "./action";
+import MailModal from "@/components/admin/stories/MailModal";
 import type { EditorBlock } from "@/context/StoryEditorContext";
 import type { BlockType } from "@/types/story";
 
@@ -61,6 +62,7 @@ const FAB_AMBER  = `${FAB_BASE} bg-[#FEF3C7] dark:bg-[#422006]  text-[#92400E] d
 const FAB_TEAL   = `${FAB_BASE} bg-[#CCFBF1] dark:bg-[#022C22]  text-[#065F46] dark:text-[#6EE7B7]`; // save as draft
 const FAB_VIOLET = `${FAB_BASE} bg-[#EDE9FE] dark:bg-[#2E1065]  text-[#5B21B6] dark:text-[#C4B5FD]`; // preview
 const FAB_BLUE   = `${FAB_BASE} bg-secondary dark:bg-[#1e3a5f]  text-primary   dark:text-[#93b8f0]`; // edit
+const FAB_RED    = `${FAB_BASE} bg-[#FEE2E2] dark:bg-[#450a0a]  text-[#DC2626] dark:text-[#FCA5A5]`; // mail
 
 // Strips the `id` field from a block before comparison.
 // `id` is a client-only UUID used as a React key — it is NOT content.
@@ -193,6 +195,7 @@ export default function EditStoryEditor({
   // The save button renders only when isDirty is true.
   const isDirty = simpleFieldsChanged || blocksChanged;
 
+  const [isMailOpen, setIsMailOpen] = useState(false);
   const [isUpdating, startUpdating] = useTransition();
   const [isSubmitting, startSubmitting] = useTransition();
 
@@ -221,6 +224,7 @@ export default function EditStoryEditor({
 
   return (
     <div className="min-h-screen bg-slate-100 dark:bg-[#0f1117] font-nunito">
+      <MailModal storiId={storiId} isOpen={isMailOpen} onClose={() => setIsMailOpen(false)} />
       {/* Floating action buttons — layout changes depending on current mode */}
       <div
         className="fixed z-[100] flex flex-col gap-2.5"
@@ -284,6 +288,11 @@ export default function EditStoryEditor({
             <Eye size={20} />
           </button>
         )}
+
+        {/* Mail — always visible, red family, same shape/size as other FABs */}
+        <button title="Email" className={`${FAB_RED} cursor-pointer`} onClick={() => setIsMailOpen(true)}>
+          <Mail size={20} />
+        </button>
       </div>
 
       {/* Page content — wider than create page (1100px) for reading comfort */}

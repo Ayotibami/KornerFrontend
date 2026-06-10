@@ -22,9 +22,10 @@
 13. [Admin Components](#13-admin-components)
 14. [Editor Components](#14-editor-components)
 15. [Routes & Pages](#15-routes--pages)
-16. [Server Actions Pattern](#16-server-actions-pattern)
-17. [Public Pages](#17-public-pages)
-18. [Key Patterns & Decisions](#18-key-patterns--decisions)
+16. [Story Mail (MailModal)](#16-story-mail-mailmodal)
+17. [Server Actions Pattern](#17-server-actions-pattern)
+18. [Public Pages](#18-public-pages)
+19. [Key Patterns & Decisions](#19-key-patterns--decisions)
 
 ---
 
@@ -41,6 +42,7 @@ The public-facing site (where readers see stories) also lives in this repo under
 - Edit an existing story (with dirty-state detection so Save only appears when something changed)
 - Submit a draft for review (from the editor FAB or directly from the story card)
 - Revert a pending story back to draft (from the story card)
+- Compose and manage story mail (subject + body) from any story card or edit page via `MailModal`
 - Profile management — update name, bio, avatar
 - Help modal accessible from the `?` icon in the navbar
 - Logout
@@ -103,8 +105,9 @@ kornerfrontend/
 │   │           ├── layout.tsx            # Wraps page in StoryEditorProvider
 │   │           ├── page.tsx              # Edit story (server component — fetches data)
 │   │           ├── EditStoryEditor.tsx   # Edit story UI (client component)
-│   │           └── action.tsx            # getStori(), updateStory(), submitStoryForReview(),
-│   │                                     # submitStoryForReviewFromCard()
+│   │           ├── action.tsx            # getStori(), updateStory(), submitStoryForReview(),
+│   │           │                         # submitStoryForReviewFromCard()
+│   │           └── mailAction.tsx        # getMail(), createMail(), updateMail(), deleteMail()
 │   ├── stories/                          # Public story listing (user-facing)
 │   ├── layout.tsx                        # Root layout (fonts, Toaster)
 │   └── globals.css                       # Tailwind v4 theme + custom utilities
@@ -137,7 +140,8 @@ kornerfrontend/
 │   │   ├── stories/                      # Stories grid components
 │   │   │   ├── StoryCard.tsx             # Individual story card (client component)
 │   │   │   ├── StoriesList.tsx           # Grid of story cards (server component)
-│   │   │   └── FilterBar.tsx             # Draft / Pending / Published filter buttons
+│   │   │   ├── FilterBar.tsx             # Draft / Pending / Published filter buttons
+│   │   │   └── MailModal.tsx             # Story mail compose/edit modal (create/update/delete)
 │   │   ├── AdminGreeting.tsx             # "Hi, [name]" greeting in Navbar
 │   │   └── Navbar.tsx                    # Fixed top navigation bar (server component)
 │   ├── admincomponent/                   # LEGACY — kept for public pages only
@@ -252,6 +256,7 @@ The four floating action buttons on the create and edit pages use consistent col
 | Save as draft | Teal | `#CCFBF1` | `#022C22` | Save without submitting |
 | Edit story | Blue (brand) | `secondary` | `#1e3a5f` | Enter write mode |
 | Preview story | Violet | `#EDE9FE` | `#2E1065` | Enter read/preview mode |
+| Mail | Red | `#FEE2E2` | `#450a0a` | Open story mail modal |
 
 ---
 
@@ -677,9 +682,10 @@ Position: `fixed top-[14vh]` — sits just below the Navbar. Home page content h
 **Quick-action buttons (bottom-right):**
 - **Draft card** — amber `SendHorizonal` button → `submitStoryForReviewFromCard()` → success toast
 - **Pending card** — blue `RotateCcw` button → `updateStory(..., [])` with empty blocks → reverts to draft → success toast
-- **Published card** — no quick-action button
+- **Published card** — no submit/revert button
+- **All cards** — red `Mail` button (always visible) → opens `MailModal` for that story
 
-Both button handlers use `e.preventDefault()` + `e.stopPropagation()` to prevent the card's `<Link>` from navigating when the button is clicked.
+All button handlers use `e.preventDefault()` + `e.stopPropagation()` to prevent the card's `<Link>` from navigating when the button is clicked. `MailModal` is rendered alongside the `<Link>` inside a `<>` fragment at the root of the return.
 
 ### StoriesList (`components/admin/stories/StoriesList.tsx`)
 
@@ -846,6 +852,7 @@ Key differences from the create page:
 - **Submit for review FAB** — amber, only shown when `stori.status === "Draft"`
 - **Save FAB** — teal, only shown when `isDirty === true`
 - **Edit FAB** — blue, enters write mode
+- **Mail FAB** — red, always visible, opens `MailModal` for this story
 - Wider content area (`maxWidth: 1100px` vs create's `800px`)
 - Save shows a success toast and stays on the page (doesn't redirect)
 
@@ -899,7 +906,81 @@ Four server actions:
 
 ---
 
-## 16. Server Actions Pattern
+## 16. Story Mail (MailModal)
+
+### Overview
+
+Each story can have exactly one mail associated with it (one-to-one). The mail has a **subject** and a **body** (plain text for now; rich text formatting is planned). The admin composes, edits, or deletes the mail from either the story card or the edit story page.
+
+The mail button (red `Mail` icon) appears:
+- On every **story card** (bottom-right, `w-8 h-8` rounded button — same style as submit/revert buttons)
+- As a **FAB** on the edit story page (always visible, `w-[52px] h-[52px]`, red `FAB_RED` constant)
+
+The create story page has **no mail button** — a story must exist first before a mail can be attached.
+
+### `mailAction.tsx` (`app/admin/stories/[storiId]/mailAction.tsx`)
+
+Four server actions following the standard `apiRequest` + try/catch → `ApiResult` pattern:
+
+| Action | Method | Endpoint | Notes |
+|---|---|---|---|
+| `getMail(storiId)` | GET | `/stories/:storiId/mail` | Returns `ApiResult<Mail \| null>` — 404 maps to `null` (not an error) |
+| `createMail(storiId, subject, body)` | POST | `/stories/:storiId/mail` | Creates a new mail for the story |
+| `updateMail(storiId, subject, body)` | PATCH | `/stories/:storiId/mail` | Updates existing mail |
+| `deleteMail(storiId)` | DELETE | `/stories/:storiId/mail` | Deletes the mail |
+
+The `Mail` type:
+```ts
+type Mail = {
+  mail_id: string
+  stori_id: string
+  subject: string
+  body: string
+  created_at: string
+  updated_at: string
+}
+```
+
+`getMail` treats 404 as `{ ok: true, data: null }` — no mail yet is a valid state, not a fetch failure.
+
+### `MailModal.tsx` (`components/admin/stories/MailModal.tsx`)
+
+Client component rendered via `createPortal` into `document.body` (same pattern as `HelpModal` and `ProfileModal`).
+
+**Props:** `storiId: string`, `isOpen: boolean`, `onClose: () => void`
+
+**Internal state:**
+
+| State | Type | Purpose |
+|---|---|---|
+| `fetchState` | `"loading" \| "found" \| "not-found" \| "error"` | Tracks the GET result |
+| `subject` | `string` | Controlled subject input |
+| `body` | `string` | Controlled body textarea |
+| `confirmDelete` | `boolean` | Whether the delete confirmation row is showing |
+| `isSaving` | `useTransition` | Save/create in-flight indicator |
+| `isDeleting` | `useTransition` | Delete in-flight indicator |
+
+**On open (`useEffect` on `isOpen`):** Resets all local state and calls `getMail(storiId)`. If the result is `null` → `fetchState = "not-found"` (empty form). If mail exists → `fetchState = "found"` (prefill subject + body).
+
+**Keyboard:** Closes on `Escape` key (second `useEffect`).
+
+**Structure:**
+- **Sticky header** — red `Mail` icon badge + "Story Mail" title + subtitle (changes based on `fetchState`) + X close button
+- **Body** — loading spinner / error message / form (subject input + body textarea)
+- **Sticky footer** — context-sensitive:
+  - `not-found` → right-aligned "Create Mail" primary button (disabled until both fields have content)
+  - `found` (normal) → red soft "Delete" button (left) + "Save Changes" primary button (right)
+  - `found` (confirm delete) → "Delete this mail?" text + Cancel + "Yes, delete" red solid button
+
+**Input styles** match the project's `Input` component exactly: `rounded-full border-2 border-secondary bg-[#F0F5FF] dark:bg-[#1e2a3a]` etc. The textarea uses `rounded-2xl` instead of `rounded-full` and `resize-none`.
+
+**Save logic:**
+- If `fetchState === "not-found"` → calls `createMail`, then updates `fetchState` to `"found"` and closes
+- If `fetchState === "found"` → calls `updateMail`, then closes
+
+---
+
+## 17. Server Actions Pattern
 
 ### What a server action is
 
@@ -947,7 +1028,7 @@ const handleClick = () => {
 
 ---
 
-## 17. Public Pages
+## 18. Public Pages
 
 The `components/admincomponent/` folder still exists but is **only used by public user-facing pages**. These four files must never be deleted:
 
@@ -962,7 +1043,7 @@ These are not part of the admin panel. They are legacy components from before th
 
 ---
 
-## 18. Key Patterns & Decisions
+## 19. Key Patterns & Decisions
 
 ### Functional updater for setBlocks
 
@@ -1057,5 +1138,5 @@ Remove-Item -Recurse -Force .next; npm run dev
 
 ---
 
-*Last updated: 2026-06-07*
-*Updated by: Full codebase review — added Pending status, three-filter bar, card quick-action buttons (submit/revert), isDirty save logic, submitForReview on create page, submitStoryForReviewFromCard, formatFullDate, date display on cards, HelpModal, HelpTrigger, OtpInput, forgot-password and reset-password flows, ProfileModal updateProfile wiring, ThemeToggle, ThemedToaster, dark mode across all pages, FAB color system.*
+*Last updated: 2026-06-10*
+*Updated by: Added Story Mail feature — mailAction.tsx (GET/POST/PATCH/DELETE server actions), MailModal.tsx (create/edit/delete modal with branded UI), red mail button on StoryCard, red mail FAB on EditStoryEditor, Red color family in FAB Colors table, Section 16 (Story Mail). Section numbers bumped: Server Actions → §17, Public Pages → §18, Key Patterns → §19.*
