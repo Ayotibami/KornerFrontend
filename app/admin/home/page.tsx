@@ -10,8 +10,7 @@
 
 import StoriesList from "@/components/admin/stories/StoriesList";
 import FilterBar from "@/components/admin/stories/FilterBar";
-import Link from "next/link";
-import { FeatherIcon } from "lucide-react";
+import SpeedDialFAB from "@/components/admin/SpeedDialFAB";
 import { Suspense } from "react";
 
 export default async function HomePage({
@@ -33,14 +32,7 @@ export default async function HomePage({
         <StoriesList status={activeStatus} />
       </div>
 
-      <Link
-        href="/admin/stories/create"
-        aria-label="Create new story"
-        style={{ animation: "float 3s ease-in-out infinite" }}
-        className="fixed bottom-8 right-8 w-14 h-14 rounded-full flex items-center justify-center bg-white/30 dark:bg-[#1a2744]/50 backdrop-blur-md border-4 border-primary dark:border-[#93b8f0] shadow-[0_8px_32px_rgba(0,0,0,0.15)] dark:shadow-[0_8px_32px_rgba(0,0,0,0.5)] text-primary dark:text-[#93b8f0] hover:scale-110 active:scale-95 transition-transform"
-      >
-        <FeatherIcon size={22} />
-      </Link>
+      <SpeedDialFAB />
     </div>
   );
 }

@@ -17,7 +17,8 @@
 // FAB position: `top: calc(14vh + 16px)` places it just below the fixed Navbar.
 
 import { useTransition } from "react";
-import { BookCheck, Eye, Loader2, Pencil, SendHorizonal } from "lucide-react";
+import { ArrowLeft, BookCheck, Eye, FeatherIcon, Loader2, Pencil, SendHorizonal } from "lucide-react";
+import Link from "next/link";
 import { toast } from "sonner";
 import { useStoryEditor } from "@/context/StoryEditorContext";
 import CoverImage from "@/components/admin/editor/CoverImage";
@@ -118,6 +119,30 @@ export default function CreatePage() {
         className="mx-auto flex flex-col gap-6"
         style={{ maxWidth: 800, padding: "clamp(16px, 4vw, 40px)" }}
       >
+        {/* Go back */}
+        <Link
+          href="/admin/home"
+          className="flex items-center gap-1.5 text-[#0f1e3d] dark:text-gray-300 no-underline font-nunito font-bold text-sm w-fit"
+        >
+          <ArrowLeft size={18} />
+          Go back
+        </Link>
+
+        {/* Heading */}
+        <div className="flex items-center gap-3">
+          <div className="w-11 h-11 rounded-full bg-secondary dark:bg-[#1e3a5f] flex items-center justify-center flex-shrink-0">
+            <FeatherIcon size={20} className="text-primary dark:text-[#93b8f0]" />
+          </div>
+          <div>
+            <h1 className="text-2xl font-extrabold text-[#0f1e3d] dark:text-gray-50 leading-tight">
+              Create Story
+            </h1>
+            <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
+              Write freely — save as a draft to keep working later, or submit it for review right away if it's ready to go
+            </p>
+          </div>
+        </div>
+
         <CoverImage
           mode={mode}
           url={coverImage}

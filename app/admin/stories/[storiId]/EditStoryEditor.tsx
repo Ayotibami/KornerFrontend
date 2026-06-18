@@ -300,13 +300,26 @@ export default function EditStoryEditor({
         className="mx-auto flex flex-col gap-6"
         style={{ maxWidth: 1100, padding: "clamp(16px, 4vw, 40px)" }}
       >
-        <Link
-          href="/admin/home"
-          className="flex items-center gap-1.5 text-[#0f1e3d] dark:text-gray-300 no-underline font-nunito font-bold text-sm"
-        >
-          <ArrowLeft size={18} />
-          Go back
-        </Link>
+        <div className="flex items-center justify-between">
+          <Link
+            href="/admin/home"
+            className="flex items-center gap-1.5 text-[#0f1e3d] dark:text-gray-300 no-underline font-nunito font-bold text-sm"
+          >
+            <ArrowLeft size={18} />
+            Go back
+          </Link>
+          <span
+            className={`px-4 py-1.5 rounded-full text-sm font-bold font-nunito flex-shrink-0 ${
+              stori.status === "Draft"
+                ? "bg-[#DBEAFE] text-[#1e40af] dark:bg-[#1e3a5f] dark:text-[#93c5fd]"
+                : stori.status === "Pending"
+                  ? "bg-[#FEF3C7] text-[#92400E] dark:bg-[#422006] dark:text-[#FDE68A]"
+                  : "bg-[#D1FAE5] text-[#065F46] dark:bg-[#022C22] dark:text-[#6EE7B7]"
+            }`}
+          >
+            {stori.status}
+          </span>
+        </div>
 
         <CoverImage
           mode={mode}
@@ -320,25 +333,11 @@ export default function EditStoryEditor({
           <TitleField mode={mode} value={title} onChange={setTitle} />
           <SubTitleField mode={mode} value={subTitle} onChange={setSubTitle} />
           <ExcerptField mode={mode} value={excerpt} onChange={setExcerpt} />
-          <div className="flex items-center gap-3">
-            <ReadTimeField
-              mode={mode}
-              value={readTime}
-              onChange={setReadTime}
-            />
-            {/* Status badge — shows the current publish state from when the page loaded.
-                It doesn't update if the story is published while the page is open,
-                but that's acceptable since publishing is done via the backend/dashboard. */}
-            <span
-              className={`px-3.5 py-1 rounded-full text-xs font-bold font-nunito flex-shrink-0 ${
-                stori.status === "Draft"
-                  ? "bg-secondary text-[#0E3E87]"
-                  : "bg-primary text-white"
-              }`}
-            >
-              {stori.status}
-            </span>
-          </div>
+          <ReadTimeField
+            mode={mode}
+            value={readTime}
+            onChange={setReadTime}
+          />
         </div>
 
         <StoryEditor

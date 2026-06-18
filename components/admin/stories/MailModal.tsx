@@ -1,8 +1,9 @@
 "use client";
 
 import { useEffect, useRef, useState, useTransition } from "react";
+import MailBodyEditor from "@/components/admin/editor/MailBodyEditor";
 import { createPortal } from "react-dom";
-import { X, Mail, Loader2, Trash2 } from "lucide-react";
+import { X, Mail, Loader2, Trash2, ChevronDown } from "lucide-react";
 import { toast } from "sonner";
 import { getMail, createMail, updateMail, deleteMail } from "@/app/admin/stories/[storiId]/mailAction";
 
@@ -35,31 +36,30 @@ export default function MailModal({
   const [body, setBody] = useState("");
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [templateUsed, setTemplateUsed] = useState(false);
+  const [infoOpen, setInfoOpen] = useState(false);
   const [isSaving, startSaving] = useTransition();
   const [isDeleting, startDeleting] = useTransition();
-  const bodyRef = useRef<HTMLTextAreaElement>(null);
+  const subjectRef = useRef<HTMLInputElement>(null);
 
-  const useTemplate = () => {
-    setSubject("Hey {{name}}, we don drop another stori o");
-    setBody(
-      "Heyyyyyyyyyyy {{name}}\n\nHow far na, hope say you dey read your book???\nAnyway we don come again!\nWe have dropped a new stori and we dont want you to miss this one so abeg quickly grab popcorn and hot zobo and hop into korner. We dey wait for you!"
-    );
-    setTemplateUsed(true);
-  };
-
-  const insertName = () => {
-    const el = bodyRef.current;
-    if (!el) { setBody((b) => `{{name}} ${b}`); return; }
-    const start = el.selectionStart ?? body.length;
-    const end   = el.selectionEnd   ?? body.length;
-    const next  = body.slice(0, start) + "{{name}}" + body.slice(end);
-    setBody(next);
-    // restore cursor after React re-render
+  const insertNameInSubject = () => {
+    const el = subjectRef.current;
+    if (!el) { setSubject((s) => s + "{{name}}"); return; }
+    const start = el.selectionStart ?? subject.length;
+    const end   = el.selectionEnd   ?? subject.length;
+    setSubject(subject.slice(0, start) + "{{name}}" + subject.slice(end));
     requestAnimationFrame(() => {
       el.focus();
       const pos = start + "{{name}}".length;
       el.setSelectionRange(pos, pos);
     });
+  };
+
+  const useTemplate = () => {
+    setSubject("Hey {{name}}, we don drop another stori o");
+    setBody(
+      "<p>Heyyyyyyyyyyy {{name}}</p><p>How far na, hope say you dey read your book???</p><p>Anyway we don come again!</p><p>We have dropped a new stori and we dont want you to miss this one so abeg quickly grab popcorn and hot zobo and hop into korner. We dey wait for you!</p>"
+    );
+    setTemplateUsed(true);
   };
 
   // Fetch mail every time the modal opens so data is always fresh
@@ -184,27 +184,41 @@ export default function MailModal({
             <div className="flex flex-col gap-5">
 
               {/* ── How this works ── */}
-              <div className="rounded-2xl bg-[#F0F5FF] dark:bg-[#1e2a3a] border border-secondary dark:border-[#2a4a7a] p-4 flex flex-col gap-3">
-                <p className="text-xs font-extrabold text-primary dark:text-[#93b8f0] font-nunito uppercase tracking-wide">How this works</p>
-                <p className="text-xs text-gray-600 dark:text-gray-300 font-nunito leading-relaxed">
-                  Once your story goes <span className="font-bold text-[#0f1e3d] dark:text-gray-100">Published</span>, this mail fires off automatically to every subscriber on the Korner list — so give it some thought before you send.
-                </p>
-                <ul className="flex flex-col gap-2">
-                  {[
-                    { label: "Subject", desc: `The first thing they see before they even open it. Make it irresistible. "New post" is not it. "Your CGPA called, it's not happy 😅" is closer.` },
-                    { label: "Body", desc: "Your pitch. Tell them what the story is about and why they need to drop everything and read it right now. Keep it short, keep it real." },
-                    { label: "Cover image + read link", desc: "Already sorted. Your story's cover photo and a direct \"Read now\" link are added automatically to every mail. You don't need to add them." },
-                    { label: "✨ Use template", desc: "First time creating a mail for this story? Hit that button and we'll prefill a Korner-branded subject and body for you. Edit it however you like or just send it as-is." },
-                    { label: "+ Add user name", desc: 'Click that button to drop {{name}} anywhere in the body. Each subscriber gets their real name inserted there. "Hey Chisom, see this one" hits different than "Hey there."' },
-                  ].map(({ label, desc }) => (
-                    <li key={label} className="flex gap-2 items-start">
-                      <span className="w-1.5 h-1.5 rounded-full bg-primary dark:bg-[#93b8f0] mt-1.5 flex-shrink-0" />
-                      <p className="text-xs text-gray-600 dark:text-gray-300 font-nunito leading-relaxed">
-                        <span className="font-bold text-[#0f1e3d] dark:text-gray-100">{label}</span> — {desc}
-                      </p>
-                    </li>
-                  ))}
-                </ul>
+              <div className="rounded-2xl bg-[#F0F5FF] dark:bg-[#1e2a3a] border border-secondary dark:border-[#2a4a7a] overflow-hidden">
+                <button
+                  type="button"
+                  onClick={() => setInfoOpen((o) => !o)}
+                  className="w-full flex items-center justify-between px-4 py-3 cursor-pointer"
+                >
+                  <p className="text-xs font-extrabold text-primary dark:text-[#93b8f0] font-nunito uppercase tracking-wide">How this works</p>
+                  <ChevronDown
+                    size={15}
+                    className={`text-primary dark:text-[#93b8f0] transition-transform duration-200 flex-shrink-0 ${infoOpen ? "rotate-180" : "rotate-0"}`}
+                  />
+                </button>
+                {infoOpen && (
+                  <div className="px-4 pb-4 flex flex-col gap-3">
+                    <p className="text-xs text-gray-600 dark:text-gray-300 font-nunito leading-relaxed">
+                      Once your story goes <span className="font-bold text-[#0f1e3d] dark:text-gray-100">Published</span>, this mail fires off automatically to every subscriber on the Korner list — so give it some thought before you send.
+                    </p>
+                    <ul className="flex flex-col gap-2">
+                      {[
+                        { label: "Subject", desc: `The first thing they see before they even open it. Make it irresistible. "New post" is not it. "Your CGPA called, it's not happy 😅" is closer.` },
+                        { label: "Body", desc: "Your pitch. Tell them what the story is about and why they need to drop everything and read it right now. Keep it short, keep it real." },
+                        { label: "Cover image + read link", desc: "Already sorted. Your story's cover photo and a direct \"Read now\" link are added automatically to every mail. You don't need to add them." },
+                        { label: "✨ Use template", desc: "First time creating a mail for this story? Hit that button and we'll prefill a Korner-branded subject and body for you. Edit it however you like or just send it as-is." },
+                        { label: "+ name", desc: 'Click that button (in the subject or body toolbar) to drop {{name}} anywhere. Each subscriber gets their real name inserted there. "Hey Chisom, see this one" hits different than "Hey there."' },
+                      ].map(({ label, desc }) => (
+                        <li key={label} className="flex gap-2 items-start">
+                          <span className="w-1.5 h-1.5 rounded-full bg-primary dark:bg-[#93b8f0] mt-1.5 flex-shrink-0" />
+                          <p className="text-xs text-gray-600 dark:text-gray-300 font-nunito leading-relaxed">
+                            <span className="font-bold text-[#0f1e3d] dark:text-gray-100">{label}</span> — {desc}
+                          </p>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
               </div>
 
               {/* Use template — only when creating, disappears after use */}
@@ -221,8 +235,19 @@ export default function MailModal({
 
               {/* Subject */}
               <div className="flex flex-col gap-1.5">
-                <label className="text-sm font-bold text-primary font-nunito">Subject</label>
+                <div className="flex items-center justify-between">
+                  <label className="text-sm font-bold text-primary font-nunito">Subject</label>
+                  <button
+                    type="button"
+                    onClick={insertNameInSubject}
+                    disabled={busy}
+                    className="flex items-center gap-1 text-xs font-bold font-nunito px-2.5 py-1 rounded-lg bg-secondary dark:bg-[#1e3a5f] text-primary dark:text-[#93b8f0] hover:opacity-80 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer select-none"
+                  >
+                    + name
+                  </button>
+                </div>
                 <input
+                  ref={subjectRef}
                   type="text"
                   value={subject}
                   onChange={(e) => setSubject(e.target.value)}
@@ -234,25 +259,13 @@ export default function MailModal({
 
               {/* Body */}
               <div className="flex flex-col gap-1.5">
-                <div className="flex items-center justify-between">
-                  <label className="text-sm font-bold text-primary font-nunito">Body</label>
-                  <button
-                    type="button"
-                    onClick={insertName}
-                    disabled={busy}
-                    className="flex items-center gap-1.5 text-xs font-bold font-nunito px-3 py-1.5 rounded-full bg-secondary dark:bg-[#1e3a5f] text-primary dark:text-[#93b8f0] hover:opacity-80 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
-                  >
-                    + Add user name
-                  </button>
-                </div>
-                <textarea
-                  ref={bodyRef}
+                <label className="text-sm font-bold text-primary font-nunito">Body</label>
+                <MailBodyEditor
                   value={body}
-                  onChange={(e) => setBody(e.target.value)}
-                  placeholder={"Write your mail content here...\nTip: use the button above to insert {{name}} wherever you want the reader's name to appear."}
-                  rows={8}
+                  onChange={setBody}
+                  showNameButton
                   disabled={busy}
-                  className={`${INPUT_BASE} rounded-2xl resize-none`}
+                  placeholder="Write your mail content here…"
                 />
               </div>
             </div>

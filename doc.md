@@ -23,9 +23,10 @@
 14. [Editor Components](#14-editor-components)
 15. [Routes & Pages](#15-routes--pages)
 16. [Story Mail (MailModal)](#16-story-mail-mailmodal)
-17. [Server Actions Pattern](#17-server-actions-pattern)
-18. [Public Pages](#18-public-pages)
-19. [Key Patterns & Decisions](#19-key-patterns--decisions)
+17. [Newsletter](#17-newsletter)
+18. [Server Actions Pattern](#18-server-actions-pattern)
+19. [Public Pages](#19-public-pages)
+20. [Key Patterns & Decisions](#20-key-patterns--decisions)
 
 ---
 
@@ -57,12 +58,14 @@ The public-facing site (where readers see stories) also lives in this repo under
 | React | 19+ | UI rendering |
 | TypeScript | 5+ | Type safety |
 | Tailwind CSS | v4 | Styling (CSS-first config, no `tailwind.config.ts`) |
-| TipTap | 2.x | Rich text editor (built on ProseMirror) |
+| TipTap | 3.x | Rich text editor (built on ProseMirror) |
 | Cloudinary | (direct API) | Image hosting and CDN |
 | Sonner | latest | Toast notifications |
 | date-fns | latest | Relative and formatted date output |
 | Lucide React | latest | Icon library |
 | react-icons/fa | latest | `FaQuoteLeft` (Lucide has no quote icon) |
+| react-day-picker | v10 | Calendar date picker (newsletter scheduling) |
+| timescape | latest | Accessible time segment picker (newsletter scheduling) |
 
 ---
 
@@ -87,6 +90,9 @@ kornerfrontend/
 │   │   │       ├── page.tsx              # Server shell — reads ?email from searchParams
 │   │   │       ├── ResetPasswordForm.tsx # Client form — OTP input + new password
 │   │   │       └── action.ts             # resetPassword() server action
+│   │   ├── newsletter/
+│   │   │   ├── page.tsx                  # Newsletter page (server shell)
+│   │   │   └── NewsletterForm.tsx        # Compose + send/schedule form (client component)
 │   │   ├── home/
 │   │   │   ├── layout.tsx                # Wraps all home content with Navbar
 │   │   │   ├── page.tsx                  # Stories grid — Draft by default, toggle to Pending/Published
@@ -131,6 +137,7 @@ kornerfrontend/
 │   │   │   └── CreateStoryButton.tsx     # Feather icon link — navigates to /stories/create
 │   │   ├── editor/                       # Story editor building blocks
 │   │   │   ├── RichTextEditor.tsx        # TipTap wrapper (bold, italic, underline, strike)
+│   │   │   ├── MailBodyEditor.tsx        # TipTap rich body editor for mail (H1–H3, B/I/S/U, UL/OL, +name)
 │   │   │   ├── CoverImage.tsx            # Full-width cover image with upload
 │   │   │   ├── ImageUploader.tsx         # Inline image block with upload (16:9)
 │   │   │   ├── EditorBlock.tsx           # Routes to correct sub-component by block_type
@@ -746,6 +753,30 @@ Key details:
 - **`forceUpdate` via `useReducer`** — TipTap's `isActive("bold")` state changes inside ProseMirror without triggering a React re-render; `forceUpdate()` in `onTransaction` keeps the toolbar in sync
 - **Empty output normalization** — TipTap's `"<p></p>"` is normalized to `""` in `onChange`
 
+### MailBodyEditor (`components/admin/editor/MailBodyEditor.tsx`)
+
+Shared TipTap rich body editor used for both the newsletter and story mail. Full toolbar: H1, H2, H3, ¶, Bold, Italic, Strikethrough, Underline, UL, OL, optional `+ name` button.
+
+**Props:**
+```ts
+{
+  value?: string          // controlled — synced via useEffect
+  onChange: (html: string) => void
+  placeholder?: string    // default: "Write your message here…"
+  disabled?: boolean      // syncs via editor.setEditable()
+  showNameButton?: boolean // shows "+ name" pill at right of toolbar
+  minHeight?: number       // default: 192 (px) — via CSS variable
+}
+```
+
+**Key details:**
+- `value` prop is synced in a `useEffect` — compares `editor.getHTML()` against incoming value to avoid feedback loops. If they match (or both empty), no-op.
+- `toHTML()` helper: if `value` doesn't start with `<`, converts `\n\n` → `<p>` blocks and `\n` → `<br>`. This handles both stored plain-text bodies and template strings.
+- `StarterKit` configured with headings enabled (`levels: [1, 2, 3]`), lists enabled, code/codeBlock/blockquote/horizontalRule disabled.
+- Scoped CSS via `.mail-editor` wrapper class + `<style>` tag. CSS variable `--mail-editor-min-h` controls min height.
+- `+ name` button inserts `{{name}}` at cursor via `editor.commands.insertContent("{{name}}")`.
+- All toolbar buttons use `onMouseDown` + `e.preventDefault()` to keep editor focused.
+
 ### EditorBlock (`components/admin/editor/EditorBlock.tsx`)
 
 Routes to the correct sub-component by `block.block_type`:
@@ -910,7 +941,7 @@ Four server actions:
 
 ### Overview
 
-Each story can have exactly one mail associated with it (one-to-one). The mail has a **subject** and a **body** (plain text for now; rich text formatting is planned). The admin composes, edits, or deletes the mail from either the story card or the edit story page.
+Each story can have exactly one mail associated with it (one-to-one). The mail has a **subject** and a **body** (HTML rich text via `MailBodyEditor`). The admin composes, edits, or deletes the mail from either the story card or the edit story page.
 
 The mail button (red `Mail` icon) appears:
 - On every **story card** (bottom-right, `w-8 h-8` rounded button — same style as submit/revert buttons)
@@ -972,7 +1003,9 @@ Client component rendered via `createPortal` into `document.body` (same pattern 
   - `found` (normal) → red soft "Delete" button (left) + "Save Changes" primary button (right)
   - `found` (confirm delete) → "Delete this mail?" text + Cancel + "Yes, delete" red solid button
 
-**Input styles** match the project's `Input` component exactly: `rounded-full border-2 border-secondary bg-[#F0F5FF] dark:bg-[#1e2a3a]` etc. The textarea uses `rounded-2xl` instead of `rounded-full` and `resize-none`.
+Subject input uses `rounded-full border-2 border-secondary bg-[#F0F5FF] dark:bg-[#1e2a3a]`. Body uses `MailBodyEditor` with `showNameButton` — the "+ name" pill is inside the editor toolbar rather than a separate button above the field.
+
+The `useTemplate()` function now sets the body as HTML (four `<p>` paragraphs) so `MailBodyEditor` receives proper HTML and renders correctly. Legacy plain-text bodies from before the rich editor are handled by `MailBodyEditor`'s `toHTML()` helper.
 
 **Save logic:**
 - If `fetchState === "not-found"` → calls `createMail`, then updates `fetchState` to `"found"` and closes
@@ -980,7 +1013,101 @@ Client component rendered via `createPortal` into `document.body` (same pattern 
 
 ---
 
-## 17. Server Actions Pattern
+## 17. Newsletter
+
+### Overview
+
+`/admin/newsletter` — compose and send (or schedule) a mail blast to all subscribers, and manage past/scheduled sends. The feature lives at `app/admin/newsletter/` and is fully wired to the backend's `/newsletter` endpoints.
+
+### `page.tsx` (`app/admin/newsletter/page.tsx`)
+
+Client component, owns the Compose/History tab state plus two pieces of cross-tab state:
+- `composePrefill: { subject: string; body: string } | null` — set by `NewsletterHistoryList`'s Resend action, passed down to `NewsletterForm` as `prefill`, and cleared again once `NewsletterForm` reports a successful send (`onSent`) so a later remount of the form doesn't resurrect already-sent content.
+- `helpOpen` — toggles `NewsletterHelpModal`, opened via a `HelpCircle` button next to the "Go back" link (page-specific, separate from the global Navbar help icon which covers the story-creation flow instead).
+
+Switching to the Compose tab calls `setTab("compose")` and switching to History calls `setTab("history")` directly — since the tab content is a ternary, the inactive tab's component is fully unmounted, so `NewsletterHistoryList` always re-fetches fresh on remount (relevant after a send, since History needs to show the new entry).
+
+### `NewsletterHelpModal.tsx` (`components/admin/newsletter/NewsletterHelpModal.tsx`)
+
+Portal-into-`document.body` modal, same structure/voice as the global `HelpModal.tsx` (numbered steps, colored icon cards, Pidgin-flavored copy) but scoped to the newsletter flow: composing + personalising with `{{name}}`, the Compose/History tabs, the Sent/Scheduled status badges, and what each History card action (Edit, Cancel, Resend, Delete) does and on which status it appears.
+
+### `action.ts` (`app/admin/newsletter/action.ts`)
+
+Five server actions, all following the standard `apiRequest` + try/catch → `ApiResult` pattern:
+
+| Action | Method | Endpoint | Notes |
+|---|---|---|---|
+| `sendNewsletter(subject, body, scheduledAt)` | POST | `/newsletter/send` | `scheduledAt` is `null` for immediate sends — `scheduled_at` is only included in the body when scheduling |
+| `getNewsletters()` | GET | `/newsletter/sends` | Returns `ApiResult<NewsletterSend[]>` — list items have no `body` field |
+| `getNewsletter(sendId)` | GET | `/newsletter/sends/:sendId` | Returns `ApiResult<NewsletterSendDetail>` — includes `body`; used to prefill the edit modal, and to load a sent newsletter's content into Compose for the "Resend" flow |
+| `updateNewsletter(sendId, subject, body, scheduledAt)` | PATCH | `/newsletter/sends/:sendId` | Only valid for `pending` (not yet sent) newsletters |
+| `deleteNewsletter(sendId)` | DELETE | `/newsletter/sends/:sendId` | Cancels/removes a pending newsletter |
+
+The backend's raw response uses snake_case (`send_id`, `scheduled_at`, `sent_at`) — `mapSend()` converts to the camelCase `NewsletterSend` type used throughout the UI. `status` is either `"pending"` or `"sent"` (the UI labels `"pending"` as "Scheduled").
+
+### `NewsletterForm.tsx` (`app/admin/newsletter/NewsletterForm.tsx`)
+
+Client component. Single card form with three sections:
+
+1. **Subject** — `rounded-full` text input
+2. **Body** — `MailBodyEditor` with `showNameButton` and placeholder
+3. **Mode toggle** — sliding segmented control:
+   - **Send now** — submit immediately
+   - **Schedule** — reveals `ScheduleFields` (date + time pickers)
+
+Submits via `useTransition` + `sendNewsletter()`. On success: toasts and resets the whole form (including the `MailBodyEditor`, which is reset by passing `value={body}` so external state changes are reflected). Submit button disabled until subject + body are non-empty and (if Schedule mode) a valid date+time is selected.
+
+Accepts an optional `prefill?: { subject: string; body: string } | null` prop, used by the "Resend" flow (see `NewsletterHistoryList.tsx` below) — a `useEffect` keyed on `prefill` syncs it into local state whenever a new object reference comes in, resetting `mode`/date/time so a stale schedule can't carry over.
+
+Also accepts an optional `onSent?: () => void`, called after a successful send/schedule (right after the toast, alongside the field reset). `page.tsx` uses it to flip the page to the History tab so the admin immediately sees the new entry land.
+
+### `ScheduleFields.tsx` (`components/admin/newsletter/ScheduleFields.tsx`)
+
+Shared date + time picker, extracted so the compose form and the edit modal render an identical scheduling UI. Exports the component plus two pure helpers: `formatScheduled(date, time)` (human-readable label, e.g. `"Wednesday, 18 June 2026 at 3:00 PM"`) and `toScheduledAtIso(date, time)` (ISO 8601 string for the API, or `null` if incomplete).
+
+**Date/time pickers:**
+
+| Picker | Package | Notes |
+|---|---|---|
+| Date | `react-day-picker` v10 | `DayPicker` with `mode="single"`, `disabled={{ before: today }}` |
+| Time | `timescape` | `useTimescape({ hour12: true, wrapAround: true, wheelControl: true })`. Accepts a `time` prop so the edit modal can preload an existing scheduled time (compose form passes `""` for a fresh 12:00 PM default) |
+
+**react-day-picker v10 classNames pattern:**
+- `root: "relative"` — positioning context for the absolutely-positioned `nav`
+- Day cells are `<td class="group">`, day buttons are children — active state uses `group-data-[selected]:` Tailwind variants
+- `!` prefix on selected hover classes (`group-data-[selected]:!bg-primary`) for cascade specificity
+
+**timescape AM/PM on mobile:**
+- The `am/pm` input segment opens a numeric keyboard on mobile — useless for A/P input
+- Solution: custom `<button>` that calls `ampm.toggle()` instead of rendering the input segment
+
+**Keystroke blocking for time inputs:**
+- timescape listens in the bubble phase — a capture-phase listener with `stopImmediatePropagation()` filters non-digit, non-control keys before timescape sees them
+
+### `NewsletterHistoryList.tsx` (`app/admin/newsletter/NewsletterHistoryList.tsx`)
+
+Client component rendered by the page's "History" tab. Fetches `getNewsletters()` on mount; handles `loading` / `error` (with "Try again") / empty / loaded states.
+
+Each card shows the subject, a status badge (`Sent` — emerald, or `Scheduled` — amber, for `status === "pending"`), and the relevant date (`Sent {date}` or `Scheduled for {date}`, via `formatFullDateTime` in `lib/utils.ts`). Action buttons differ by status, each with a distinct icon since they mean different things:
+- **Edit** (pencil, `w-8 h-8` round) — `pending` only — opens `NewsletterEditModal` for that `sendId`
+- **Resend** (`Repeat` icon, neutral/primary) — `sent` only — fetches the full record via `getNewsletter(sendId)` (the list response has no `body`), then calls the `onUseAsTemplate(subject, body)` prop. Shows a spinner in place of the icon (tracked via `templatingId`) while the fetch is in flight, and is disabled meanwhile to prevent double-fetches.
+- **Cancel** (`Ban` icon, amber, matches the "Scheduled" badge color) — `pending` only — stops a not-yet-sent newsletter from going out
+- **Delete** (`Trash2` icon, red) — `sent` only — removes the record from history (the mail already went out; this doesn't unsend it)
+
+Cancel/Delete toggle the same inline confirm row pattern (no popup, same gravity as `MailModal`'s delete confirmation), with copy that matches the action ("Cancel this scheduled newsletter?" / "Yes, cancel" vs "Delete this from history?" / "Yes, delete"). Under the hood both call the same `deleteNewsletter()` action — the backend only exposes one DELETE endpoint (named "Cancel Send" in Postman) — and optimistically remove the card from local state on success. Resend has no confirm step — it's non-destructive and nothing is sent until the admin acts again on the Compose tab.
+
+**Resend flow** (`onUseAsTemplate` prop, supplied by `page.tsx`): clicking Resend on a sent card loads that mail's subject/body into the Compose tab as a fresh draft and switches the page to it — `page.tsx` holds a `composePrefill` state, sets it in the callback, flips `tab` to `"compose"`, and passes it down to `NewsletterForm` as `prefill`. Schedule fields are not carried over (see `NewsletterForm.tsx` above).
+
+### `NewsletterEditModal.tsx` (`components/admin/newsletter/NewsletterEditModal.tsx`)
+
+Client component, portal into `document.body` (same pattern as `MailModal`/`HelpModal`). Props: `sendId`, `isOpen`, `onClose`, `onSaved`.
+
+On open: calls `getNewsletter(sendId)`, prefills subject/body/date/time from the result. Save calls `updateNewsletter(sendId, subject, body, scheduledAtIso)`, toasts, then calls `onSaved()` (the list's `load()`, to refresh) and closes.
+
+---
+
+## 18. Server Actions Pattern
+
 
 ### What a server action is
 
@@ -1028,7 +1155,7 @@ const handleClick = () => {
 
 ---
 
-## 18. Public Pages
+## 19. Public Pages
 
 The `components/admincomponent/` folder still exists but is **only used by public user-facing pages**. These four files must never be deleted:
 
@@ -1043,7 +1170,7 @@ These are not part of the admin panel. They are legacy components from before th
 
 ---
 
-## 19. Key Patterns & Decisions
+## 20. Key Patterns & Decisions
 
 ### Functional updater for setBlocks
 
@@ -1138,5 +1265,5 @@ Remove-Item -Recurse -Force .next; npm run dev
 
 ---
 
-*Last updated: 2026-06-10*
-*Updated by: Added Story Mail feature — mailAction.tsx (GET/POST/PATCH/DELETE server actions), MailModal.tsx (create/edit/delete modal with branded UI), red mail button on StoryCard, red mail FAB on EditStoryEditor, Red color family in FAB Colors table, Section 16 (Story Mail). Section numbers bumped: Server Actions → §17, Public Pages → §18, Key Patterns → §19.*
+*Last updated: 2026-06-18*
+*Updated by: Added Newsletter feature (§17) — app/admin/newsletter/NewsletterForm.tsx with react-day-picker v10 calendar, timescape time picker, MailBodyEditor. Added MailBodyEditor shared component (§14) — TipTap v3 with H1–H3, B/I/S/U, UL/OL, optional +name button, value sync via useEffect, plain-text→HTML toHTML() helper. Updated MailModal (§16) — replaced textarea + external insertName button with MailBodyEditor; useTemplate() body now HTML. Updated tech stack table. Section numbers bumped: Server Actions → §18, Public Pages → §19, Key Patterns → §20. Renamed the whole feature from "Broadcast Mail" to "Newsletter" — routes, components, and server actions all use the Newsletter name now (app/admin/newsletter/, components/admin/newsletter/). Added "Resend" action on sent History cards — loads that mail's content into Compose as a fresh draft via a new `prefill` prop on NewsletterForm. Added NewsletterHelpModal.tsx — page-specific help icon explaining the newsletter flow, tabs, status badges, and card actions. Sending/scheduling now auto-switches to the History tab on success (NewsletterForm's new `onSent` callback).*

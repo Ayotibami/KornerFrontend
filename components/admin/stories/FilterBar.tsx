@@ -34,7 +34,7 @@ export default function FilterBar() {
     `px-6 sm:px-8 py-2 sm:py-2.5 rounded-full font-bold text-sm font-nunito transition-colors duration-200 ${
       active === status
         ? `${ACTIVE_STYLES[status]} shadow-md cursor-default`
-        : "bg-slate-200 text-slate-500 cursor-pointer dark:bg-[#1e2130] dark:text-slate-400"
+        : "bg-slate-200 text-slate-700 cursor-pointer dark:bg-[#1e2130] dark:text-slate-200 hover:opacity-80 transition-opacity"
     }`;
 
   return (

@@ -10,6 +10,11 @@ export function formatFullDate(date: string | Date): string {
   return format(new Date(date), "MMM d, yyyy");
 }
 
+// Converts a date to a full readable string with time. Example: "Jun 7, 2026 at 3:00 PM".
+export function formatFullDateTime(date: string | Date): string {
+  return format(new Date(date), "MMM d, yyyy 'at' h:mm a");
+}
+
 // Capitalizes just the first character of a string.
 // Used to normalize story status values from the API
 // (e.g. "draft" → "Draft", "published" → "Published").
