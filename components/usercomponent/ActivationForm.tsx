@@ -25,6 +25,9 @@ export default function ActivationForm() {
       try {
         await oneSignalReady;
         await OneSignal.User.PushSubscription.optIn();
+        const subscriptionId = OneSignal.User.PushSubscription.id;
+
+        console.log(subscriptionId);
         setNotifStatus("already-on");
       } catch (err) {
         if (process.env.NODE_ENV === "development")
