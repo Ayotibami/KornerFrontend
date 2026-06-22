@@ -12,8 +12,10 @@ export default function OneSignalInit() {
   useEffect(() => {
     oneSignalReady = OneSignal.init({
       appId: process.env.NEXT_PUBLIC_ONESIGNAL_APP_ID ?? "",
-      // allows localhost (http) to be treated as secure for local testing
-      allowLocalhostAsSecureOrigin: true,
+      // allows localhost (http) to be treated as secure for local testing —
+      // OneSignal throws if this is true on any origin other than localhost,
+      // so it must never be passed as true in production
+      allowLocalhostAsSecureOrigin: window.location.hostname === "localhost",
       // do not auto-prompt — the button in ActivationForm handles this
       autoRegister: false,
     });
