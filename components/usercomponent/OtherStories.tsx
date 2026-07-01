@@ -2,10 +2,14 @@ import { nunito } from "@/lib/font";
 import Link from "next/link";
 import Button from "@/components/admincomponent/Button";
 import StoriCardList from "./StoriCardList";
+import { getPublicStories } from "@/lib/publicApi";
 
 // Shown at the bottom of an individual story page.
 // Encourages the user to keep reading after finishing a story.
-export default function OtherStories() {
+// excludeStoriId keeps the current story out of its own "other stories" list.
+export default async function OtherStories({ excludeStoriId }: { excludeStoriId: string }) {
+  const stories = (await getPublicStories()).filter((s) => s.stori_id !== excludeStoriId);
+
   return (
     <div
       style={{
@@ -31,7 +35,7 @@ export default function OtherStories() {
       </h2>
 
       {/* Shows 3 cards as a teaser — same limit used in PeepSection */}
-      <StoriCardList limit={3} />
+      <StoriCardList stories={stories} limit={3} />
 
       {/* href="/stories#stories-list" navigates to the stories page AND scrolls
           directly to the story grid, skipping the hero section at the top. */}

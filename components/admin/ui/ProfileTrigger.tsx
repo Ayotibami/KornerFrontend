@@ -27,21 +27,49 @@ export default function ProfileTrigger({
   return (
     <>
       {variant === "avatar" ? (
-        <button
-          onClick={() => setOpen(true)}
-          title="View profile"
-          className="relative w-[50px] h-[50px] rounded-full border-2 border-primary bg-secondary overflow-hidden flex-shrink-0 cursor-pointer transition-opacity hover:opacity-80 active:opacity-60"
-        >
-          {profile?.avatar_url && (
-            <Image
-              src={profile.avatar_url}
-              fill
-              alt="Admin avatar"
-              className="object-cover"
-              unoptimized
-            />
+        <div className="relative w-[50px] h-[50px] flex-shrink-0">
+          <button
+            onClick={() => setOpen(true)}
+            title="View profile"
+            className="relative w-full h-full rounded-full border-2 border-primary bg-secondary overflow-hidden cursor-pointer transition-opacity hover:opacity-80 active:opacity-60"
+          >
+            {profile?.avatar_url && (
+              <Image
+                src={profile.avatar_url}
+                fill
+                alt="Admin avatar"
+                className="object-cover"
+                unoptimized
+              />
+            )}
+          </button>
+          {profile?.role === "master" && (
+            <svg
+              viewBox="0 0 24 24"
+              className="absolute -top-[10px] -left-[6px] w-7 h-7 pointer-events-none z-10 -rotate-[25deg]"
+              style={{
+                filter:
+                  "drop-shadow(0 0 3px rgba(255,215,0,0.9)) drop-shadow(0 0 7px rgba(255,179,0,0.65))",
+              }}
+            >
+              <defs>
+                <linearGradient id="navCrownGold" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stopColor="#FFE066" />
+                  <stop offset="45%" stopColor="#FFC700" />
+                  <stop offset="100%" stopColor="#E8A300" />
+                </linearGradient>
+              </defs>
+              <path
+                d="M3 18.5L1.6 7.8a0.8 0.8 0 0 1 1.24-0.77L7 9.8l4.2-5.4a1 1 0 0 1 1.6 0L17 9.8l4.16-2.77a0.8 0.8 0 0 1 1.24 0.77L21 18.5H3Z"
+                fill="url(#navCrownGold)"
+              />
+              <rect x="3" y="18.5" width="18" height="2.2" rx="0.8" fill="url(#navCrownGold)" />
+              <circle cx="2.4" cy="7.4" r="1.5" fill="#FFE066" />
+              <circle cx="12" cy="4.3" r="1.6" fill="#FFE066" />
+              <circle cx="21.6" cy="7.4" r="1.5" fill="#FFE066" />
+            </svg>
           )}
-        </button>
+        </div>
       ) : (
         <button
           onClick={() => setOpen(true)}

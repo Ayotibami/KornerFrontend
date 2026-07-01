@@ -9,19 +9,29 @@
 //
 // Wrapped in <Suspense> by the parent because useSearchParams() requires it
 // in Next.js App Router to avoid blocking the page.
+//
+// Not self-positioning — just the row of pills. Each caller wraps it in its
+// own fixed bar, since /admin/stories needs to share that bar with a back
+// button (stacked above the pills, both touching the Navbar directly) while
+// /admin/home (writers) just needs the pills on their own.
 
-import { useSearchParams, useRouter } from "next/navigation";
+import { useSearchParams, useRouter, usePathname } from "next/navigation";
 
 const FILTERS = ["Draft", "Pending", "Published"] as const;
 
 export default function FilterBar() {
   const searchParams = useSearchParams();
   const router = useRouter();
+  const pathname = usePathname();
   const active = searchParams.get("status") ?? "Draft";
 
   const setFilter = (status: string) => {
     if (active === status) return;
-    router.push(`/admin/home?status=${status}`);
+    // Push to the current path, not a hardcoded one — FilterBar now renders
+    // on both /admin/home (writers) and /admin/stories (master).
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("status", status);
+    router.push(`${pathname}?${params.toString()}`);
   };
 
   const ACTIVE_STYLES: Record<string, string> = {
@@ -38,7 +48,7 @@ export default function FilterBar() {
     }`;
 
   return (
-    <div className="fixed top-[14vh] left-0 right-0 z-[4] flex justify-center gap-3 sm:gap-4 py-3 bg-slate-100/90 dark:bg-[#0f1117]/90 backdrop-blur-sm">
+    <div className="flex justify-center items-center gap-3 sm:gap-4 py-3">
       {FILTERS.map((status) => (
         <button
           key={status}

@@ -1,13 +1,19 @@
 import type { ReactNode } from "react";
 import Navbar from "@/components/admin/Navbar";
+import AdminProvider from "@/context/AdminContext";
+import getProfile from "@/app/admin/home/action";
 
-export default function NewsletterLayout({ children }: { children: ReactNode }) {
+export default async function NewsletterLayout({ children }: { children: ReactNode }) {
+  const profile = await getProfile();
+
   return (
     <div className="min-h-screen bg-slate-100 dark:bg-[#0f1117]">
-      <Navbar />
-      <div className="pt-[14vh] pb-10">
-        {children}
-      </div>
+      <AdminProvider profile={profile}>
+        <Navbar profile={profile} />
+        <div className="pt-[14vh] pb-10">
+          {children}
+        </div>
+      </AdminProvider>
     </div>
   );
 }

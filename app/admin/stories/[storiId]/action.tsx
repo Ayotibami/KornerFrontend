@@ -29,6 +29,7 @@ export type StoriDetail = {
   readingTime: string;
   coverImage?: string | null;
   status: string;
+  rejectionReason?: string | null;
   blocks: StoriBlock[];
 };
 
@@ -109,6 +110,77 @@ export async function submitStoryForReviewFromCard(storiId: string): Promise<Api
   } catch (err: unknown) {
     const status = (err as { status?: number }).status ?? 500;
     const message = err instanceof Error ? err.message : "Failed to submit for review.";
+    return { ok: false, status, message };
+  }
+}
+
+// Master-only actions, called from MasterStoryCard on the home page.
+// All revalidate /admin/home (instead of redirecting) since the card stays
+// on the same page and just needs the list to refresh with the new status.
+
+export async function publishStoriMaster(storiId: string): Promise<ApiResult<void>> {
+  try {
+    await apiRequest(`/master/stories/${storiId}/publish`, { method: "PATCH" });
+    revalidatePath("/admin/home");
+    revalidatePath(`/admin/stories/${storiId}`);
+    return { ok: true, data: undefined };
+  } catch (err: unknown) {
+    const status = (err as { status?: number }).status ?? 500;
+    const message = err instanceof Error ? err.message : "Failed to publish story.";
+    return { ok: false, status, message };
+  }
+}
+
+export async function unpublishStoriMaster(storiId: string): Promise<ApiResult<void>> {
+  try {
+    await apiRequest(`/master/stories/${storiId}/unpublish`, { method: "PATCH" });
+    revalidatePath("/admin/home");
+    revalidatePath(`/admin/stories/${storiId}`);
+    return { ok: true, data: undefined };
+  } catch (err: unknown) {
+    const status = (err as { status?: number }).status ?? 500;
+    const message = err instanceof Error ? err.message : "Failed to unpublish story.";
+    return { ok: false, status, message };
+  }
+}
+
+export async function approveStoriMaster(storiId: string): Promise<ApiResult<void>> {
+  try {
+    await apiRequest(`/master/stories/${storiId}/approve`, { method: "PATCH" });
+    revalidatePath("/admin/home");
+    revalidatePath(`/admin/stories/${storiId}`);
+    return { ok: true, data: undefined };
+  } catch (err: unknown) {
+    const status = (err as { status?: number }).status ?? 500;
+    const message = err instanceof Error ? err.message : "Failed to approve story.";
+    return { ok: false, status, message };
+  }
+}
+
+export async function rejectStoriMaster(storiId: string, reason?: string): Promise<ApiResult<void>> {
+  try {
+    await apiRequest(`/master/stories/${storiId}/reject`, {
+      method: "PATCH",
+      body: JSON.stringify({ reason: reason?.trim() || null }),
+    });
+    revalidatePath("/admin/home");
+    revalidatePath(`/admin/stories/${storiId}`);
+    return { ok: true, data: undefined };
+  } catch (err: unknown) {
+    const status = (err as { status?: number }).status ?? 500;
+    const message = err instanceof Error ? err.message : "Failed to reject story.";
+    return { ok: false, status, message };
+  }
+}
+
+export async function deleteStoriMaster(storiId: string): Promise<ApiResult<void>> {
+  try {
+    await apiRequest(`/master/stories/${storiId}`, { method: "DELETE" });
+    revalidatePath("/admin/home");
+    return { ok: true, data: undefined };
+  } catch (err: unknown) {
+    const status = (err as { status?: number }).status ?? 500;
+    const message = err instanceof Error ? err.message : "Failed to delete story.";
     return { ok: false, status, message };
   }
 }

@@ -1,5 +1,6 @@
 // Fixed top navigation bar shown on all admin pages that use the home layout.
-// Server component — fetches the admin profile on the server so there's no loading flash.
+// Server component — receives the admin profile as a prop (fetched once by
+// the layout) so there's no loading flash and no duplicate fetch.
 //
 // Layout:
 //   Left  — avatar circle (clickable → profile modal) + personalized greeting
@@ -19,13 +20,9 @@ import ProfileTrigger from "./ui/ProfileTrigger";
 import LogoutButton from "./ui/LogoutButton";
 import ThemeToggle from "./ui/ThemeToggle";
 import HelpTrigger from "./ui/HelpTrigger";
-import getProfile from "@/app/admin/home/action";
+import type { AdminProfile } from "@/types/admin";
 
-export default async function Navbar() {
-  // getProfile() catches errors internally and returns null on failure,
-  // so a broken profile endpoint won't crash the entire nav.
-  const profile = await getProfile();
-
+export default function Navbar({ profile }: { profile: AdminProfile | null }) {
   return (
     <nav className="fixed top-0 left-0 right-0 h-[14vh] px-4 sm:px-5 flex items-center justify-between bg-white/90 dark:bg-[#1a1f2e]/90 backdrop-blur-sm shadow-[0_4px_20px_rgba(0,0,0,0.08)] dark:shadow-[0_4px_20px_rgba(0,0,0,0.4)] z-10 box-border">
       {/* Left: avatar (opens profile modal) + greeting */}

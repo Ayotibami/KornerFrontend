@@ -25,6 +25,23 @@ const getProfile = async (): Promise<AdminProfile | null> => {
 
 export default getProfile;
 
+export async function changePassword(
+  currentPassword: string,
+  newPassword: string,
+): Promise<ApiResult<void>> {
+  try {
+    await apiRequest("/admin/password", {
+      method: "PATCH",
+      body: JSON.stringify({ currentPassword, newPassword }),
+    });
+    return { ok: true, data: undefined };
+  } catch (err: unknown) {
+    const status = (err as { status?: number }).status ?? 500;
+    const message = err instanceof Error ? err.message : "Failed to change password.";
+    return { ok: false, status, message };
+  }
+}
+
 export async function updateProfile(
   name: string,
   bio: string,

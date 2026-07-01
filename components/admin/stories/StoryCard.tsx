@@ -12,7 +12,7 @@
 import { useState, useTransition } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Clock, Loader2, Mail, RotateCcw, SendHorizonal } from "lucide-react";
+import { Clock, Eye, Loader2, Mail, RotateCcw, SendHorizonal } from "lucide-react";
 import { toast } from "sonner";
 import { capitalize, formatDate, formatFullDate } from "@/lib/utils";
 import { submitStoryForReviewFromCard, updateStory } from "@/app/admin/stories/[storiId]/action";
@@ -60,11 +60,17 @@ export default function StoryCard({ story }: { story: Story }) {
       <Link href={`/admin/stories/${story.stori_id}`} className="block">
         <div className="h-[540px] p-5 rounded-2xl bg-white dark:bg-[#1a1f2e] shadow-[0_4px_20px_rgba(0,0,0,0.12)] dark:shadow-[0_4px_20px_rgba(0,0,0,0.4)] flex flex-col gap-3 overflow-hidden transition-transform hover:-translate-y-1 hover:scale-[1.02] hover:shadow-xl">
 
-          {/* Reading time + Draft/Published badge */}
+          {/* Reading time + view count + Draft/Published badge */}
           <div className="flex justify-between items-center">
-            <div className="flex items-center gap-1 text-gray-500 dark:text-gray-400 text-xs">
-              <Clock size={12} color={PRIMARY} />
-              <span>{story.reading_time}</span>
+            <div className="flex items-center gap-3 text-gray-500 dark:text-gray-400 text-xs">
+              <div className="flex items-center gap-1">
+                <Clock size={12} color={PRIMARY} />
+                <span>{story.reading_time}</span>
+              </div>
+              <div className="flex items-center gap-1">
+                <Eye size={12} />
+                <span>{story.views}</span>
+              </div>
             </div>
             <span
               className={`text-xs px-2.5 py-1 rounded-xl font-semibold ${

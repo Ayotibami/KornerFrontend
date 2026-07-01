@@ -12,6 +12,7 @@
 import { notFound } from "next/navigation";
 import { getStori } from "./action";
 import EditStoryEditor from "./EditStoryEditor";
+import getProfile from "@/app/admin/home/action";
 
 export default async function StoriPage({
   params,
@@ -19,11 +20,10 @@ export default async function StoriPage({
   params: Promise<{ storiId: string }>;
 }) {
   const { storiId } = await params;
-  const stori = await getStori(storiId);
-  console.log(stori?.blocks, "from backend");
+  const [stori, profile] = await Promise.all([getStori(storiId), getProfile()]);
 
   // getStori returns null on 404 — notFound() renders the nearest not-found.tsx.
   if (!stori) notFound();
 
-  return <EditStoryEditor stori={stori} storiId={storiId} />;
+  return <EditStoryEditor stori={stori} storiId={storiId} role={profile?.role ?? "writer"} />;
 }

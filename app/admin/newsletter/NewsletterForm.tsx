@@ -1,11 +1,12 @@
 "use client";
 
 import React, { useState, useRef, useTransition, useEffect } from "react";
-import { CalendarClock, Loader2, Send } from "lucide-react";
+import { CalendarClock, Send } from "lucide-react";
 import { toast } from "sonner";
 import MailBodyEditor from "@/components/admin/editor/MailBodyEditor";
 import ScheduleFields, { formatScheduled, toScheduledAtIso } from "@/components/admin/newsletter/ScheduleFields";
 import HeaderImagePicker from "@/components/admin/newsletter/HeaderImagePicker";
+import SendNewsletterConfirmModal from "@/components/admin/newsletter/SendNewsletterConfirmModal";
 import { sendNewsletter } from "./action";
 
 type Mode = "now" | "schedule";
@@ -33,6 +34,7 @@ export default function NewsletterForm({
   const [time, setTime]                 = useState("");
   const subjectRef = useRef<HTMLInputElement>(null);
   const [isPending, startSending] = useTransition();
+  const [previewOpen, setPreviewOpen] = useState(false);
 
   // Reuses a sent newsletter's content as a fresh draft — schedule is
   // intentionally not carried over so a stale time can't slip through.
@@ -62,7 +64,7 @@ export default function NewsletterForm({
   const scheduledLabel = mode === "schedule" ? formatScheduled(selectedDate, time) : null;
   const canSubmit = subject.trim() && body.trim() && !uploadingImage && (mode === "now" || Boolean(scheduledLabel));
 
-  const handleSubmit = () => {
+  const handleConfirmSend = () => {
     const scheduledAt = mode === "schedule" ? toScheduledAtIso(selectedDate, time) : null;
     if (mode === "schedule" && !scheduledAt) return;
 
@@ -70,6 +72,7 @@ export default function NewsletterForm({
       const result = await sendNewsletter(subject, body, scheduledAt, imageUrl);
       if (!result.ok) { toast.error(result.message); return; }
       toast.success(mode === "now" ? "Newsletter sent." : "Newsletter scheduled.");
+      setPreviewOpen(false);
       setSubject("");
       setBody("");
       setImageUrl(null);
@@ -167,22 +170,31 @@ export default function NewsletterForm({
         />
       )}
 
-      {/* Submit */}
+      {/* Submit — opens the preview/confirm modal rather than sending directly */}
       <div className="flex justify-end">
         <button
           type="button"
-          onClick={handleSubmit}
+          onClick={() => setPreviewOpen(true)}
           disabled={!canSubmit || isPending}
           className="flex items-center gap-2 bg-primary text-white rounded-full px-8 py-3 text-sm font-bold font-nunito hover:opacity-90 active:scale-95 transition-all duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100"
         >
-          {isPending
-            ? <><Loader2 size={14} className="animate-spin" /> Sending…</>
-            : mode === "now"
-              ? <><Send size={14} /> Send now</>
-              : <><CalendarClock size={14} /> Schedule</>
+          {mode === "now"
+            ? <><Send size={14} /> Send now</>
+            : <><CalendarClock size={14} /> Schedule</>
           }
         </button>
       </div>
+
+      <SendNewsletterConfirmModal
+        subject={subject}
+        body={body}
+        imageUrl={imageUrl}
+        scheduledLabel={mode === "schedule" ? scheduledLabel : null}
+        isOpen={previewOpen}
+        isSending={isPending}
+        onClose={() => setPreviewOpen(false)}
+        onConfirm={handleConfirmSend}
+      />
     </div>
   );
 }

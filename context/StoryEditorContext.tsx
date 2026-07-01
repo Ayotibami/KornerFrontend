@@ -49,6 +49,10 @@ type StoryEditorContextType = {
   updateBlock: (pos: number, value: string) => void;
   updateImageBlock: (pos: number, url: string) => void;
   deleteBlock: (pos: number) => void;
+  // Reorders blocks after a drag-and-drop. activeId/overId are the client-
+  // side UUIDs (block.id) that dnd-kit uses to identify which block moved
+  // and where it landed. Positions are renumbered sequentially after the move.
+  moveBlock: (activeId: string, overId: string) => void;
 };
 
 // Default value is an empty object — this is safe because StoryEditorProvider
@@ -134,6 +138,22 @@ export default function StoryEditorProvider({
     });
   };
 
+  // Moves a block from wherever activeId is to wherever overId is, using the
+  // client-side UUID (block.id) that dnd-kit tracks during a drag gesture.
+  // Positions are renumbered sequentially after the move so they stay
+  // contiguous — same guarantee as deleteBlock.
+  const moveBlock = (activeId: string, overId: string) => {
+    setBlocks((prev) => {
+      const activeIndex = prev.findIndex((b) => b.id === activeId);
+      const overIndex  = prev.findIndex((b) => b.id === overId);
+      if (activeIndex === -1 || overIndex === -1 || activeIndex === overIndex) return prev;
+      const result = [...prev];
+      const [removed] = result.splice(activeIndex, 1);
+      result.splice(overIndex, 0, removed);
+      return result.map((block, index) => ({ ...block, position: index + 1 }));
+    });
+  };
+
   return (
     <StoryEditorContext.Provider
       value={{
@@ -151,6 +171,7 @@ export default function StoryEditorProvider({
         updateBlock,
         updateImageBlock,
         deleteBlock,
+        moveBlock,
       }}
     >
       {children}

@@ -81,3 +81,84 @@ p {
   animation: shake-logic 3s ease-in-out infinite;
   display: inline-block;
 }
+
+@keyframes crown-glow {
+  0%, 100% {
+    filter: drop-shadow(0 0 3px rgba(255, 215, 0, 0.7)) drop-shadow(0 0 6px rgba(255, 179, 0, 0.5));
+    transform: rotate(-14deg);
+  }
+  50% {
+    filter: drop-shadow(0 0 8px rgba(255, 215, 0, 1)) drop-shadow(0 0 16px rgba(255, 179, 0, 0.7));
+    transform: rotate(14deg);
+  }
+}
+
+.crown-active {
+  animation: crown-glow 1.3s ease-in-out infinite;
+  transform-origin: 50% 100%;
+}
+
+/* Draft — pen scribbling back and forth, like mid-write */
+@keyframes pen-write {
+  0%, 100% { transform: rotate(-10deg) translate(0, 0); }
+  25%      { transform: rotate(8deg) translate(1px, -1px); }
+  50%      { transform: rotate(-10deg) translate(-1px, 1px); }
+  75%      { transform: rotate(8deg) translate(1px, -1px); }
+}
+
+.pen-write-active {
+  animation: pen-write 1.8s ease-in-out infinite;
+  transform-origin: 75% 75%;
+}
+
+/* Pending — slow constant sweep, like time passing while you wait */
+@keyframes clock-spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+.clock-spin-active {
+  animation: clock-spin 3s linear infinite;
+  transform-origin: 50% 50%;
+}
+
+/* Published — a confident little success pop */
+@keyframes check-pop {
+  0%, 100% { transform: scale(1); }
+  50%      { transform: scale(1.25); }
+}
+
+.check-pop-active {
+  animation: check-pop 1.6s ease-in-out infinite;
+  transform-origin: 50% 50%;
+}
+
+/* Admin avatar halo — each one bounces gently in place. The centering
+   translate(-50%, -50%) is repeated in every keyframe step because an
+   animated transform replaces the inline-style transform entirely while
+   it's running, not just adds to it. */
+@keyframes avatar-bounce {
+  0%, 100% { transform: translate(-50%, -50%) translateY(0); }
+  50%      { transform: translate(-50%, -50%) translateY(-6px); }
+}
+
+.avatar-bounce-active {
+  animation: avatar-bounce 2s ease-in-out infinite;
+}
+
+/* Writers page — unverified status badge pulses red to draw the eye,
+   verified ones reuse check-pop-active for the same confident pop. */
+@keyframes attention-pulse {
+  0%, 100% {
+    filter: drop-shadow(0 0 0px rgba(220, 38, 38, 0));
+    transform: scale(1);
+  }
+  50% {
+    filter: drop-shadow(0 0 5px rgba(220, 38, 38, 0.8));
+    transform: scale(1.15);
+  }
+}
+
+.attention-pulse-active {
+  animation: attention-pulse 1.4s ease-in-out infinite;
+}

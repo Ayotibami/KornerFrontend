@@ -37,22 +37,41 @@ function HeadingBlock({ content }: { content: string }) {
   );
 }
 
+// content for paragraph/quote blocks is real HTML (TipTap's output from the
+// editor, e.g. "<p>some text</p>", possibly with <strong>/<em>/<u>/<s>
+// inside) — never plain text. Dropping it in as a JSX child would just print
+// the literal tags on screen instead of rendering them, since React escapes
+// string children by default. dangerouslySetInnerHTML actually parses it as
+// markup — same approach the admin editor's own read mode already uses for
+// these two block types in EditorBlock.tsx.
+//
+// Margins reset + reapplied via this scoped class because TipTap content can
+// contain multiple <p> tags (multiple paragraphs typed within one block),
+// which need consistent spacing instead of relying on the browser's default
+// <p> margins.
+const RICH_HTML_CSS = `
+  .stori-rich-html p { margin: 0; }
+  .stori-rich-html p + p { margin-top: 0.5em; }
+`;
+
 function ParagraphBlock({ content }: { content: string }) {
   return (
-    // lineHeight: 1.85 gives generous spacing between lines — important for
-    // long-form reading comfort, especially on mobile.
-    <p
-      style={{
-        fontFamily: nunito.style.fontFamily,
-        fontSize: "clamp(0.95rem, 2vw, 1.05rem)",
-        fontWeight: 500,
-        color: "#374151",
-        margin: 0,
-        lineHeight: 1.85,
-      }}
-    >
-      {content}
-    </p>
+    <>
+      <style>{RICH_HTML_CSS}</style>
+      {/* lineHeight: 1.85 gives generous spacing between lines — important
+          for long-form reading comfort, especially on mobile. */}
+      <div
+        className="stori-rich-html"
+        style={{
+          fontFamily: nunito.style.fontFamily,
+          fontSize: "clamp(0.95rem, 2vw, 1.05rem)",
+          fontWeight: 500,
+          color: "#374151",
+          lineHeight: 1.85,
+        }}
+        dangerouslySetInnerHTML={{ __html: content }}
+      />
+    </>
   );
 }
 
@@ -82,19 +101,19 @@ function QuoteBlock({ content }: { content: string }) {
         style={{ animation: "quote-shake 2.5s ease-in-out infinite" }}
       />
 
-      <p
+      <style>{RICH_HTML_CSS}</style>
+      <div
+        className="stori-rich-html"
         style={{
           fontFamily: nunito.style.fontFamily,
           fontSize: "clamp(1rem, 2.5vw, 1.2rem)",
           fontWeight: 600,
           fontStyle: "italic",
           color: "#112C4A",
-          margin: 0,
           lineHeight: 1.7,
         }}
-      >
-        {content}
-      </p>
+        dangerouslySetInnerHTML={{ __html: content }}
+      />
     </div>
   );
 }
@@ -132,6 +151,7 @@ function ImageBlock({
           alt="Story image"
           fill
           style={{ objectFit: "cover" }}
+          unoptimized
         />
       ) : null}
     </div>

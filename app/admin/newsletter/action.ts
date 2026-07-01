@@ -41,6 +41,20 @@ function mapSend(raw: RawSend): NewsletterSend {
   };
 }
 
+// Count only (no subscriber list) — any admin can call this, used by the
+// send-preview modal to show reach before a blast actually fires.
+export async function getSubscriberCount(): Promise<ApiResult<number>> {
+  try {
+    const res = await apiRequest("/user/subscribers/count");
+    const data = await res.json();
+    return { ok: true, data: data.count ?? 0 };
+  } catch (err: unknown) {
+    const status = (err as { status?: number }).status ?? 500;
+    const message = err instanceof Error ? err.message : "Failed to load subscriber count.";
+    return { ok: false, status, message };
+  }
+}
+
 export async function sendNewsletter(
   subject: string,
   body: string,

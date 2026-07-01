@@ -203,7 +203,7 @@ export default function StoriCard({
           }}
         >
           {image && (
-            <Image src={image} alt={title} fill style={{ objectFit: "cover" }} />
+            <Image src={image} alt={title} fill style={{ objectFit: "cover" }} unoptimized />
           )}
         </div>
         <div
@@ -262,6 +262,14 @@ export default function StoriCard({
                   overflow: "hidden",
                   backgroundColor: "lightgray",
                   flexShrink: 0,
+                  // position: relative is required here — next/image's `fill`
+                  // positions itself absolute/inset:0 relative to the nearest
+                  // positioned ancestor. Without this, there isn't one
+                  // anywhere up this tree, so the browser falls back to
+                  // positioning it against the page itself — the avatar
+                  // stretches to cover the full viewport instead of this
+                  // 28px circle.
+                  position: "relative",
                 }}
               >
                 {authorAvatar && (
@@ -270,6 +278,7 @@ export default function StoriCard({
                     alt="avatar"
                     fill
                     style={{ objectFit: "cover" }}
+                    unoptimized
                   />
                 )}
               </div>
