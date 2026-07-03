@@ -31,9 +31,9 @@ export default function SubscriberRow({ subscriber }: { subscriber: Subscriber }
   if (isRemoved) return null;
 
   return (
-    <div className="flex items-center justify-between gap-3 bg-white dark:bg-[#1a1f2e] rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.12)] dark:shadow-[0_4px_20px_rgba(0,0,0,0.4)] p-4">
+    <div className="flex items-center justify-between gap-3 bg-white dark:bg-[#1a1f2e] rounded-2xl shadow-[0_2px_8px_rgba(0,0,0,0.06)] dark:shadow-[0_2px_8px_rgba(0,0,0,0.3)] p-4">
       <div className="flex flex-col gap-0.5 min-w-0">
-        <p className="font-bold text-[#0f1e3d] dark:text-gray-50 font-nunito truncate">
+        <p className="font-semibold text-[#0f1e3d] dark:text-gray-50 truncate">
           {subscriber.name || "—"}
         </p>
         <p className="text-sm text-gray-500 dark:text-gray-400 truncate">
@@ -48,7 +48,7 @@ export default function SubscriberRow({ subscriber }: { subscriber: Subscriber }
         type="button"
         onClick={handleRemove}
         disabled={isPending}
-        className="flex items-center gap-2 bg-[#FEE2E2] text-[#DC2626] dark:bg-[#450a0a] dark:text-[#FCA5A5] rounded-full px-4 py-2 text-sm font-bold font-nunito hover:opacity-80 transition-all duration-200 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed flex-shrink-0"
+        className="flex items-center gap-2 bg-[#FEE2E2] text-[#DC2626] dark:bg-[#450a0a] dark:text-[#FCA5A5] rounded-xl px-4 py-2 text-sm font-semibold hover:opacity-80 transition-all duration-200 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed flex-shrink-0"
       >
         {isPending ? <Loader2 size={16} className="animate-spin" /> : <UserMinus size={16} />}
         Remove

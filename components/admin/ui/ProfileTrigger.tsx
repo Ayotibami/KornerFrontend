@@ -27,7 +27,7 @@ export default function ProfileTrigger({
   return (
     <>
       {variant === "avatar" ? (
-        <div className="relative w-[50px] h-[50px] flex-shrink-0">
+        <div className="relative w-10 h-10 flex-shrink-0">
           <button
             onClick={() => setOpen(true)}
             title="View profile"
@@ -46,7 +46,7 @@ export default function ProfileTrigger({
           {profile?.role === "master" && (
             <svg
               viewBox="0 0 24 24"
-              className="absolute -top-[10px] -left-[6px] w-7 h-7 pointer-events-none z-10 -rotate-[25deg]"
+              className="absolute -top-[9px] -left-[5px] w-6 h-6 pointer-events-none z-10 -rotate-[25deg]"
               style={{
                 filter:
                   "drop-shadow(0 0 3px rgba(255,215,0,0.9)) drop-shadow(0 0 7px rgba(255,179,0,0.65))",

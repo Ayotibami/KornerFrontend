@@ -6,16 +6,37 @@
 import Image from "next/image";
 import StoriesHero from "@/components/usercomponent/StoriesHero";
 import TornSection from "@/components/admincomponent/Tornsection";
-import StoriCardList from "@/components/usercomponent/StoriCardList";
+import LoadMoreStories from "@/components/usercomponent/LoadMoreStories";
 import { nunito } from "@/lib/font";
 import ActivationForm from "@/components/usercomponent/ActivationForm";
 import Footer from "@/components/usercomponent/Footer";
 import AuxillaryText from "@/components/usercomponent/AuxillaryText";
 import Navbar from "@/components/usercomponent/Navbar";
+import type { Metadata } from "next";
 import { getPublicStories } from "@/lib/publicApi";
 
+export const metadata: Metadata = {
+  title: "Stories — The Korner",
+  description: "Student life, real talk, straight from Kampos — browse all Korner stories.",
+  openGraph: {
+    title: "Stories — The Korner",
+    description: "Student life, real talk, straight from Kampos — browse all Korner stories.",
+    url: "/stories",
+    type: "website",
+    images: [{ url: "/images/og-default.png", width: 1200, height: 630, alt: "The Korner" }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Stories — The Korner",
+    description: "Student life, real talk, straight from Kampos — browse all Korner stories.",
+    images: ["/images/og-default.png"],
+  },
+};
+
+const PAGE_SIZE = 12;
+
 export default async function Page() {
-  const stories = await getPublicStories();
+  const { stories, hasMore } = await getPublicStories(PAGE_SIZE, 0);
 
   return (
     <div
@@ -77,8 +98,11 @@ export default async function Page() {
             >
               Pick one na, No waste time!
             </h1>
-            {/* No limit passed — shows all stories */}
-            <StoriCardList stories={stories} />
+            <LoadMoreStories
+              initialStories={stories}
+              initialHasMore={hasMore}
+              pageSize={PAGE_SIZE}
+            />
           </div>
         </TornSection>
       </div>

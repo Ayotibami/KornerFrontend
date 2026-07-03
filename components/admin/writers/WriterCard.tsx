@@ -23,9 +23,9 @@ import AdminDetailModal from "./AdminDetailModal";
 import type { AdminListItem } from "@/types/admin";
 
 const BTN_GREEN_SOFT =
-  "flex items-center gap-2 bg-[#D1FAE5] text-[#065F46] dark:bg-[#022C22] dark:text-[#6EE7B7] rounded-full px-4 py-2 text-sm font-bold font-nunito hover:opacity-80 transition-all duration-200 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed";
+  "flex items-center gap-2 bg-[#D1FAE5] text-[#065F46] dark:bg-[#022C22] dark:text-[#6EE7B7] rounded-xl px-4 py-2 text-sm font-semibold hover:opacity-80 transition-all duration-200 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed";
 const BTN_RED_SOFT =
-  "flex items-center gap-2 bg-[#FEE2E2] text-[#DC2626] dark:bg-[#450a0a] dark:text-[#FCA5A5] rounded-full px-4 py-2 text-sm font-bold font-nunito hover:opacity-80 transition-all duration-200 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed";
+  "flex items-center gap-2 bg-[#FEE2E2] text-[#DC2626] dark:bg-[#450a0a] dark:text-[#FCA5A5] rounded-xl px-4 py-2 text-sm font-semibold hover:opacity-80 transition-all duration-200 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed";
 
 export default function WriterCard({
   admin: initialAdmin,
@@ -74,7 +74,7 @@ export default function WriterCard({
       />
       <Link
         href={`/admin/stories?admin=${admin.admin_id}`}
-        className="flex items-center justify-between gap-3 bg-white dark:bg-[#1a1f2e] rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.12)] dark:shadow-[0_4px_20px_rgba(0,0,0,0.4)] p-4 transition-transform hover:-translate-y-0.5 hover:shadow-lg"
+        className="flex items-center justify-between gap-3 bg-white dark:bg-[#1a1f2e] rounded-2xl shadow-[0_2px_8px_rgba(0,0,0,0.06)] dark:shadow-[0_2px_8px_rgba(0,0,0,0.3)] p-4 transition-all duration-200 hover:shadow-[0_6px_20px_rgba(0,0,0,0.1)] dark:hover:shadow-[0_6px_20px_rgba(0,0,0,0.45)] hover:-translate-y-0.5"
       >
       <div className="flex items-center gap-3 min-w-0">
         <button
@@ -103,7 +103,7 @@ export default function WriterCard({
         </button>
 
         <div className="flex flex-col gap-1 min-w-0">
-          <p className="font-bold text-[#0f1e3d] dark:text-gray-50 font-nunito truncate">
+          <p className="font-semibold text-[#0f1e3d] dark:text-gray-50 truncate">
             {admin.admin_name}
           </p>
           {/* Stacked on mobile so the two pieces don't crowd into each

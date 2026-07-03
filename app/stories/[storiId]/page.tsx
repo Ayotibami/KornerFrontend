@@ -26,15 +26,28 @@ export async function generateMetadata({
     return { title: "Story not found" };
   }
 
+  const base = process.env.NEXT_PUBLIC_BASE_URL!;
+  const coverImage = story.cover_image
+    ? [{ url: story.cover_image, width: 1200, height: 630, alt: story.title }]
+    : [{ url: `${base}/images/og-default.png`, width: 1200, height: 630, alt: "The Korner" }];
+
   return {
     title: story.title,
-    description: story.subtitle,
+    description: story.excerpt,
     openGraph: {
       title: story.title,
-      description: story.subtitle,
-      url: `https://thekorner.com/stories/${storiId}`,
+      description: story.excerpt,
+      url: `${base}/stories/${storiId}`,
       type: "article",
-      images: story.cover_image ? [story.cover_image] : undefined,
+      images: coverImage,
+      authors: [story.author_name],
+      publishedTime: story.created_at,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: story.title,
+      description: story.excerpt,
+      images: story.cover_image ? [story.cover_image] : [`${base}/images/og-default.png`],
     },
   };
 }
@@ -49,8 +62,24 @@ export default async function StoriPage({
 
   if (!story) notFound();
 
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: story.title,
+    description: story.excerpt,
+    image: story.cover_image || undefined,
+    author: { "@type": "Person", name: story.author_name },
+    publisher: { "@type": "Organization", name: "The Korner" },
+    datePublished: story.created_at,
+    url: `${process.env.NEXT_PUBLIC_BASE_URL}/stories/${storiId}`,
+  };
+
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <div
         style={{
           display: "flex",

@@ -86,9 +86,11 @@ export default function SignupPage() {
         <AvatarPicker setAvatarUrl={setAvatarUrl} onUploadingChange={setAvatarUploading} />
       </div>
 
-      <form action={handleSubmit} className="flex flex-col gap-5">
+      <form action={handleSubmit} className="flex flex-col gap-4">
         {error && (
-          <p className="text-red-600 text-sm text-center">{error}</p>
+          <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800/40 rounded-xl px-4 py-3">
+            <p className="text-red-600 dark:text-red-400 text-sm text-center">{error}</p>
+          </div>
         )}
 
         <Input
@@ -127,22 +129,21 @@ export default function SignupPage() {
           disabled={isPending}
         />
 
-        {/* Also disabled while avatar is uploading — prevents submitting with null avatar_url */}
         <Button type="submit" disabled={isPending || avatarUploading}>
           {isPending ? (
             <span className="flex items-center justify-center gap-2">
-              <Loader2 size={16} className="animate-spin" /> Creating account...
+              <Loader2 size={16} className="animate-spin" /> Creating account…
             </span>
           ) : (
-            "Sign up"
+            "Create account"
           )}
         </Button>
       </form>
 
-      <p className="text-center text-sm text-gray-500">
+      <p className="text-center text-sm text-gray-500 dark:text-gray-400">
         Already an admin?{" "}
-        <Link href="/admin/login" className="text-primary font-bold">
-          Login
+        <Link href="/admin/login" className="text-primary dark:text-[#93b8f0] font-semibold hover:opacity-70 transition-opacity">
+          Log in
         </Link>
       </p>
     </AuthCard>

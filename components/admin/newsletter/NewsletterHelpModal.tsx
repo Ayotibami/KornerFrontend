@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { X, Send, History, Pencil, Ban, Repeat, Trash2, CheckCircle2, Clock } from "lucide-react";
 import { createPortal } from "react-dom";
@@ -10,13 +10,13 @@ export default function NewsletterHelpModal({ onClose }: { onClose: () => void }
       onClick={onClose}
     >
       <div
-        className="relative bg-white dark:bg-[#1a1f2e] rounded-2xl w-full max-w-[520px] max-h-[85vh] overflow-y-auto shadow-[0_8px_40px_rgba(0,0,0,0.2)] dark:shadow-[0_8px_40px_rgba(0,0,0,0.6)] font-nunito"
+        className="relative bg-white dark:bg-[#1a1f2e] rounded-2xl w-full max-w-[520px] max-h-[85vh] overflow-y-auto shadow-[0_8px_40px_rgba(0,0,0,0.2)] dark:shadow-[0_8px_40px_rgba(0,0,0,0.6)]"
         onClick={(e) => e.stopPropagation()}
       >
         {/* ── Sticky header ── */}
         <div className="sticky top-0 bg-white dark:bg-[#1a1f2e] z-10 flex justify-between items-start p-6 pb-4 border-b border-slate-100 dark:border-slate-700">
           <div>
-            <h2 className="font-extrabold text-xl text-[#0f1e3d] dark:text-gray-50">
+            <h2 className="font-bold text-xl text-[#0f1e3d] dark:text-gray-50">
               Oya, make I explain newsletter 🗣️
             </h2>
             <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
@@ -36,7 +36,7 @@ export default function NewsletterHelpModal({ onClose }: { onClose: () => void }
 
           {/* ── Section 1: Composing ── */}
           <section>
-            <h3 className="font-extrabold text-base text-[#0f1e3d] dark:text-gray-50 mb-3">
+            <h3 className="font-bold text-base text-[#0f1e3d] dark:text-gray-50 mb-3">
               ✍️ How to send one
             </h3>
             <div className="flex flex-col gap-2.5">
@@ -57,7 +57,7 @@ export default function NewsletterHelpModal({ onClose }: { onClose: () => void }
 
           {/* ── Section 2: Compose vs History ── */}
           <section>
-            <h3 className="font-extrabold text-base text-[#0f1e3d] dark:text-gray-50 mb-3">
+            <h3 className="font-bold text-base text-[#0f1e3d] dark:text-gray-50 mb-3">
               🔄 The two tabs
             </h3>
             <div className="flex flex-col gap-3">
@@ -88,12 +88,12 @@ export default function NewsletterHelpModal({ onClose }: { onClose: () => void }
 
           {/* ── Section 3: Status badges ── */}
           <section>
-            <h3 className="font-extrabold text-base text-[#0f1e3d] dark:text-gray-50 mb-3">
+            <h3 className="font-bold text-base text-[#0f1e3d] dark:text-gray-50 mb-3">
               🚦 Status badges
             </h3>
             <div className="flex flex-col gap-3">
               <div className="flex gap-3 items-start p-3.5 rounded-xl bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-100 dark:border-emerald-900/40">
-                <span className="inline-flex items-center gap-1 text-xs font-bold font-nunito px-2.5 py-1 rounded-full bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-400 flex-shrink-0 mt-0.5">
+                <span className="inline-flex items-center gap-1 text-xs font-bold px-2.5 py-1 rounded-full bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-400 flex-shrink-0 mt-0.5">
                   <CheckCircle2 size={11} /> Sent
                 </span>
                 <p className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">
@@ -101,7 +101,7 @@ export default function NewsletterHelpModal({ onClose }: { onClose: () => void }
                 </p>
               </div>
               <div className="flex gap-3 items-start p-3.5 rounded-xl bg-amber-50 dark:bg-amber-900/20 border border-amber-100 dark:border-amber-900/40">
-                <span className="inline-flex items-center gap-1 text-xs font-bold font-nunito px-2.5 py-1 rounded-full bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-400 flex-shrink-0 mt-0.5">
+                <span className="inline-flex items-center gap-1 text-xs font-bold px-2.5 py-1 rounded-full bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-400 flex-shrink-0 mt-0.5">
                   <Clock size={11} /> Scheduled
                 </span>
                 <p className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">
@@ -113,7 +113,7 @@ export default function NewsletterHelpModal({ onClose }: { onClose: () => void }
 
           {/* ── Section 4: History card actions ── */}
           <section>
-            <h3 className="font-extrabold text-base text-[#0f1e3d] dark:text-gray-50 mb-1">
+            <h3 className="font-bold text-base text-[#0f1e3d] dark:text-gray-50 mb-1">
               🎛️ Actions on each card
             </h3>
             <p className="text-xs text-gray-500 dark:text-gray-400 mb-3">Which buttons show depends on the status</p>
@@ -137,7 +137,7 @@ export default function NewsletterHelpModal({ onClose }: { onClose: () => void }
 
           {/* ── Section 5: Tips ── */}
           <section>
-            <h3 className="font-extrabold text-base text-[#0f1e3d] dark:text-gray-50 mb-3">
+            <h3 className="font-bold text-base text-[#0f1e3d] dark:text-gray-50 mb-3">
               💡 Last last — remember these things
             </h3>
             <div className="flex flex-col gap-2.5">

@@ -8,7 +8,9 @@ import { getPublicStories } from "@/lib/publicApi";
 // Encourages the user to keep reading after finishing a story.
 // excludeStoriId keeps the current story out of its own "other stories" list.
 export default async function OtherStories({ excludeStoriId }: { excludeStoriId: string }) {
-  const stories = (await getPublicStories()).filter((s) => s.stori_id !== excludeStoriId);
+  // Fetch one extra so filtering out the current story still leaves 3
+  const { stories: all } = await getPublicStories(4, 0);
+  const stories = all.filter((s) => s.stori_id !== excludeStoriId);
 
   return (
     <div

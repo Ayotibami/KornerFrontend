@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 // Rich text editor built on TipTap (ProseMirror).
 // Used for paragraph and quote blocks inside the story editor.
@@ -133,7 +133,7 @@ export default function RichTextEditor({
 
   return (
     <div
-      className="rte-box border-2 border-secondary dark:border-[#2a4a7a] rounded-xl overflow-hidden bg-[#F0F5FF] dark:bg-[#1e2a3a] font-nunito leading-[1.85]"
+      className="rte-box border-2 border-secondary dark:border-[#2a4a7a] rounded-xl overflow-hidden bg-[#F0F5FF] dark:bg-[#1e2a3a] leading-[1.85]"
       style={
         {
           fontSize,

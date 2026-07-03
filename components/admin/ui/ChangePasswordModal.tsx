@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import { createPortal } from "react-dom";
@@ -7,7 +7,7 @@ import { toast } from "sonner";
 import { changePassword } from "@/app/admin/home/action";
 
 const inputClass =
-  "w-full bg-[#F0F5FF] dark:bg-[#1e2a3a] border-2 border-secondary dark:border-[#2a4a7a] rounded-xl px-4 py-2.5 outline-none font-nunito font-medium text-[#374151] dark:text-gray-300 text-sm placeholder:text-gray-300 dark:placeholder:text-gray-600";
+  "w-full bg-[#F0F5FF] dark:bg-[#1e2a3a] border-2 border-secondary dark:border-[#2a4a7a] rounded-xl px-4 py-2.5 outline-none font-medium text-[#374151] dark:text-gray-300 text-sm placeholder:text-gray-300 dark:placeholder:text-gray-600";
 
 const rules = (p: string) => ({
   length: p.length >= 8,
@@ -58,7 +58,7 @@ export default function ChangePasswordModal({ onClose }: { onClose: () => void }
       onClick={onClose}
     >
       <div
-        className="bg-white dark:bg-[#1a1f2e] rounded-2xl w-[90vw] max-w-[380px] p-6 shadow-[0_8px_40px_rgba(0,0,0,0.22)] dark:shadow-[0_8px_40px_rgba(0,0,0,0.6)] font-nunito"
+        className="bg-white dark:bg-[#1a1f2e] rounded-2xl w-[90vw] max-w-[380px] p-6 shadow-[0_8px_40px_rgba(0,0,0,0.22)] dark:shadow-[0_8px_40px_rgba(0,0,0,0.6)]"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}

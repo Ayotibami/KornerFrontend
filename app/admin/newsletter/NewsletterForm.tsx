@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useState, useRef, useTransition, useEffect } from "react";
 import { CalendarClock, Send } from "lucide-react";
@@ -14,7 +14,7 @@ type Mode = "now" | "schedule";
 // ─── Shared input style ───────────────────────────────────────────────────────
 
 const INPUT_BASE =
-  "w-full font-nunito text-[0.95rem] border-2 border-secondary dark:border-[#2a4a7a] bg-[#F0F5FF] dark:bg-[#1e2a3a] text-[#0f1e3d] dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-600 px-4 py-3 outline-none transition-[border-color,box-shadow,background-color] duration-200 focus:border-primary focus:bg-white dark:focus:bg-[#243347] focus:ring-2 focus:ring-primary/10 disabled:opacity-60 disabled:cursor-not-allowed";
+  "w-full text-[0.95rem] border-2 border-secondary dark:border-[#2a4a7a] bg-[#F0F5FF] dark:bg-[#1e2a3a] text-[#0f1e3d] dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-600 px-4 py-3 outline-none transition-[border-color,box-shadow,background-color] duration-200 focus:border-primary focus:bg-white dark:focus:bg-[#243347] focus:ring-2 focus:ring-primary/10 disabled:opacity-60 disabled:cursor-not-allowed";
 
 // ─── Main form ────────────────────────────────────────────────────────────────
 
@@ -98,12 +98,12 @@ export default function NewsletterForm({
       {/* Subject */}
       <div className="flex flex-col gap-1.5">
         <div className="flex items-center justify-between">
-          <label className="text-sm font-bold text-primary dark:text-[#93b8f0] font-nunito">Subject</label>
+          <label className="text-sm font-bold text-primary dark:text-[#93b8f0]">Subject</label>
           <button
             type="button"
             onClick={insertNameInSubject}
             disabled={isPending}
-            className="flex items-center gap-1 text-xs font-bold font-nunito px-2.5 py-1 rounded-lg bg-secondary dark:bg-[#1e3a5f] text-primary dark:text-[#93b8f0] hover:opacity-80 transition-opacity disabled:opacity-40 cursor-pointer select-none"
+            className="flex items-center gap-1 text-xs font-bold px-2.5 py-1 rounded-lg bg-secondary dark:bg-[#1e3a5f] text-primary dark:text-[#93b8f0] hover:opacity-80 transition-opacity disabled:opacity-40 cursor-pointer select-none"
           >
             + name
           </button>
@@ -121,7 +121,7 @@ export default function NewsletterForm({
 
       {/* Body — rich editor */}
       <div className="flex flex-col gap-1.5">
-        <label className="text-sm font-bold text-primary dark:text-[#93b8f0] font-nunito">Body</label>
+        <label className="text-sm font-bold text-primary dark:text-[#93b8f0]">Body</label>
         <MailBodyEditor
           value={body}
           onChange={setBody}
@@ -141,7 +141,7 @@ export default function NewsletterForm({
         <button
           type="button"
           onClick={() => setMode("now")}
-          className={`relative z-10 flex-1 flex items-center justify-center gap-2 py-2.5 text-sm font-bold font-nunito rounded-full transition-colors duration-200 cursor-pointer ${
+          className={`relative z-10 flex-1 flex items-center justify-center gap-2 py-2.5 text-sm font-bold rounded-full transition-colors duration-200 cursor-pointer ${
             mode === "now" ? "text-primary dark:text-[#93b8f0]" : "text-gray-600 dark:text-gray-300"
           }`}
         >
@@ -151,7 +151,7 @@ export default function NewsletterForm({
         <button
           type="button"
           onClick={() => setMode("schedule")}
-          className={`relative z-10 flex-1 flex items-center justify-center gap-2 py-2.5 text-sm font-bold font-nunito rounded-full transition-colors duration-200 cursor-pointer ${
+          className={`relative z-10 flex-1 flex items-center justify-center gap-2 py-2.5 text-sm font-bold rounded-full transition-colors duration-200 cursor-pointer ${
             mode === "schedule" ? "text-primary dark:text-[#93b8f0]" : "text-gray-600 dark:text-gray-300"
           }`}
         >
@@ -176,7 +176,7 @@ export default function NewsletterForm({
           type="button"
           onClick={() => setPreviewOpen(true)}
           disabled={!canSubmit || isPending}
-          className="flex items-center gap-2 bg-primary text-white rounded-full px-8 py-3 text-sm font-bold font-nunito hover:opacity-90 active:scale-95 transition-all duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100"
+          className="flex items-center gap-2 bg-primary text-white rounded-xl px-8 py-3 text-sm font-bold hover:opacity-90 active:scale-95 transition-all duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100"
         >
           {mode === "now"
             ? <><Send size={14} /> Send now</>

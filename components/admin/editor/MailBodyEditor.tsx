@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
@@ -116,7 +116,7 @@ export default function MailBodyEditor({
     "text-gray-500 dark:text-gray-400 hover:bg-white/60 dark:hover:bg-[#1e3a5f]/60 hover:text-primary dark:hover:text-[#93b8f0]";
   const ON = "bg-primary/10 dark:bg-primary/20 text-primary dark:text-[#93b8f0]";
   const blockBtn = (on: boolean) =>
-    `flex items-center justify-center rounded-lg px-2 py-1 text-xs font-extrabold font-nunito flex-shrink-0 transition-colors duration-150 cursor-pointer select-none disabled:opacity-40 ${on ? ON : IDLE}`;
+    `flex items-center justify-center rounded-lg px-2 py-1 text-xs font-extrabold flex-shrink-0 transition-colors duration-150 cursor-pointer select-none disabled:opacity-40 ${on ? ON : IDLE}`;
 
   return (
     <div
@@ -175,7 +175,7 @@ export default function MailBodyEditor({
               type="button"
               disabled={disabled}
               onMouseDown={press(() => editor?.chain().focus().insertContent("{{name}}").run())}
-              className="flex items-center gap-1 text-xs font-bold font-nunito px-2.5 py-1 rounded-lg bg-secondary dark:bg-[#1e3a5f] text-primary dark:text-[#93b8f0] hover:opacity-80 transition-opacity disabled:opacity-40 cursor-pointer select-none"
+              className="flex items-center gap-1 text-xs font-bold px-2.5 py-1 rounded-lg bg-secondary dark:bg-[#1e3a5f] text-primary dark:text-[#93b8f0] hover:opacity-80 transition-opacity disabled:opacity-40 cursor-pointer select-none"
             >
               + name
             </button>
@@ -186,7 +186,7 @@ export default function MailBodyEditor({
       {/* ── Editor area ── */}
       <div className="relative">
         {editor?.isEmpty && (
-          <p className="absolute top-0 left-0 px-4 py-3 text-gray-400 dark:text-gray-600 font-nunito text-[0.95rem] pointer-events-none select-none leading-relaxed">
+          <p className="absolute top-0 left-0 px-4 py-3 text-gray-400 dark:text-gray-600 text-[0.95rem] pointer-events-none select-none leading-relaxed">
             {placeholder}
           </p>
         )}

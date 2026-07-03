@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 // Six individual digit boxes for OTP entry.
 // Behaviours:
@@ -10,7 +10,7 @@
 import { useRef, KeyboardEvent, ClipboardEvent, ChangeEvent } from "react";
 
 const boxClass =
-  "flex-1 min-w-0 max-w-[52px] h-14 text-center text-xl font-extrabold rounded-xl border-2 border-secondary dark:border-[#2a4a7a] bg-[#F0F5FF] dark:bg-[#1e2a3a] text-[#0f1e3d] dark:text-gray-50 outline-none focus:border-primary dark:focus:border-[#93b8f0] transition-colors font-nunito";
+  "flex-1 min-w-0 max-w-[52px] h-14 text-center text-xl font-bold rounded-xl border-2 border-secondary dark:border-[#2a4a7a] bg-[#F0F5FF] dark:bg-[#1e2a3a] text-[#0f1e3d] dark:text-gray-50 outline-none focus:border-primary dark:focus:border-[#93b8f0] focus:ring-2 focus:ring-primary/10 transition-colors";
 
 export default function OtpInput({
   value,

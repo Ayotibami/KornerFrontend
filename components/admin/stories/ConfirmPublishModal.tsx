@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 // Confirmation modal for any action that makes a story live right now —
 // publishing a draft (own or someone else's) or approving a Pending story.
@@ -13,9 +13,9 @@ import { createPortal } from "react-dom";
 import { X, Loader2 } from "lucide-react";
 
 const BTN_GHOST =
-  "flex items-center gap-2 bg-secondary dark:bg-[#1e3a5f] text-primary dark:text-[#93b8f0] rounded-full px-6 py-2.5 text-sm font-bold font-nunito hover:opacity-80 transition-all duration-200 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed";
+  "flex items-center gap-2 bg-secondary dark:bg-[#1e3a5f] text-primary dark:text-[#93b8f0] rounded-xl px-6 py-2.5 text-sm font-bold hover:opacity-80 transition-all duration-200 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed";
 const BTN_GREEN_SOLID =
-  "flex items-center gap-2 bg-[#16A34A] text-white rounded-full px-6 py-2.5 text-sm font-bold font-nunito hover:opacity-90 active:scale-95 transition-all duration-200 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed disabled:active:scale-100";
+  "flex items-center gap-2 bg-[#16A34A] text-white rounded-xl px-6 py-2.5 text-sm font-bold hover:opacity-90 active:scale-95 transition-all duration-200 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed disabled:active:scale-100";
 
 export default function ConfirmPublishModal({
   icon,
@@ -49,7 +49,7 @@ export default function ConfirmPublishModal({
       onClick={handleClose}
     >
       <div
-        className="relative bg-white dark:bg-[#1a1f2e] rounded-2xl w-full max-w-[480px] flex flex-col shadow-[0_8px_40px_rgba(0,0,0,0.2)] dark:shadow-[0_8px_40px_rgba(0,0,0,0.6)] font-nunito overflow-hidden"
+        className="relative bg-white dark:bg-[#1a1f2e] rounded-2xl w-full max-w-[480px] flex flex-col shadow-[0_8px_40px_rgba(0,0,0,0.2)] dark:shadow-[0_8px_40px_rgba(0,0,0,0.6)] overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
         {/* ── Header ── */}

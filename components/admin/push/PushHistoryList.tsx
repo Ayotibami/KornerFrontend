@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 // Recent push history on the push page — list comes pre-fetched from the
 // server (no stats, cheap). Click-through stats are fetched on demand per
@@ -37,7 +37,7 @@ function HistoryRow({ send }: { send: PushSend }) {
         <button
           type="button"
           onClick={handleCheck}
-          className="flex items-center gap-1.5 text-xs font-bold font-nunito px-3 py-1.5 rounded-full bg-secondary dark:bg-[#1e3a5f] text-primary dark:text-[#93b8f0] hover:opacity-80 transition-opacity cursor-pointer flex-shrink-0"
+          className="flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg bg-secondary dark:bg-[#1e3a5f] text-primary dark:text-[#93b8f0] hover:opacity-80 transition-opacity cursor-pointer flex-shrink-0"
         >
           <BarChart3 size={13} />
           Check stats
@@ -54,10 +54,10 @@ function HistoryRow({ send }: { send: PushSend }) {
 
       {state.status === "loaded" && (
         <div className="flex items-center gap-2 flex-shrink-0">
-          <span className="text-xs font-bold rounded-full px-2.5 py-1 bg-[#DBEAFE] dark:bg-[#1e3a5f] text-[#1e40af] dark:text-[#93c5fd]">
+          <span className="text-xs font-bold rounded-xl px-2.5 py-1 bg-[#DBEAFE] dark:bg-[#1e3a5f] text-[#1e40af] dark:text-[#93c5fd]">
             {state.stats.successful} reached
           </span>
-          <span className="text-xs font-bold rounded-full px-2.5 py-1 bg-[#D1FAE5] dark:bg-[#022C22] text-[#065F46] dark:text-[#6EE7B7]">
+          <span className="text-xs font-bold rounded-xl px-2.5 py-1 bg-[#D1FAE5] dark:bg-[#022C22] text-[#065F46] dark:text-[#6EE7B7]">
             {state.stats.converted} clicked
           </span>
         </div>
@@ -76,7 +76,7 @@ export default function PushHistoryList({ sends }: { sends: PushSend[] }) {
   }
 
   return (
-    <div className="bg-white dark:bg-[#1a1f2e] rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.08)] dark:shadow-[0_4px_20px_rgba(0,0,0,0.4)] p-4 sm:p-6 flex flex-col">
+    <div className="bg-white dark:bg-[#1a1f2e] rounded-2xl shadow-[0_2px_8px_rgba(0,0,0,0.06)] dark:shadow-[0_2px_8px_rgba(0,0,0,0.3)] p-4 sm:p-6 flex flex-col">
       {sends.map((send) => (
         <HistoryRow key={send.id} send={send} />
       ))}

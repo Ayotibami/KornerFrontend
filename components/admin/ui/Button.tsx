@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 // Shared button used on the admin auth pages (login and signup).
 // primary   — solid blue, main CTA. Stays the same in dark mode.
@@ -35,7 +35,7 @@ export default function Button({
       type={type}
       disabled={disabled}
       onClick={onClick}
-      className={`w-full py-4 px-8 rounded-full font-bold text-sm font-nunito transition-all duration-200 ${variants[variant]} ${className}`}
+      className={`w-full py-4 px-8 rounded-xl font-semibold text-sm transition-all duration-200 ${variants[variant]} ${className}`}
     >
       {children}
     </button>

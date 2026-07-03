@@ -1,16 +1,29 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import OneSignal from "react-onesignal";
 import { oneSignalReady } from "@/components/usercomponent/OneSignalInit";
 import Button from "@/components/admincomponent/Button";
 import { nunito } from "@/lib/font";
+import { subscribeToNewsletter } from "@/app/subscribe-action";
+
+type NotifStatus = "idle" | "enabled" | "already-on" | "blocked";
+type EmailStatus = "idle" | "success" | "already-subscribed" | "error";
+
+function isValidEmail(email: string) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
+}
+
+const TEXT = { fontFamily: nunito.style.fontFamily };
 
 export default function ActivationForm() {
-  // "idle" = not yet clicked, "enabled" = just subscribed, "already-on" = was already subscribed, "blocked" = browser denied
-  const [notifStatus, setNotifStatus] = useState<
-    "idle" | "enabled" | "already-on" | "blocked"
-  >("idle");
+  const [notifStatus, setNotifStatus] = useState<NotifStatus>("idle");
+
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [emailStatus, setEmailStatus] = useState<EmailStatus>("idle");
+  const [emailError, setEmailError] = useState("");
+  const [isPending, startTransition] = useTransition();
 
   const handleEnableNotifications = async () => {
     if (Notification.permission === "denied") {
@@ -18,22 +31,14 @@ export default function ActivationForm() {
       return;
     }
     if (Notification.permission === "granted") {
-      // call optIn() even if already granted — covers the case where the user
-      // enabled notifications directly in browser settings without going through
-      // our button, meaning OneSignal may have no record of them yet.
-      // optIn() is safe to call multiple times — OneSignal upserts, no duplicates.
       try {
         await oneSignalReady;
         await OneSignal.User.PushSubscription.optIn();
-        const subscriptionId = OneSignal.User.PushSubscription.id;
-
-        console.log(subscriptionId);
         setNotifStatus("already-on");
       } catch (err) {
         if (process.env.NODE_ENV === "development")
           console.error("OneSignal optIn failed:", err);
       }
-
       return;
     }
     try {
@@ -46,6 +51,37 @@ export default function ActivationForm() {
     } catch (error) {
       console.error("OneSignal init or permission request failed", error);
     }
+  };
+
+  const handleEmailSubmit = () => {
+    setEmailError("");
+
+    if (!name.trim()) {
+      setEmailError("Enter your nickname.");
+      return;
+    }
+    if (!email.trim()) {
+      setEmailError("Enter your email address.");
+      return;
+    }
+    if (!isValidEmail(email)) {
+      setEmailError("That doesn't look like a valid email.");
+      return;
+    }
+
+    startTransition(async () => {
+      const result = await subscribeToNewsletter(name, email);
+      if (!result.ok) {
+        if (result.alreadySubscribed) {
+          setEmailStatus("already-subscribed");
+        } else {
+          setEmailStatus("error");
+          setEmailError(result.message);
+        }
+        return;
+      }
+      setEmailStatus("success");
+    });
   };
 
   return (
@@ -66,7 +102,7 @@ export default function ActivationForm() {
       <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
         <p
           style={{
-            fontFamily: nunito.style.fontFamily,
+            ...TEXT,
             fontSize: "clamp(1.25rem, 3vw, 1.875rem)",
             fontWeight: 800,
             color: "white",
@@ -76,7 +112,7 @@ export default function ActivationForm() {
         </p>
         <p
           style={{
-            fontFamily: nunito.style.fontFamily,
+            ...TEXT,
             fontSize: "0.9375rem",
             fontWeight: 500,
             color: "#C4C4C4",
@@ -92,79 +128,116 @@ export default function ActivationForm() {
 
       {/* Right: email section + or divider + notify section */}
       <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-        {/* Email section */}
-        <input
-          placeholder="Nickname"
-          style={{
-            backgroundColor: "white",
-            border: "none",
-            borderRadius: 14,
-            padding: "16px 20px",
-            fontSize: "0.9375rem",
-            fontFamily: nunito.style.fontFamily,
-            color: "#0f1e3d",
-            outline: "none",
-            width: "100%",
-            boxSizing: "border-box",
-          }}
-        />
-        <input
-          placeholder="Email"
-          type="email"
-          style={{
-            backgroundColor: "white",
-            border: "none",
-            borderRadius: 14,
-            padding: "16px 20px",
-            fontSize: "0.9375rem",
-            fontFamily: nunito.style.fontFamily,
-            color: "#0f1e3d",
-            outline: "none",
-            width: "100%",
-            boxSizing: "border-box",
-          }}
-        />
-        <div style={{ width: "fit-content" }}>
-          <Button>Email me</Button>
-        </div>
 
-        {/* "or" divider — two lines with "or" centred between them */}
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: 12,
-            marginTop: 8,
-          }}
-        >
+        {/* ── Email section ── */}
+        {emailStatus === "success" ? (
           <div
             style={{
-              flex: 1,
-              height: 1,
-              backgroundColor: "rgba(255,255,255,0.15)",
-            }}
-          />
-          <p
-            style={{
-              fontFamily: nunito.style.fontFamily,
-              fontSize: "0.8rem",
-              fontWeight: 600,
-              color: "rgba(255,255,255,0.4)",
-              margin: 0,
+              backgroundColor: "rgba(94,207,168,0.12)",
+              border: "1px solid rgba(94,207,168,0.35)",
+              borderRadius: 14,
+              padding: "20px 24px",
+              display: "flex",
+              flexDirection: "column",
+              gap: 6,
             }}
           >
-            or
-          </p>
+            <p style={{ ...TEXT, fontSize: "0.9375rem", fontWeight: 700, color: "#5ECFA8", margin: 0 }}>
+              You don land! 🎉
+            </p>
+            <p style={{ ...TEXT, fontSize: "0.85rem", fontWeight: 500, color: "rgba(255,255,255,0.6)", margin: 0, lineHeight: 1.6 }}>
+              {name.trim() ? `${name.trim()}, we` : "We"} go send every new stori straight to{" "}
+              <span style={{ color: "rgba(255,255,255,0.85)", fontWeight: 600 }}>{email}</span>.
+              No spam — only Korner.
+            </p>
+          </div>
+        ) : emailStatus === "already-subscribed" ? (
           <div
             style={{
-              flex: 1,
-              height: 1,
-              backgroundColor: "rgba(255,255,255,0.15)",
+              backgroundColor: "rgba(180,207,246,0.1)",
+              border: "1px solid rgba(180,207,246,0.25)",
+              borderRadius: 14,
+              padding: "20px 24px",
+              display: "flex",
+              flexDirection: "column",
+              gap: 6,
             }}
-          />
+          >
+            <p style={{ ...TEXT, fontSize: "0.9375rem", fontWeight: 700, color: "#B4CFF6", margin: 0 }}>
+              You don already dey our list!
+            </p>
+            <p style={{ ...TEXT, fontSize: "0.85rem", fontWeight: 500, color: "rgba(255,255,255,0.5)", margin: 0, lineHeight: 1.6 }}>
+              <span style={{ color: "rgba(255,255,255,0.8)", fontWeight: 600 }}>{email}</span>{" "}
+              is already subscribed. We go find you when we drop a new stori.
+            </p>
+          </div>
+        ) : (
+          <>
+            <input
+              placeholder="Nickname"
+              value={name}
+              onChange={(e) => { setName(e.target.value); setEmailError(""); }}
+              disabled={isPending}
+              style={{
+                backgroundColor: "white",
+                border: "none",
+                borderRadius: 14,
+                padding: "16px 20px",
+                fontSize: "0.9375rem",
+                ...TEXT,
+                color: "#0f1e3d",
+                outline: "none",
+                width: "100%",
+                boxSizing: "border-box",
+                opacity: isPending ? 0.6 : 1,
+              }}
+            />
+            <input
+              placeholder="Email"
+              type="email"
+              value={email}
+              onChange={(e) => { setEmail(e.target.value); setEmailError(""); }}
+              disabled={isPending}
+              onKeyDown={(e) => { if (e.key === "Enter") handleEmailSubmit(); }}
+              style={{
+                backgroundColor: "white",
+                border: "2px solid transparent",
+                borderRadius: 14,
+                padding: "16px 20px",
+                fontSize: "0.9375rem",
+                ...TEXT,
+                color: "#0f1e3d",
+                outline: "none",
+                width: "100%",
+                boxSizing: "border-box",
+                opacity: isPending ? 0.6 : 1,
+              }}
+            />
+
+            {emailError && (
+              <p style={{ ...TEXT, fontSize: "0.8rem", fontWeight: 500, color: "#FF6B6B", margin: 0 }}>
+                {emailError}
+              </p>
+            )}
+
+            <div style={{ width: "fit-content" }}>
+              <Button onClick={handleEmailSubmit} disabled={isPending}>
+                {isPending ? "Sending…" : "Email me"}
+              </Button>
+            </div>
+          </>
+        )}
+
+        {/* "or" divider */}
+        <div style={{ display: "flex", alignItems: "center", gap: 12, marginTop: 8 }}>
+          <div style={{ flex: 1, height: 1, backgroundColor: "rgba(255,255,255,0.15)" }} />
+          <p style={{ ...TEXT, fontSize: "0.8rem", fontWeight: 600, color: "rgba(255,255,255,0.4)", margin: 0 }}>
+            or
+          </p>
+          <div style={{ flex: 1, height: 1, backgroundColor: "rgba(255,255,255,0.15)" }} />
         </div>
 
-        {/* Notify section */}
+        {/* ── Notify section ── */}
         <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
           {notifStatus === "idle" && (
             <div style={{ width: "fit-content" }}>
@@ -173,61 +246,26 @@ export default function ActivationForm() {
           )}
 
           {notifStatus === "enabled" && (
-            <p
-              style={{
-                fontFamily: nunito.style.fontFamily,
-                fontSize: "0.875rem",
-                fontWeight: 600,
-                color: "#5ECFA8",
-                margin: 0,
-              }}
-            >
-              Notifications On
+            <p style={{ ...TEXT, fontSize: "0.875rem", fontWeight: 600, color: "#5ECFA8", margin: 0 }}>
+              Notifications on — we go ping you directly!
             </p>
           )}
 
           {notifStatus === "already-on" && (
-            <p
-              style={{
-                fontFamily: nunito.style.fontFamily,
-                fontSize: "0.875rem",
-                fontWeight: 600,
-                color: "#5ECFA8",
-                margin: 0,
-              }}
-            >
-              You don already subscribe — we go find you when we drop a new
-              stori
+            <p style={{ ...TEXT, fontSize: "0.875rem", fontWeight: 600, color: "#5ECFA8", margin: 0 }}>
+              You don already subscribe — we go find you when we drop a new stori
             </p>
           )}
 
           {notifStatus === "blocked" && (
-            <p
-              style={{
-                fontFamily: nunito.style.fontFamily,
-                fontSize: "0.8rem",
-                fontWeight: 500,
-                color: "#FF6B6B",
-                margin: 0,
-                lineHeight: 1.6,
-              }}
-            >
+            <p style={{ ...TEXT, fontSize: "0.8rem", fontWeight: 500, color: "#FF6B6B", margin: 0, lineHeight: 1.6 }}>
               You don block notifications for this site. To fix am, click the
               lock icon for your address bar, go to Site settings, change
               Notifications back to Allow, then reload the page.
             </p>
           )}
 
-          <p
-            style={{
-              fontFamily: nunito.style.fontFamily,
-              fontSize: "0.8rem",
-              fontWeight: 500,
-              color: "rgba(255,255,255,0.4)",
-              margin: 0,
-              lineHeight: 1.6,
-            }}
-          >
+          <p style={{ ...TEXT, fontSize: "0.8rem", fontWeight: 500, color: "rgba(255,255,255,0.4)", margin: 0, lineHeight: 1.6 }}>
             No time to dey check mail? Click Notify me and we go ping you
             directly on your device whenever we drop a new stori — no inbox, no
             wahala. iPhone users, you go need to add this site to your home

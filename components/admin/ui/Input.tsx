@@ -1,9 +1,5 @@
 "use client";
 
-// Shared form input for the admin auth pages.
-// Automatically handles password fields: shows an eye icon toggle to reveal/hide the value.
-// The `peer` class lets the eye button use peer-focus:text-primary without JS.
-
 import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
 
@@ -33,7 +29,9 @@ export default function Input({
   return (
     <div className="flex flex-col gap-1.5">
       {label && (
-        <label className="text-sm font-bold text-primary font-nunito">{label}</label>
+        <label className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">
+          {label}
+        </label>
       )}
 
       <div className="relative">
@@ -45,7 +43,7 @@ export default function Input({
           placeholder={placeholder}
           disabled={disabled}
           className={`
-            peer w-full font-nunito text-[0.95rem] rounded-full border-2 border-secondary
+            peer w-full text-[0.95rem] rounded-xl border-2 border-secondary
             dark:border-[#2a4a7a]
             bg-[#F0F5FF] dark:bg-[#1e2a3a]
             text-[#0f1e3d] dark:text-gray-100
@@ -63,9 +61,9 @@ export default function Input({
             type="button"
             onClick={() => setShowPassword((p) => !p)}
             disabled={disabled}
-            className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 peer-focus:text-primary transition-colors duration-200 disabled:cursor-not-allowed"
+            className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 peer-focus:text-primary transition-colors duration-200 disabled:cursor-not-allowed cursor-pointer"
           >
-            {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+            {showPassword ? <EyeOff size={17} /> : <Eye size={17} />}
           </button>
         )}
       </div>

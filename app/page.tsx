@@ -7,6 +7,7 @@
 // needed), and this needs to be a Server Component to fetch the real story
 // list for PeepSection's preview cards.
 
+import type { Metadata } from "next";
 import Navbar from "@/components/usercomponent/Navbar";
 import HeroSection from "@/components/usercomponent/HeroSection";
 import AboutSection from "@/components/usercomponent/AboutSection";
@@ -16,8 +17,29 @@ import ActivationForm from "@/components/usercomponent/ActivationForm";
 import Footer from "@/components/usercomponent/Footer";
 import { getPublicStories } from "@/lib/publicApi";
 
+export const metadata: Metadata = {
+  title: "The Korner — Kampos talks you listen",
+  description:
+    "Korner's is that chill corner on Kampos where we just get student life. From late-night gist about love and grades to real talks on career, money, and culture — it's Kampos talking your talk, straight from our hearts to yours.",
+  openGraph: {
+    title: "The Korner — Kampos talks you listen",
+    description:
+      "Korner's is that chill corner on Kampos where we just get student life. From late-night gist about love and grades to real talks on career, money, and culture — it's Kampos talking your talk, straight from our hearts to yours.",
+    url: "/",
+    type: "website",
+    images: [{ url: "/images/og-default.png", width: 1200, height: 630, alt: "The Korner" }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "The Korner — Kampos talks you listen",
+    description:
+      "Korner's is that chill corner on Kampos where we just get student life. From late-night gist about love and grades to real talks on career, money, and culture.",
+    images: ["/images/og-default.png"],
+  },
+};
+
 export default async function Home() {
-  const stories = await getPublicStories();
+  const { stories } = await getPublicStories(3, 0);
 
   return (
     <div

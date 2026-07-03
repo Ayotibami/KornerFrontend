@@ -1,13 +1,4 @@
-"use client";
-
-// Interactive half of StoriesStatCard — split out because clicking a row
-// needs to override the card-wide navigation (preventDefault + stopPropagation
-// on a nested click), which needs client JS. Data-fetching stays in the
-// Server Component parent; this just renders what it's given.
-//
-// Same nested-clickable pattern already used in StoryCard.tsx: an outer
-// <Link> for the whole card, real <button>s inside it for the more specific
-// actions, each one stopping the outer Link's navigation before doing its own.
+﻿"use client";
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -30,13 +21,13 @@ export default function StoriesCardClient({ rows }: { rows: StoryStatRow[] }) {
   return (
     <Link
       href="/admin/stories"
-      className="bg-white dark:bg-[#1a1f2e] rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.12)] dark:shadow-[0_4px_20px_rgba(0,0,0,0.4)] border-l-4 border-[#FFC700] p-5 flex flex-col gap-4 w-full max-w-sm transition-transform hover:-translate-y-1 hover:scale-[1.02] hover:shadow-xl"
+      className="bg-white dark:bg-[#1a1f2e] rounded-2xl border-l-4 border-[#FFC700] shadow-[0_2px_8px_rgba(0,0,0,0.06)] dark:shadow-[0_2px_8px_rgba(0,0,0,0.3)] p-5 flex flex-col gap-4 w-full transition-all duration-200 hover:shadow-[0_6px_20px_rgba(0,0,0,0.09)] dark:hover:shadow-[0_6px_20px_rgba(0,0,0,0.45)] hover:-translate-y-0.5"
     >
-      <p className="font-extrabold text-xl text-[#0f1e3d] dark:text-gray-50 font-nunito">
+      <p className="font-semibold text-base text-[#0f1e3d] dark:text-gray-100">
         Stories
       </p>
 
-      <div className="flex flex-col gap-1.5">
+      <div className="flex flex-col gap-1">
         {rows.map(({ label, href, count, icon, iconBg, iconColor, pillBg, pillColor }) => (
           <button
             key={label}
@@ -46,17 +37,17 @@ export default function StoriesCardClient({ rows }: { rows: StoryStatRow[] }) {
               e.stopPropagation();
               router.push(href);
             }}
-            className="flex items-center justify-between rounded-lg px-1.5 py-1.5 -mx-1.5 transition-colors hover:bg-slate-50 dark:hover:bg-white/5 cursor-pointer text-left"
+            className="flex items-center justify-between rounded-xl px-2 py-2 -mx-2 transition-colors hover:bg-gray-50 dark:hover:bg-white/[0.04] cursor-pointer text-left"
           >
             <div className="flex items-center gap-2.5">
-              <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${iconBg}`}>
+              <div className={`w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 ${iconBg}`}>
                 {icon}
               </div>
-              <span className={`text-sm font-bold font-nunito hover:underline ${iconColor}`}>
+              <span className={`text-sm font-medium ${iconColor}`}>
                 {label}
               </span>
             </div>
-            <span className={`text-sm font-bold rounded-full px-3 py-0.5 min-w-[2.25rem] text-center ${pillBg} ${pillColor}`}>
+            <span className={`text-xs font-semibold rounded-xl px-2.5 py-0.5 min-w-[2rem] text-center ${pillBg} ${pillColor}`}>
               {count}
             </span>
           </button>

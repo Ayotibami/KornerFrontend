@@ -1,6 +1,3 @@
-// Shared empty state for both StoriesList and MasterStoriesList.
-// Extracted so the two lists don't duplicate this SVG/copy.
-
 import Link from "next/link";
 
 export default function StoriesEmptyState({
@@ -10,17 +7,6 @@ export default function StoriesEmptyState({
   status?: string;
   hasAnyStories: boolean;
 }) {
-  // Derive the heading and sub-text based on two things:
-  //   1. Which filter is active (status)
-  //   2. Whether any stories exist at all (hasAnyStories)
-  //
-  // Why we need hasAnyStories:
-  //   When the Draft filter is active and there are no drafts, `stories` (the filtered
-  //   list) is empty — but there may be published or pending stories that DO exist.
-  //   Without this flag, the Draft empty state would say "You have no stories yet"
-  //   even when the admin has published stories. We use hasAnyStories to distinguish
-  //   "no stories at all" from "no stories matching this filter".
-
   let heading: string;
   let subText: React.ReactNode;
 
@@ -31,23 +17,21 @@ export default function StoriesEmptyState({
     heading = "No pending stories";
     subText = "Stories submitted for review will appear here";
   } else if (hasAnyStories) {
-    // Stories exist but none are drafts
     heading = "No drafts yet";
     subText = (
       <>
         Go ahead and{" "}
-        <Link href="/admin/stories/create" className="text-primary font-bold no-underline">
+        <Link href="/admin/stories/create" className="text-primary font-semibold no-underline">
           create a new draft
         </Link>
       </>
     );
   } else {
-    // Truly no stories at all
     heading = "You have no stories yet";
     subText = (
       <>
         Go ahead and{" "}
-        <Link href="/admin/stories/create" className="text-primary font-bold no-underline">
+        <Link href="/admin/stories/create" className="text-primary font-semibold no-underline">
           create one
         </Link>
       </>
@@ -55,10 +39,10 @@ export default function StoriesEmptyState({
   }
 
   return (
-    <div className="flex flex-col items-center justify-center w-full gap-6 py-[clamp(40px,10vw,80px)] px-6">
+    <div className="flex flex-col items-center justify-center w-full gap-5 py-[clamp(40px,10vw,80px)] px-6">
       <svg
         viewBox="0 0 400 220"
-        style={{ width: "clamp(240px, 60vw, 400px)", height: "auto" }}
+        style={{ width: "clamp(200px, 55vw, 360px)", height: "auto" }}
         xmlns="http://www.w3.org/2000/svg"
       >
         <rect width="400" height="220" fill="#FFF7ED" rx="20" />
@@ -88,19 +72,13 @@ export default function StoriesEmptyState({
         <rect x="270" y="104" width="12" height="26" rx="6" fill="#15803D" />
         <rect x="308" y="124" width="32" height="9" rx="4" fill="#15803D" />
         <rect x="328" y="110" width="12" height="26" rx="6" fill="#15803D" />
-        <ellipse cx="150" cy="170" rx="12" ry="7" fill="#B45309" opacity="0.6" />
-        <ellipse cx="255" cy="175" rx="8" ry="5" fill="#B45309" opacity="0.5" />
-        <ellipse cx="190" cy="182" rx="6" ry="4" fill="#92400E" opacity="0.5" />
-        <circle cx="130" cy="162" r="7" fill="none" stroke="#92400E" strokeWidth="1.5" opacity="0.5" />
-        <line x1="125" y1="157" x2="135" y2="167" stroke="#92400E" strokeWidth="1" opacity="0.5" />
-        <line x1="135" y1="157" x2="125" y2="167" stroke="#92400E" strokeWidth="1" opacity="0.5" />
       </svg>
 
-      <div className="text-center flex flex-col gap-2 font-nunito">
-        <p className="text-[clamp(1.1rem,2.5vw,1.35rem)] font-extrabold text-[#0f1e3d] dark:text-gray-50">
+      <div className="text-center flex flex-col gap-1.5">
+        <p className="text-[clamp(1rem,2.5vw,1.2rem)] font-semibold text-[#0f1e3d] dark:text-gray-50">
           {heading}
         </p>
-        <p className="text-[clamp(0.85rem,2vw,1rem)] font-medium text-gray-500 dark:text-gray-400">
+        <p className="text-sm text-gray-500 dark:text-gray-400">
           {subText}
         </p>
       </div>

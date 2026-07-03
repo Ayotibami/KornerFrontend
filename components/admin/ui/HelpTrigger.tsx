@@ -10,11 +10,11 @@ export default function HelpTrigger() {
   return (
     <>
       <button
-        title="Help — e go make sense, I promise"
+        title="Help"
         onClick={() => setOpen(true)}
-        className="w-9 h-9 flex items-center justify-center rounded-full text-primary dark:text-[#93b8f0] hover:bg-secondary/40 dark:hover:bg-[#1e3a5f]/50 transition-colors cursor-pointer"
+        className="w-9 h-9 flex items-center justify-center rounded-xl text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-white/[0.08] transition-colors cursor-pointer"
       >
-        <HelpCircle size={20} />
+        <HelpCircle size={17} />
       </button>
       {open && <HelpModal onClose={() => setOpen(false)} />}
     </>

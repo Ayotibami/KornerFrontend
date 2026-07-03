@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 // Confirmation modal for the master-only delete-admin action, opened from
 // AdminDetailModal's danger zone. Deletion is irreversible and blocked
@@ -13,9 +13,9 @@ import { toast } from "sonner";
 import { deleteAdmin } from "@/app/admin/writers/action";
 
 const BTN_GHOST =
-  "flex items-center gap-2 bg-secondary dark:bg-[#1e3a5f] text-primary dark:text-[#93b8f0] rounded-full px-6 py-2.5 text-sm font-bold font-nunito hover:opacity-80 transition-all duration-200 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed";
+  "flex items-center gap-2 bg-secondary dark:bg-[#1e3a5f] text-primary dark:text-[#93b8f0] rounded-xl px-6 py-2.5 text-sm font-bold hover:opacity-80 transition-all duration-200 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed";
 const BTN_RED_SOLID =
-  "flex items-center gap-2 bg-[#DC2626] text-white rounded-full px-6 py-2.5 text-sm font-bold font-nunito hover:opacity-90 active:scale-95 transition-all duration-200 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed disabled:active:scale-100";
+  "flex items-center gap-2 bg-[#DC2626] text-white rounded-xl px-6 py-2.5 text-sm font-bold hover:opacity-90 active:scale-95 transition-all duration-200 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed disabled:active:scale-100";
 
 export default function DeleteAdminModal({
   adminId,
@@ -63,7 +63,7 @@ export default function DeleteAdminModal({
       onClick={handleClose}
     >
       <div
-        className="relative bg-white dark:bg-[#1a1f2e] rounded-2xl w-full max-w-[480px] flex flex-col shadow-[0_8px_40px_rgba(0,0,0,0.2)] dark:shadow-[0_8px_40px_rgba(0,0,0,0.6)] font-nunito overflow-hidden"
+        className="relative bg-white dark:bg-[#1a1f2e] rounded-2xl w-full max-w-[480px] flex flex-col shadow-[0_8px_40px_rgba(0,0,0,0.2)] dark:shadow-[0_8px_40px_rgba(0,0,0,0.6)] overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex justify-between items-center p-6 pb-4 border-b border-slate-100 dark:border-slate-700">
@@ -100,7 +100,7 @@ export default function DeleteAdminModal({
             placeholder="Type DELETE to confirm"
             disabled={isDeleting}
             autoFocus
-            className="w-full font-nunito text-[0.95rem] border-2 border-secondary dark:border-[#2a4a7a] bg-[#F0F5FF] dark:bg-[#1e2a3a] text-[#0f1e3d] dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-600 px-4 py-3 rounded-xl outline-none transition-[border-color,box-shadow,background-color] duration-200 focus:border-[#DC2626] focus:bg-white dark:focus:bg-[#243347] focus:ring-2 focus:ring-[#DC2626]/10 disabled:opacity-60 disabled:cursor-not-allowed"
+            className="w-full text-[0.95rem] border-2 border-secondary dark:border-[#2a4a7a] bg-[#F0F5FF] dark:bg-[#1e2a3a] text-[#0f1e3d] dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-600 px-4 py-3 rounded-xl outline-none transition-[border-color,box-shadow,background-color] duration-200 focus:border-[#DC2626] focus:bg-white dark:focus:bg-[#243347] focus:ring-2 focus:ring-[#DC2626]/10 disabled:opacity-60 disabled:cursor-not-allowed"
           />
 
           <div className="flex justify-end gap-3 mt-2">

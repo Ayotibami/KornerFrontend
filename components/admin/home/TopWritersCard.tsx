@@ -1,15 +1,4 @@
-// Master's home screen — "Top Writers" card.
-// Ranks writers (role: "writer", master excluded — this is about the team,
-// master already has their own "Mine" count on the Stories card) by
-// Published story count. No new backend — groups /master/stories by
-// admin_id (cross-referenced against /master/admins for role) entirely in
-// JS, same counting trick used throughout this dashboard.
-//
-// Top 3 get a medal-colored rank badge (gold/silver/bronze); the rest (if
-// shown) get a plain numbered badge. Each row links to that writer's
-// Published stories specifically.
-
-import Link from "next/link";
+﻿import Link from "next/link";
 import Image from "next/image";
 import { Trophy } from "lucide-react";
 import { apiRequest } from "@/lib/api";
@@ -23,9 +12,9 @@ type AdminListItem = {
 };
 
 const RANK_COLORS = [
-  "bg-[#FFF8E1] dark:bg-[#3a2e05] text-[#C77F00] dark:text-[#FFC700]", // gold
-  "bg-[#F1F5F9] dark:bg-[#334155] text-[#475569] dark:text-[#CBD5E1]", // silver
-  "bg-[#FFEDD5] dark:bg-[#431407] text-[#C2410C] dark:text-[#FDBA74]", // bronze
+  "bg-[#FFF8E1] dark:bg-[#3a2e05] text-[#C77F00] dark:text-[#FFC700]",
+  "bg-[#F1F5F9] dark:bg-[#334155] text-[#475569] dark:text-[#CBD5E1]",
+  "bg-[#FFEDD5] dark:bg-[#431407] text-[#C2410C] dark:text-[#FDBA74]",
 ];
 
 export default async function TopWritersCard() {
@@ -56,8 +45,8 @@ export default async function TopWritersCard() {
     .slice(0, 5);
 
   return (
-    <div className="bg-white dark:bg-[#1a1f2e] rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.12)] dark:shadow-[0_4px_20px_rgba(0,0,0,0.4)] border-l-4 border-[#FFC700] p-5 flex flex-col gap-3 w-full max-w-sm">
-      <p className="font-extrabold text-xl text-[#0f1e3d] dark:text-gray-50 font-nunito">
+    <div className="bg-white dark:bg-[#1a1f2e] rounded-2xl border-l-4 border-[#FFC700] shadow-[0_2px_8px_rgba(0,0,0,0.06)] dark:shadow-[0_2px_8px_rgba(0,0,0,0.3)] p-5 flex flex-col gap-4 w-full">
+      <p className="font-semibold text-base text-[#0f1e3d] dark:text-gray-100">
         Top Writers
       </p>
 
@@ -66,40 +55,42 @@ export default async function TopWritersCard() {
           No published stories yet.
         </p>
       ) : (
-        ranked.map(({ admin, count }, i) => (
-          <Link
-            key={admin.admin_id}
-            href={`/admin/stories?admin=${admin.admin_id}&status=Published`}
-            className="flex items-center justify-between rounded-lg px-1.5 py-1.5 -mx-1.5 transition-colors hover:bg-slate-50 dark:hover:bg-white/5"
-          >
-            <div className="flex items-center gap-2.5 min-w-0">
-              <div
-                className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 font-bold text-sm ${
-                  RANK_COLORS[i] ?? "bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-300"
-                }`}
-              >
-                {i < 3 ? <Trophy size={14} /> : i + 1}
+        <div className="flex flex-col gap-1">
+          {ranked.map(({ admin, count }, i) => (
+            <Link
+              key={admin.admin_id}
+              href={`/admin/stories?admin=${admin.admin_id}&status=Published`}
+              className="flex items-center justify-between rounded-xl px-2 py-2 -mx-2 transition-colors hover:bg-gray-50 dark:hover:bg-white/[0.04]"
+            >
+              <div className="flex items-center gap-2.5 min-w-0">
+                <div
+                  className={`w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 text-xs font-bold ${
+                    RANK_COLORS[i] ?? "bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-300"
+                  }`}
+                >
+                  {i < 3 ? <Trophy size={13} /> : i + 1}
+                </div>
+                <div className="relative w-7 h-7 rounded-full overflow-hidden bg-slate-200 dark:bg-[#2d3748] flex-shrink-0 ring-1 ring-white dark:ring-[#1a1f2e]">
+                  {admin.avatar_url && (
+                    <Image
+                      src={admin.avatar_url}
+                      alt={admin.admin_name}
+                      fill
+                      className="object-cover"
+                      unoptimized
+                    />
+                  )}
+                </div>
+                <span className="text-sm font-medium text-gray-700 dark:text-gray-200 truncate">
+                  {admin.admin_name}
+                </span>
               </div>
-              <div className="relative w-6 h-6 rounded-full overflow-hidden bg-slate-200 dark:bg-[#2d3748] flex-shrink-0">
-                {admin.avatar_url && (
-                  <Image
-                    src={admin.avatar_url}
-                    alt={admin.admin_name}
-                    fill
-                    className="object-cover"
-                    unoptimized
-                  />
-                )}
-              </div>
-              <span className="text-sm font-bold font-nunito text-gray-700 dark:text-gray-200 truncate">
-                {admin.admin_name}
+              <span className="text-xs font-semibold rounded-xl px-2.5 py-0.5 min-w-[2rem] text-center bg-[#D1FAE5] dark:bg-[#022C22] text-[#065F46] dark:text-[#6EE7B7] flex-shrink-0">
+                {count}
               </span>
-            </div>
-            <span className="text-sm font-bold rounded-full px-3 py-0.5 min-w-[2.25rem] text-center bg-[#D1FAE5] dark:bg-[#022C22] text-[#065F46] dark:text-[#6EE7B7] flex-shrink-0">
-              {count}
-            </span>
-          </Link>
-        ))
+            </Link>
+          ))}
+        </div>
       )}
     </div>
   );

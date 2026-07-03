@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState, useTransition, useEffect } from "react";
 import { useRouter } from "next/navigation";
@@ -71,16 +71,20 @@ export default function ResetPasswordForm({ email }: { email: string }) {
         subtitle={`Enter the OTP sent to ${email} and choose a new password.`}
       />
 
-      <form action={handleSubmit} className="flex flex-col gap-5">
+      <form action={handleSubmit} className="flex flex-col gap-4">
         {error && (
-          <p className="text-red-600 text-sm text-center">{error}</p>
+          <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800/40 rounded-xl px-4 py-3">
+            <p className="text-red-600 dark:text-red-400 text-sm text-center">{error}</p>
+          </div>
         )}
         {resendMessage && (
-          <p className="text-green-600 dark:text-green-400 text-sm text-center">{resendMessage}</p>
+          <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800/40 rounded-xl px-4 py-3">
+            <p className="text-green-600 dark:text-green-400 text-sm text-center">{resendMessage}</p>
+          </div>
         )}
 
         <div className="flex flex-col gap-1.5">
-          <p className="font-semibold text-sm text-[#374151] dark:text-gray-300 font-nunito">
+          <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">
             OTP Code
           </p>
           <OtpInput value={otp} onChange={setOtp} disabled={isPending} />
@@ -97,7 +101,7 @@ export default function ResetPasswordForm({ email }: { email: string }) {
         <Button type="submit" disabled={isPending || otp.length < 6}>
           {isPending ? (
             <span className="flex items-center justify-center gap-2">
-              <Loader2 size={16} className="animate-spin" /> Resetting...
+              <Loader2 size={16} className="animate-spin" /> Resetting…
             </span>
           ) : (
             "Reset Password"
@@ -105,7 +109,7 @@ export default function ResetPasswordForm({ email }: { email: string }) {
         </Button>
       </form>
 
-      <p className="text-center text-sm font-nunito">
+      <p className="text-center text-sm text-gray-500 dark:text-gray-400">
         Didn&apos;t receive a code?{" "}
         {cooldown > 0 ? (
           <span className="text-gray-400 dark:text-gray-500">
@@ -118,7 +122,7 @@ export default function ResetPasswordForm({ email }: { email: string }) {
             disabled={isResending}
             className="text-primary dark:text-[#93b8f0] font-semibold hover:opacity-70 transition-opacity disabled:opacity-50 cursor-pointer"
           >
-            {isResending ? "Sending..." : "Resend OTP"}
+            {isResending ? "Sending…" : "Resend OTP"}
           </button>
         )}
       </p>

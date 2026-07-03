@@ -48,10 +48,7 @@ export default async function MasterStoriesList({
   if (stories.length === 0) return <StoriesEmptyState status={status} hasAnyStories={allStories.length > 0} />;
 
   return (
-    <div
-      className="grid gap-4 p-3 w-full"
-      style={{ gridTemplateColumns: "repeat(auto-fill, minmax(350px, 1fr))" }}
-    >
+    <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 p-3 sm:p-4 w-full">
       {stories.map((story) => (
         <MasterStoryCard story={story} key={story.stori_id} />
       ))}

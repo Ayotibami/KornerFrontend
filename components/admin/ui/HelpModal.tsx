@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { X, Eye, Pencil, SendHorizonal, RotateCcw, BookCheck, FeatherIcon } from "lucide-react";
 import { createPortal } from "react-dom";
@@ -10,7 +10,7 @@ export default function HelpModal({ onClose }: { onClose: () => void }) {
       onClick={onClose}
     >
       <div
-        className="relative bg-white dark:bg-[#1a1f2e] rounded-2xl w-full max-w-[520px] max-h-[85vh] overflow-y-auto shadow-[0_8px_40px_rgba(0,0,0,0.2)] dark:shadow-[0_8px_40px_rgba(0,0,0,0.6)] font-nunito"
+        className="relative bg-white dark:bg-[#1a1f2e] rounded-2xl w-full max-w-[520px] max-h-[85vh] overflow-y-auto shadow-[0_8px_40px_rgba(0,0,0,0.2)] dark:shadow-[0_8px_40px_rgba(0,0,0,0.6)]"
         onClick={(e) => e.stopPropagation()}
       >
         {/* ── Sticky header ── */}
@@ -176,9 +176,9 @@ export default function HelpModal({ onClose }: { onClose: () => void }) {
               That row of buttons at the very top of the home page — use am to switch between your story categories. The active one lights up with its own color.
             </p>
             <div className="flex gap-2 flex-wrap">
-              <span className="text-xs px-3 py-1.5 rounded-full font-bold bg-[#DBEAFE] text-[#1e40af] dark:bg-[#1e3a5f] dark:text-[#93c5fd]">Draft</span>
-              <span className="text-xs px-3 py-1.5 rounded-full font-bold bg-[#FEF3C7] text-[#92400E] dark:bg-[#422006] dark:text-[#FDE68A]">Pending</span>
-              <span className="text-xs px-3 py-1.5 rounded-full font-bold bg-[#D1FAE5] text-[#065F46] dark:bg-[#022C22] dark:text-[#6EE7B7]">Published</span>
+              <span className="text-xs px-3 py-1.5 rounded-xl font-bold bg-[#DBEAFE] text-[#1e40af] dark:bg-[#1e3a5f] dark:text-[#93c5fd]">Draft</span>
+              <span className="text-xs px-3 py-1.5 rounded-xl font-bold bg-[#FEF3C7] text-[#92400E] dark:bg-[#422006] dark:text-[#FDE68A]">Pending</span>
+              <span className="text-xs px-3 py-1.5 rounded-xl font-bold bg-[#D1FAE5] text-[#065F46] dark:bg-[#022C22] dark:text-[#6EE7B7]">Published</span>
             </div>
           </section>
 

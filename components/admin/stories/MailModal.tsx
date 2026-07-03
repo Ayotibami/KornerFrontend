@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useRef, useState, useTransition } from "react";
 import MailBodyEditor from "@/components/admin/editor/MailBodyEditor";
@@ -10,16 +10,16 @@ import { getMail, createMail, updateMail, deleteMail } from "@/app/admin/stories
 type FetchState = "loading" | "found" | "not-found" | "error";
 
 const INPUT_BASE =
-  "w-full font-nunito text-[0.95rem] border-2 border-secondary dark:border-[#2a4a7a] bg-[#F0F5FF] dark:bg-[#1e2a3a] text-[#0f1e3d] dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-600 px-4 py-3 outline-none transition-[border-color,box-shadow,background-color] duration-200 focus:border-primary focus:bg-white dark:focus:bg-[#243347] focus:ring-2 focus:ring-primary/10 disabled:opacity-60 disabled:cursor-not-allowed";
+  "w-full text-[0.95rem] border-2 border-secondary dark:border-[#2a4a7a] bg-[#F0F5FF] dark:bg-[#1e2a3a] text-[#0f1e3d] dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-600 px-4 py-3 outline-none transition-[border-color,box-shadow,background-color] duration-200 focus:border-primary focus:bg-white dark:focus:bg-[#243347] focus:ring-2 focus:ring-primary/10 disabled:opacity-60 disabled:cursor-not-allowed";
 
 const BTN_PRIMARY =
-  "flex items-center gap-2 bg-primary text-white rounded-full px-6 py-2.5 text-sm font-bold font-nunito hover:opacity-90 active:scale-95 transition-all duration-200 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed disabled:active:scale-100";
+  "flex items-center gap-2 bg-primary text-white rounded-xl px-6 py-2.5 text-sm font-bold hover:opacity-90 active:scale-95 transition-all duration-200 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed disabled:active:scale-100";
 const BTN_GHOST =
-  "flex items-center gap-2 bg-secondary dark:bg-[#1e3a5f] text-primary dark:text-[#93b8f0] rounded-full px-6 py-2.5 text-sm font-bold font-nunito hover:opacity-80 transition-all duration-200 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed";
+  "flex items-center gap-2 bg-secondary dark:bg-[#1e3a5f] text-primary dark:text-[#93b8f0] rounded-xl px-6 py-2.5 text-sm font-bold hover:opacity-80 transition-all duration-200 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed";
 const BTN_RED_SOFT =
-  "flex items-center gap-2 bg-[#FEE2E2] text-[#DC2626] dark:bg-[#450a0a] dark:text-[#FCA5A5] rounded-full px-6 py-2.5 text-sm font-bold font-nunito hover:opacity-80 transition-all duration-200 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed";
+  "flex items-center gap-2 bg-[#FEE2E2] text-[#DC2626] dark:bg-[#450a0a] dark:text-[#FCA5A5] rounded-xl px-6 py-2.5 text-sm font-bold hover:opacity-80 transition-all duration-200 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed";
 const BTN_RED_SOLID =
-  "flex items-center gap-2 bg-[#DC2626] text-white rounded-full px-6 py-2.5 text-sm font-bold font-nunito hover:opacity-90 active:scale-95 transition-all duration-200 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed disabled:active:scale-100";
+  "flex items-center gap-2 bg-[#DC2626] text-white rounded-xl px-6 py-2.5 text-sm font-bold hover:opacity-90 active:scale-95 transition-all duration-200 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed disabled:active:scale-100";
 
 export default function MailModal({
   storiId,
@@ -129,7 +129,7 @@ export default function MailModal({
       onClick={onClose}
     >
       <div
-        className="relative bg-white dark:bg-[#1a1f2e] rounded-2xl w-full max-w-[640px] max-h-[85vh] flex flex-col shadow-[0_8px_40px_rgba(0,0,0,0.2)] dark:shadow-[0_8px_40px_rgba(0,0,0,0.6)] font-nunito overflow-hidden"
+        className="relative bg-white dark:bg-[#1a1f2e] rounded-2xl w-full max-w-[640px] max-h-[85vh] flex flex-col shadow-[0_8px_40px_rgba(0,0,0,0.2)] dark:shadow-[0_8px_40px_rgba(0,0,0,0.6)] overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
         {/* ── Sticky header ── */}
@@ -170,7 +170,7 @@ export default function MailModal({
           {/* Fetch error */}
           {fetchState === "error" && (
             <div className="flex flex-col items-center justify-center py-16 gap-4">
-              <p className="text-sm text-red-500 text-center font-nunito">
+              <p className="text-sm text-red-500 text-center">
                 {fetchError ?? "Failed to load mail."}
               </p>
               <button className={BTN_GHOST} onClick={onClose}>
@@ -190,7 +190,7 @@ export default function MailModal({
                   onClick={() => setInfoOpen((o) => !o)}
                   className="w-full flex items-center justify-between px-4 py-3 cursor-pointer"
                 >
-                  <p className="text-xs font-extrabold text-primary dark:text-[#93b8f0] font-nunito uppercase tracking-wide">How this works</p>
+                  <p className="text-xs font-extrabold text-primary dark:text-[#93b8f0] uppercase tracking-wide">How this works</p>
                   <ChevronDown
                     size={15}
                     className={`text-primary dark:text-[#93b8f0] transition-transform duration-200 flex-shrink-0 ${infoOpen ? "rotate-180" : "rotate-0"}`}
@@ -198,7 +198,7 @@ export default function MailModal({
                 </button>
                 {infoOpen && (
                   <div className="px-4 pb-4 flex flex-col gap-3">
-                    <p className="text-xs text-gray-600 dark:text-gray-300 font-nunito leading-relaxed">
+                    <p className="text-xs text-gray-600 dark:text-gray-300 leading-relaxed">
                       Once your story goes <span className="font-bold text-[#0f1e3d] dark:text-gray-100">Published</span>, this mail fires off automatically to every subscriber on the Korner list — so give it some thought before you send.
                     </p>
                     <ul className="flex flex-col gap-2">
@@ -211,7 +211,7 @@ export default function MailModal({
                       ].map(({ label, desc }) => (
                         <li key={label} className="flex gap-2 items-start">
                           <span className="w-1.5 h-1.5 rounded-full bg-primary dark:bg-[#93b8f0] mt-1.5 flex-shrink-0" />
-                          <p className="text-xs text-gray-600 dark:text-gray-300 font-nunito leading-relaxed">
+                          <p className="text-xs text-gray-600 dark:text-gray-300 leading-relaxed">
                             <span className="font-bold text-[#0f1e3d] dark:text-gray-100">{label}</span> — {desc}
                           </p>
                         </li>
@@ -227,7 +227,7 @@ export default function MailModal({
                   type="button"
                   onClick={useTemplate}
                   disabled={busy}
-                  className="self-start flex items-center gap-2 text-sm font-bold font-nunito px-4 py-2 rounded-full bg-[#FEE2E2] text-[#DC2626] dark:bg-[#450a0a] dark:text-[#FCA5A5] hover:opacity-80 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                  className="self-start flex items-center gap-2 text-sm font-bold px-4 py-2 rounded-full bg-[#FEE2E2] text-[#DC2626] dark:bg-[#450a0a] dark:text-[#FCA5A5] hover:opacity-80 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                 >
                   ✨ Use template
                 </button>
@@ -236,12 +236,12 @@ export default function MailModal({
               {/* Subject */}
               <div className="flex flex-col gap-1.5">
                 <div className="flex items-center justify-between">
-                  <label className="text-sm font-bold text-primary font-nunito">Subject</label>
+                  <label className="text-sm font-bold text-primary">Subject</label>
                   <button
                     type="button"
                     onClick={insertNameInSubject}
                     disabled={busy}
-                    className="flex items-center gap-1 text-xs font-bold font-nunito px-2.5 py-1 rounded-lg bg-secondary dark:bg-[#1e3a5f] text-primary dark:text-[#93b8f0] hover:opacity-80 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer select-none"
+                    className="flex items-center gap-1 text-xs font-bold px-2.5 py-1 rounded-lg bg-secondary dark:bg-[#1e3a5f] text-primary dark:text-[#93b8f0] hover:opacity-80 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer select-none"
                   >
                     + name
                   </button>
@@ -259,7 +259,7 @@ export default function MailModal({
 
               {/* Body */}
               <div className="flex flex-col gap-1.5">
-                <label className="text-sm font-bold text-primary font-nunito">Body</label>
+                <label className="text-sm font-bold text-primary">Body</label>
                 <MailBodyEditor
                   value={body}
                   onChange={setBody}
@@ -278,7 +278,7 @@ export default function MailModal({
             {confirmDelete ? (
               /* Delete confirmation row */
               <div className="flex items-center justify-between gap-3">
-                <p className="text-sm font-semibold text-[#0f1e3d] dark:text-gray-200 font-nunito">
+                <p className="text-sm font-semibold text-[#0f1e3d] dark:text-gray-200">
                   Delete this mail?
                 </p>
                 <div className="flex items-center gap-2.5">

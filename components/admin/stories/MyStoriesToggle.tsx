@@ -31,7 +31,7 @@ export default function MyStoriesToggle() {
     <button
       onClick={toggle}
       title={isActive ? "Showing only my stories" : "Showing all admins' stories"}
-      className="w-10 h-10 sm:w-11 sm:h-11 flex-shrink-0 flex items-center justify-center rounded-full bg-slate-200 dark:bg-[#1e2130] cursor-pointer transition-transform hover:scale-105 active:scale-95"
+      className="w-10 h-10 sm:w-11 sm:h-11 flex-shrink-0 flex items-center justify-center rounded-full bg-white border border-gray-200 dark:bg-[#1a1f2e] dark:border-white/[0.08] cursor-pointer transition-transform hover:scale-105 active:scale-95"
     >
       <svg
         viewBox="0 0 24 24"

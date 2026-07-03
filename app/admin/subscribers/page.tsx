@@ -23,11 +23,11 @@ export default async function SubscribersPage() {
   const subscribers: Subscriber[] = data.subscribers ?? [];
 
   return (
-    <div className="min-h-screen bg-slate-100 dark:bg-[#0f1117]">
+    <div className="min-h-screen bg-[#f8f9fb] dark:bg-[#0f1117]">
       <Navbar profile={profile} />
 
-      <div className="pt-[calc(14vh+24px)] pb-10 px-4 sm:px-6 max-w-2xl mx-auto flex flex-col gap-3">
-        <p className="font-extrabold text-2xl text-[#0f1e3d] dark:text-gray-50 font-nunito mb-1">
+      <div className="pt-[88px] pb-10 px-4 sm:px-6 max-w-2xl mx-auto flex flex-col gap-3">
+        <p className="text-xl font-bold text-[#0f1e3d] dark:text-gray-50 mb-1">
           Subscribers
         </p>
 

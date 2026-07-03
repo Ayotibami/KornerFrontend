@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useState, useTransition } from "react";
 import { createPortal } from "react-dom";
@@ -12,12 +12,12 @@ import { getNewsletter, updateNewsletter } from "@/app/admin/newsletter/action";
 type FetchState = "loading" | "ready" | "error";
 
 const INPUT_BASE =
-  "w-full font-nunito text-[0.95rem] border-2 border-secondary dark:border-[#2a4a7a] bg-[#F0F5FF] dark:bg-[#1e2a3a] text-[#0f1e3d] dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-600 px-4 py-3 outline-none transition-[border-color,box-shadow,background-color] duration-200 focus:border-primary focus:bg-white dark:focus:bg-[#243347] focus:ring-2 focus:ring-primary/10 disabled:opacity-60 disabled:cursor-not-allowed";
+  "w-full text-[0.95rem] border-2 border-secondary dark:border-[#2a4a7a] bg-[#F0F5FF] dark:bg-[#1e2a3a] text-[#0f1e3d] dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-600 px-4 py-3 outline-none transition-[border-color,box-shadow,background-color] duration-200 focus:border-primary focus:bg-white dark:focus:bg-[#243347] focus:ring-2 focus:ring-primary/10 disabled:opacity-60 disabled:cursor-not-allowed";
 
 const BTN_PRIMARY =
-  "flex items-center gap-2 bg-primary text-white rounded-full px-6 py-2.5 text-sm font-bold font-nunito hover:opacity-90 active:scale-95 transition-all duration-200 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed disabled:active:scale-100";
+  "flex items-center gap-2 bg-primary text-white rounded-xl px-6 py-2.5 text-sm font-bold hover:opacity-90 active:scale-95 transition-all duration-200 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed disabled:active:scale-100";
 const BTN_GHOST =
-  "flex items-center gap-2 bg-secondary dark:bg-[#1e3a5f] text-primary dark:text-[#93b8f0] rounded-full px-6 py-2.5 text-sm font-bold font-nunito hover:opacity-80 transition-all duration-200 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed";
+  "flex items-center gap-2 bg-secondary dark:bg-[#1e3a5f] text-primary dark:text-[#93b8f0] rounded-xl px-6 py-2.5 text-sm font-bold hover:opacity-80 transition-all duration-200 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed";
 
 export default function NewsletterEditModal({
   sendId,
@@ -92,7 +92,7 @@ export default function NewsletterEditModal({
       onClick={onClose}
     >
       <div
-        className="relative bg-white dark:bg-[#1a1f2e] rounded-2xl w-full max-w-[640px] max-h-[85vh] flex flex-col shadow-[0_8px_40px_rgba(0,0,0,0.2)] dark:shadow-[0_8px_40px_rgba(0,0,0,0.6)] font-nunito overflow-hidden"
+        className="relative bg-white dark:bg-[#1a1f2e] rounded-2xl w-full max-w-[640px] max-h-[85vh] flex flex-col shadow-[0_8px_40px_rgba(0,0,0,0.2)] dark:shadow-[0_8px_40px_rgba(0,0,0,0.6)] overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
         {/* ── Sticky header ── */}
@@ -102,7 +102,7 @@ export default function NewsletterEditModal({
               <CalendarClock size={16} className="text-primary dark:text-[#93b8f0]" />
             </div>
             <div>
-              <h2 className="font-extrabold text-xl text-[#0f1e3d] dark:text-gray-50 leading-tight">
+              <h2 className="font-bold text-xl text-[#0f1e3d] dark:text-gray-50 leading-tight">
                 Edit Newsletter
               </h2>
               <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
@@ -129,7 +129,7 @@ export default function NewsletterEditModal({
 
           {fetchState === "error" && (
             <div className="flex flex-col items-center justify-center py-16 gap-4">
-              <p className="text-sm text-red-500 text-center font-nunito">
+              <p className="text-sm text-red-500 text-center">
                 {fetchError ?? "Failed to load newsletter."}
               </p>
               <button className={BTN_GHOST} onClick={onClose}>
@@ -152,7 +152,7 @@ export default function NewsletterEditModal({
 
               {/* Subject */}
               <div className="flex flex-col gap-1.5">
-                <label className="text-sm font-bold text-primary dark:text-[#93b8f0] font-nunito">Subject</label>
+                <label className="text-sm font-bold text-primary dark:text-[#93b8f0]">Subject</label>
                 <input
                   type="text"
                   value={subject}
@@ -165,7 +165,7 @@ export default function NewsletterEditModal({
 
               {/* Body */}
               <div className="flex flex-col gap-1.5">
-                <label className="text-sm font-bold text-primary dark:text-[#93b8f0] font-nunito">Body</label>
+                <label className="text-sm font-bold text-primary dark:text-[#93b8f0]">Body</label>
                 <MailBodyEditor
                   value={body}
                   onChange={setBody}

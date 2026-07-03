@@ -1,10 +1,5 @@
 "use client";
 
-// Logout button shown in the Navbar.
-// Calls the logout server action via useTransition so the button shows a spinner
-// while the server is deleting the auth cookie and redirecting.
-// Red background/icon signals a destructive action visually.
-
 import { useTransition } from "react";
 import { LogOut, Loader2 } from "lucide-react";
 import { logout } from "@/app/admin/logout/action";
@@ -17,7 +12,7 @@ export default function LogoutButton() {
       onClick={() => !isPending && startTransition(() => logout())}
       disabled={isPending}
       aria-label="Logout"
-      className="w-9 h-9 rounded-full flex items-center justify-center bg-red-100 text-red-600 flex-shrink-0 transition-transform hover:scale-95 active:scale-90 disabled:cursor-default disabled:opacity-70"
+      className="w-9 h-9 rounded-xl flex items-center justify-center text-gray-400 dark:text-gray-500 hover:text-red-500 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 flex-shrink-0 transition-all cursor-pointer disabled:cursor-default disabled:opacity-60"
     >
       {isPending ? (
         <Loader2 size={16} className="animate-spin" />

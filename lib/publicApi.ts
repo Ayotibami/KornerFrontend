@@ -14,15 +14,19 @@ const BASE_URL = process.env.API_URL ?? "";
 
 // Listing is side-effect free, so it's fine to let Next cache it briefly —
 // every visitor doesn't need a fresh DB hit on every page load.
-export async function getPublicStories(): Promise<PublicStorySummary[]> {
-  const res = await fetch(`${BASE_URL}/user/stories`, {
-    next: { revalidate: 30 },
-  });
+export async function getPublicStories(
+  limit = 12,
+  offset = 0,
+): Promise<{ stories: PublicStorySummary[]; hasMore: boolean }> {
+  const res = await fetch(
+    `${BASE_URL}/user/stories?limit=${limit}&offset=${offset}`,
+    { next: { revalidate: 30 } },
+  );
 
-  if (!res.ok) return [];
+  if (!res.ok) return { stories: [], hasMore: false };
 
   const data = await res.json();
-  return data.stories ?? [];
+  return { stories: data.stories ?? [], hasMore: data.hasMore ?? false };
 }
 
 // The single-story fetch increments the story's view count server-side as

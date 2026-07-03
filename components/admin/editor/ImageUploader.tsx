@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 // Inline 16:9 image block for the story body.
 // Upload flow: blob preview → Cloudinary → final URL (see lib/cloudinary.ts for full pattern).
@@ -45,7 +45,7 @@ export default function ImageUploader({ mode, url, onChange, onUploadStart, onUp
           <button
             onClick={() => ref.current?.click()}
             disabled={uploading}
-            className="absolute bottom-3 left-1/2 -translate-x-1/2 bg-white/90 dark:bg-[#1a1f2e]/90 text-[#0f1e3d] dark:text-gray-100 rounded-full px-6 py-2.5 font-bold text-sm shadow-md whitespace-nowrap z-10 cursor-pointer disabled:opacity-70 disabled:cursor-not-allowed"
+            className="absolute bottom-3 left-1/2 -translate-x-1/2 bg-white/90 dark:bg-[#1a1f2e]/90 text-[#0f1e3d] dark:text-gray-100 rounded-xl px-6 py-2.5 font-bold text-sm shadow-md whitespace-nowrap z-10 cursor-pointer disabled:opacity-70 disabled:cursor-not-allowed"
           >
             {uploading ? "Uploading…" : previewUrl ? "Change Image" : "Upload Image"}
           </button>

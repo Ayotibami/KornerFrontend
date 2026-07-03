@@ -63,7 +63,7 @@ import type { BlockType } from "@/types/story";
 
 // w-10/h-10 (40px) on small screens so a full row of buttons fits without
 // wrapping or scrolling; sm: and up reverts to the original 52px size.
-const FAB_BASE   = "w-10 h-10 sm:w-[52px] sm:h-[52px] flex items-center justify-center rounded-full shadow-[0_2px_12px_rgba(0,0,0,0.12)] dark:shadow-[0_2px_12px_rgba(0,0,0,0.4)] transition-transform duration-300 hover:scale-95 active:scale-90 flex-shrink-0";
+const FAB_BASE   = "w-10 h-10 sm:w-[52px] sm:h-[52px] flex items-center justify-center rounded-2xl shadow-[0_2px_12px_rgba(0,0,0,0.12)] dark:shadow-[0_2px_12px_rgba(0,0,0,0.4)] transition-transform duration-300 hover:scale-95 active:scale-90 flex-shrink-0";
 const FAB_AMBER  = `${FAB_BASE} bg-[#FEF3C7] dark:bg-[#422006]  text-[#92400E] dark:text-[#FDE68A]`; // submit for review
 const FAB_TEAL   = `${FAB_BASE} bg-[#CCFBF1] dark:bg-[#022C22]  text-[#065F46] dark:text-[#6EE7B7]`; // save as draft
 const FAB_VIOLET = `${FAB_BASE} bg-[#EDE9FE] dark:bg-[#2E1065]  text-[#5B21B6] dark:text-[#C4B5FD]`; // preview
@@ -250,17 +250,9 @@ export default function EditStoryEditor({
   };
 
   return (
-    <div className="min-h-screen bg-slate-100 dark:bg-[#0f1117] font-nunito">
+    <div className="min-h-screen bg-[#f8f9fb] dark:bg-[#0f1117]">
       <MailModal storiId={storiId} isOpen={isMailOpen} onClose={() => setIsMailOpen(false)} />
-      {/* Floating action buttons — layout changes depending on current mode.
-          Responsive: on small screens this is a single horizontal row
-          pinned near the bottom (the native mobile pattern), with smaller
-          buttons (see FAB_BASE) so a full row fits without wrapping.
-          overflow-x-auto is a safety net only — sized to fit normally, but
-          won't break layout on an unusually narrow screen. From sm: up it
-          reverts to the vertical column pinned top-right, where vertical
-          space is ample and the original button size applies. */}
-      <div className="fixed z-[100] flex flex-row flex-nowrap items-center justify-center gap-2 overflow-x-auto px-1 bottom-4 left-1/2 -translate-x-1/2 max-w-[94vw] sm:flex-col sm:gap-2.5 sm:justify-start sm:overflow-visible sm:px-0 sm:bottom-auto sm:left-auto sm:translate-x-0 sm:max-w-none sm:top-[calc(14vh+16px)] sm:right-[clamp(12px,3vw,24px)]">
+      <div className="fixed z-[100] flex flex-row flex-nowrap items-center justify-center gap-2 overflow-x-auto px-1 bottom-4 left-1/2 -translate-x-1/2 max-w-[94vw] sm:flex-col sm:gap-2.5 sm:justify-start sm:overflow-visible sm:px-0 sm:bottom-auto sm:left-auto sm:translate-x-0 sm:max-w-none sm:top-20 sm:right-[clamp(12px,3vw,24px)]">
         {mode === "read" ? (
           // Read mode: submit for review (writers, draft only) + save as draft (only if dirty) + edit button
           <>
@@ -338,48 +330,45 @@ export default function EditStoryEditor({
         </button>
       </div>
 
-      {/* Page content — wider than create page (1100px) for reading comfort.
-          Extra bottom padding on small screens clears the fixed bottom FAB
-          row (see above) so it never sits on top of the last block of
-          content; sm: and up reverts to the original even padding since the
-          FAB moves to the side there and needs no special clearance. */}
       <div
-        className="mx-auto flex flex-col gap-6 pb-24 sm:pb-[clamp(16px,4vw,40px)]"
-        style={{ maxWidth: 1100, paddingTop: "clamp(16px, 4vw, 40px)", paddingLeft: "clamp(16px, 4vw, 40px)", paddingRight: "clamp(16px, 4vw, 40px)" }}
+        className="mx-auto px-4 sm:px-6 pb-24 sm:pb-10"
+        style={{ maxWidth: 1140, paddingTop: "clamp(16px, 4vw, 32px)" }}
       >
-        {stori.rejectionReason && stori.status === "Draft" && (
-          <div className="flex items-start gap-3 bg-[#FEF3C7] dark:bg-[#422006] border border-[#FDE68A]/40 rounded-2xl px-4 py-3">
-            <span className="text-lg flex-shrink-0">✕</span>
-            <div>
-              <p className="text-sm font-bold font-nunito text-[#92400E] dark:text-[#FDE68A]">Returned for revision</p>
-              <p className="text-sm font-nunito text-[#92400E] dark:text-[#FDE68A] mt-0.5">{stori.rejectionReason}</p>
+        <div className="bg-white dark:bg-[#1a1f2e] rounded-3xl shadow-sm px-5 sm:px-10 py-8 flex flex-col gap-6">
+
+          {stori.rejectionReason && stori.status === "Draft" && (
+            <div className="flex items-start gap-3 bg-[#FEF3C7] dark:bg-[#422006] border border-[#FDE68A]/40 rounded-2xl px-4 py-3">
+              <span className="text-base flex-shrink-0 text-[#92400E] dark:text-[#FDE68A]">✕</span>
+              <div>
+                <p className="text-sm font-semibold text-[#92400E] dark:text-[#FDE68A]">Returned for revision</p>
+                <p className="text-sm text-[#92400E] dark:text-[#FDE68A] mt-0.5">{stori.rejectionReason}</p>
+              </div>
+            </div>
+          )}
+
+          <div className="flex items-center justify-between">
+            <button
+              onClick={() => { window.location.href = "/admin/home"; }}
+              className="flex items-center gap-1.5 text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors cursor-pointer"
+            >
+              <ArrowLeft size={16} />
+              Go back
+            </button>
+            <div className="flex items-center gap-3">
+              <SaveIndicator status={saveStatus} />
+              <span
+                className={`text-xs font-semibold px-3 py-1 rounded-full flex-shrink-0 ${
+                  stori.status === "Draft"
+                    ? "bg-[#DBEAFE] text-[#1e40af] dark:bg-[#1e3a5f] dark:text-[#93c5fd]"
+                    : stori.status === "Pending"
+                      ? "bg-[#FEF3C7] text-[#92400E] dark:bg-[#422006] dark:text-[#FDE68A]"
+                      : "bg-[#D1FAE5] text-[#065F46] dark:bg-[#022C22] dark:text-[#6EE7B7]"
+                }`}
+              >
+                {stori.status}
+              </span>
             </div>
           </div>
-        )}
-
-        <div className="flex items-center justify-between">
-          <button
-            onClick={() => { window.location.href = "/admin/home"; }}
-            className="flex items-center gap-1.5 text-[#0f1e3d] dark:text-gray-300 font-nunito font-bold text-sm cursor-pointer bg-transparent border-0 p-0"
-          >
-            <ArrowLeft size={18} />
-            Go back
-          </button>
-          <div className="flex items-center gap-3">
-            <SaveIndicator status={saveStatus} />
-            <span
-              className={`px-4 py-1.5 rounded-full text-sm font-bold font-nunito flex-shrink-0 ${
-                stori.status === "Draft"
-                  ? "bg-[#DBEAFE] text-[#1e40af] dark:bg-[#1e3a5f] dark:text-[#93c5fd]"
-                  : stori.status === "Pending"
-                    ? "bg-[#FEF3C7] text-[#92400E] dark:bg-[#422006] dark:text-[#FDE68A]"
-                    : "bg-[#D1FAE5] text-[#065F46] dark:bg-[#022C22] dark:text-[#6EE7B7]"
-              }`}
-            >
-              {stori.status}
-            </span>
-          </div>
-        </div>
 
         <CoverImage
           mode={mode}
@@ -411,6 +400,7 @@ export default function EditStoryEditor({
           onUploadStart={incrementUploading}
           onUploadEnd={decrementUploading}
         />
+        </div>
       </div>
     </div>
   );

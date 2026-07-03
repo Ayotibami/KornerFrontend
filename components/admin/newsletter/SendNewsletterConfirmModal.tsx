@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 // Confirm screen between "Send now/Schedule" and the actual irreversible
 // send — shows exactly what every subscriber is about to receive (cover
@@ -21,9 +21,9 @@ import { X, Send, Loader2, Users } from "lucide-react";
 import { getSubscriberCount } from "@/app/admin/newsletter/action";
 
 const BTN_PRIMARY =
-  "flex items-center gap-2 bg-primary text-white rounded-full px-6 py-2.5 text-sm font-bold font-nunito hover:opacity-90 active:scale-95 transition-all duration-200 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed disabled:active:scale-100";
+  "flex items-center gap-2 bg-primary text-white rounded-xl px-6 py-2.5 text-sm font-bold hover:opacity-90 active:scale-95 transition-all duration-200 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed disabled:active:scale-100";
 const BTN_GHOST =
-  "flex items-center gap-2 bg-secondary dark:bg-[#1e3a5f] text-primary dark:text-[#93b8f0] rounded-full px-6 py-2.5 text-sm font-bold font-nunito hover:opacity-80 transition-all duration-200 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed";
+  "flex items-center gap-2 bg-secondary dark:bg-[#1e3a5f] text-primary dark:text-[#93b8f0] rounded-xl px-6 py-2.5 text-sm font-bold hover:opacity-80 transition-all duration-200 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed";
 
 export default function SendNewsletterConfirmModal({
   subject,
@@ -69,7 +69,7 @@ export default function SendNewsletterConfirmModal({
       onClick={() => !isSending && onClose()}
     >
       <div
-        className="relative bg-white dark:bg-[#1a1f2e] rounded-2xl w-full max-w-[560px] max-h-[85vh] flex flex-col shadow-[0_8px_40px_rgba(0,0,0,0.2)] dark:shadow-[0_8px_40px_rgba(0,0,0,0.6)] font-nunito overflow-hidden"
+        className="relative bg-white dark:bg-[#1a1f2e] rounded-2xl w-full max-w-[560px] max-h-[85vh] flex flex-col shadow-[0_8px_40px_rgba(0,0,0,0.2)] dark:shadow-[0_8px_40px_rgba(0,0,0,0.6)] overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
         {/* ── Sticky header ── */}
@@ -79,7 +79,7 @@ export default function SendNewsletterConfirmModal({
               <Send size={16} className="text-primary dark:text-[#93b8f0]" />
             </div>
             <div>
-              <h2 className="font-extrabold text-xl text-[#0f1e3d] dark:text-gray-50 leading-tight">
+              <h2 className="font-bold text-xl text-[#0f1e3d] dark:text-gray-50 leading-tight">
                 {scheduledLabel ? "Confirm schedule" : "Confirm send"}
               </h2>
               <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">

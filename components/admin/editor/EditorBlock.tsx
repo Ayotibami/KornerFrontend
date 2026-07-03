@@ -1,4 +1,4 @@
-// EditorBlock — renders a single content block based on its block_type.
+﻿// EditorBlock — renders a single content block based on its block_type.
 // Routes to HeadingBlock, ParagraphBlock, QuoteBlock, or ImageUploader.
 // Both write and read modes are handled per sub-component.
 
@@ -35,14 +35,14 @@ function HeadingBlock({ block, mode, onChange }: { block: BlockData; mode: "writ
         value={block.content}
         onChange={(e) => onChange(e.target.value)}
         placeholder="Heading goes here…"
-        className="w-full px-4 py-3 bg-[#F0F5FF] dark:bg-[#1e2a3a] border-2 border-secondary dark:border-[#2a4a7a] rounded-xl outline-none font-nunito font-extrabold text-[#0f1e3d] dark:text-gray-50 placeholder:text-gray-300 dark:placeholder:text-gray-600 box-border"
+        className="w-full px-4 py-3 bg-[#F0F5FF] dark:bg-[#1e2a3a] border-2 border-secondary dark:border-[#2a4a7a] rounded-xl outline-none font-extrabold text-[#0f1e3d] dark:text-gray-50 placeholder:text-gray-300 dark:placeholder:text-gray-600 box-border"
         style={{ fontSize: "clamp(1.2rem, 3vw, 1.75rem)" }}
       />
     );
   }
   return (
     <h2
-      className="font-nunito font-extrabold text-[#0f1e3d] dark:text-gray-50 m-0 leading-snug"
+      className="font-extrabold text-[#0f1e3d] dark:text-gray-50 m-0 leading-snug"
       style={{ fontSize: "clamp(1.2rem, 3vw, 1.75rem)" }}
     >
       {block.content || "Heading goes here"}
@@ -65,7 +65,7 @@ function ParagraphBlock({ block, mode, onChange }: { block: BlockData; mode: "wr
     <>
       <style>{RICH_READ_CSS}</style>
       <div
-        className="rich-read font-nunito font-medium text-[#374151] dark:text-gray-300 leading-[1.85]"
+        className="rich-read font-medium text-[#374151] dark:text-gray-300 leading-[1.85]"
         style={{ fontSize: "clamp(0.95rem, 2vw, 1.05rem)" }}
         dangerouslySetInnerHTML={{ __html: block.content || "<p>Paragraph goes here</p>" }}
       />
@@ -99,7 +99,7 @@ function QuoteBlock({ block, mode, onChange }: { block: BlockData; mode: "write"
         <>
           <style>{RICH_READ_CSS}</style>
           <div
-            className="rich-read font-nunito font-semibold italic text-[#112C4A] dark:text-[#93b8f0] leading-[1.7]"
+            className="rich-read font-semibold italic text-[#112C4A] dark:text-[#93b8f0] leading-[1.7]"
             style={{ fontSize: "clamp(1rem, 2.5vw, 1.2rem)" }}
             dangerouslySetInnerHTML={{ __html: block.content || "<p>Quote goes here</p>" }}
           />

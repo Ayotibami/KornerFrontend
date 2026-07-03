@@ -11,8 +11,10 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-  title: "Korner",
-  description: "The Korner",
+  metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL!),
+  title: "The Korner",
+  description:
+    "Korner's is that chill corner on Kampos where we just get student life. From late-night gist about love and grades to real talks on career, money, and culture — it's Kampos talking your talk, straight from our hearts to yours.",
 };
 
 export default function RootLayout({

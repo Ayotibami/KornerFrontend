@@ -36,9 +36,11 @@ export default function ForgotPasswordPage() {
         subtitle="Enter your email and we'll send you an OTP to reset your password."
       />
 
-      <form action={handleSubmit} className="flex flex-col gap-5">
+      <form action={handleSubmit} className="flex flex-col gap-4">
         {error && (
-          <p className="text-red-600 text-sm text-center">{error}</p>
+          <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800/40 rounded-xl px-4 py-3">
+            <p className="text-red-600 dark:text-red-400 text-sm text-center">{error}</p>
+          </div>
         )}
 
         <Input
@@ -52,7 +54,7 @@ export default function ForgotPasswordPage() {
         <Button type="submit" disabled={isPending}>
           {isPending ? (
             <span className="flex items-center justify-center gap-2">
-              <Loader2 size={16} className="animate-spin" /> Sending OTP...
+              <Loader2 size={16} className="animate-spin" /> Sending OTP…
             </span>
           ) : (
             "Send OTP"

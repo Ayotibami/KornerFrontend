@@ -41,7 +41,7 @@ import RejectReasonModal from "@/components/admin/stories/RejectReasonModal";
 // w-10/h-10 (40px) on small screens to match EditStoryEditor's FAB_BASE —
 // these buttons render inline with that page's own FABs in the same row, so
 // they need to shrink at the same breakpoint to stay visually consistent.
-const FAB_BASE = "w-10 h-10 sm:w-[52px] sm:h-[52px] flex items-center justify-center rounded-full shadow-[0_2px_12px_rgba(0,0,0,0.12)] dark:shadow-[0_2px_12px_rgba(0,0,0,0.4)] transition-transform duration-300 hover:scale-95 active:scale-90 disabled:opacity-60 disabled:cursor-not-allowed flex-shrink-0";
+const FAB_BASE = "w-10 h-10 sm:w-[52px] sm:h-[52px] flex items-center justify-center rounded-2xl shadow-[0_2px_12px_rgba(0,0,0,0.12)] dark:shadow-[0_2px_12px_rgba(0,0,0,0.4)] transition-transform duration-300 hover:scale-95 active:scale-90 disabled:opacity-60 disabled:cursor-not-allowed flex-shrink-0";
 const FAB_GREEN = `${FAB_BASE} bg-[#D1FAE5] dark:bg-[#022C22] text-[#065F46] dark:text-[#6EE7B7]`; // publish / approve
 const FAB_BLUE = `${FAB_BASE} bg-secondary dark:bg-[#1e3a5f] text-primary dark:text-[#93b8f0]`; // unpublish / reject
 const FAB_RED_SOLID = `${FAB_BASE} bg-[#DC2626] text-white`; // delete

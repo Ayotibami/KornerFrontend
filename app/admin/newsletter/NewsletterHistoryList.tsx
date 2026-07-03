@@ -1,25 +1,26 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useState, useTransition } from "react";
-import { Ban, CalendarClock, CheckCircle2, Clock, Inbox, Loader2, Pencil, Repeat, Trash2 } from "lucide-react";
+import { Ban, CalendarClock, CheckCircle2, Clock, Inbox, Loader2, Pencil, Repeat, Send, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { formatFullDateTime } from "@/lib/utils";
 import NewsletterEditModal from "@/components/admin/newsletter/NewsletterEditModal";
 import { getNewsletters, getNewsletter, deleteNewsletter, type NewsletterSend } from "./action";
 
 type LoadState = "loading" | "loaded" | "error";
+type Filter = "sent" | "pending";
 
 function StatusBadge({ status }: { status: NewsletterSend["status"] }) {
   if (status === "sent") {
     return (
-      <span className="inline-flex items-center gap-1 text-xs font-bold font-nunito px-2.5 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-400 flex-shrink-0">
+      <span className="inline-flex items-center gap-1 text-xs font-bold px-2.5 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-400 flex-shrink-0">
         <CheckCircle2 size={11} />
         Sent
       </span>
     );
   }
   return (
-    <span className="inline-flex items-center gap-1 text-xs font-bold font-nunito px-2.5 py-0.5 rounded-full bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-400 flex-shrink-0">
+    <span className="inline-flex items-center gap-1 text-xs font-bold px-2.5 py-0.5 rounded-full bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-400 flex-shrink-0">
       <Clock size={11} />
       Scheduled
     </span>
@@ -34,6 +35,7 @@ export default function NewsletterHistoryList({
   const [loadState, setLoadState] = useState<LoadState>("loading");
   const [loadError, setLoadError] = useState<string | null>(null);
   const [sends, setSends] = useState<NewsletterSend[]>([]);
+  const [filter, setFilter] = useState<Filter>("sent");
   const [editingId, setEditingId] = useState<string | null>(null);
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
   const [templatingId, setTemplatingId] = useState<string | null>(null);
@@ -85,12 +87,12 @@ export default function NewsletterHistoryList({
   if (loadState === "error") {
     return (
       <div className="flex flex-col items-center justify-center py-24 gap-4">
-        <p className="text-sm text-red-500 text-center font-nunito">
+        <p className="text-sm text-red-500 text-center">
           {loadError ?? "Failed to load newsletters."}
         </p>
         <button
           onClick={load}
-          className="text-sm font-bold font-nunito px-5 py-2 rounded-full bg-secondary dark:bg-[#1e3a5f] text-primary dark:text-[#93b8f0] hover:opacity-80 transition-opacity cursor-pointer"
+          className="text-sm font-bold px-5 py-2 rounded-full bg-secondary dark:bg-[#1e3a5f] text-primary dark:text-[#93b8f0] hover:opacity-80 transition-opacity cursor-pointer"
         >
           Try again
         </button>
@@ -98,23 +100,9 @@ export default function NewsletterHistoryList({
     );
   }
 
-  if (sends.length === 0) {
-    return (
-      <div className="flex flex-col items-center justify-center py-24 gap-4">
-        <div className="w-16 h-16 rounded-full bg-secondary dark:bg-[#1e3a5f] flex items-center justify-center">
-          <Inbox size={26} className="text-primary dark:text-[#93b8f0] opacity-60" />
-        </div>
-        <div className="text-center">
-          <p className="font-extrabold text-[#0f1e3d] dark:text-gray-200 font-nunito">
-            No newsletters yet
-          </p>
-          <p className="text-sm text-gray-400 dark:text-gray-500 font-nunito mt-1 leading-relaxed">
-            Newsletters you send or schedule will show up here.
-          </p>
-        </div>
-      </div>
-    );
-  }
+  const sentCount = sends.filter((s) => s.status === "sent").length;
+  const scheduledCount = sends.filter((s) => s.status === "pending").length;
+  const visible = sends.filter((s) => (filter === "sent" ? s.status === "sent" : s.status === "pending"));
 
   return (
     <>
@@ -127,8 +115,81 @@ export default function NewsletterHistoryList({
         />
       )}
 
+      {/* Sent / Scheduled toggle */}
+      {sends.length > 0 && (
+        <div className="flex justify-center">
+          <div className="inline-flex bg-white dark:bg-[#1a1f2e] rounded-2xl p-1 gap-1 shadow-[0_2px_8px_rgba(0,0,0,0.06)] dark:shadow-[0_2px_8px_rgba(0,0,0,0.3)] border border-gray-100 dark:border-white/[0.06]">
+            {(["sent", "pending"] as Filter[]).map((f) => {
+              const active = filter === f;
+              const count = f === "sent" ? sentCount : scheduledCount;
+              return (
+                <button
+                  key={f}
+                  type="button"
+                  onClick={() => setFilter(f)}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-200 cursor-pointer ${
+                    active
+                      ? f === "sent"
+                        ? "bg-emerald-500 text-white shadow-sm"
+                        : "bg-amber-500 text-white shadow-sm"
+                      : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
+                  }`}
+                >
+                  {f === "sent" ? <Send size={13} /> : <Clock size={13} />}
+                  {f === "sent" ? "Sent" : "Scheduled"}
+                  <span className={`text-xs px-1.5 py-0.5 rounded-full font-bold leading-none ${
+                    active
+                      ? "bg-white/25 text-white"
+                      : "bg-gray-100 dark:bg-white/[0.08] text-gray-500 dark:text-gray-400"
+                  }`}>
+                    {count}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* Empty state per filter */}
+      {sends.length > 0 && visible.length === 0 && (
+        <div className="flex flex-col items-center justify-center py-20 gap-4">
+          <div className="w-14 h-14 rounded-2xl bg-secondary dark:bg-[#1e3a5f] flex items-center justify-center">
+            {filter === "sent"
+              ? <Send size={22} className="text-primary dark:text-[#93b8f0] opacity-60" />
+              : <Clock size={22} className="text-primary dark:text-[#93b8f0] opacity-60" />
+            }
+          </div>
+          <div className="text-center">
+            <p className="font-bold text-[#0f1e3d] dark:text-gray-200">
+              {filter === "sent" ? "No sent newsletters" : "Nothing scheduled"}
+            </p>
+            <p className="text-sm text-gray-400 dark:text-gray-500 mt-1">
+              {filter === "sent"
+                ? "Newsletters you send will appear here."
+                : "Schedule a newsletter from the Compose tab."}
+            </p>
+          </div>
+        </div>
+      )}
+
+      {/* All-empty state */}
+      {sends.length === 0 && (
+        <div className="flex flex-col items-center justify-center py-24 gap-4">
+          <div className="w-16 h-16 rounded-full bg-secondary dark:bg-[#1e3a5f] flex items-center justify-center">
+            <Inbox size={26} className="text-primary dark:text-[#93b8f0] opacity-60" />
+          </div>
+          <div className="text-center">
+            <p className="font-bold text-[#0f1e3d] dark:text-gray-200">No newsletters yet</p>
+            <p className="text-sm text-gray-400 dark:text-gray-500 mt-1 leading-relaxed">
+              Newsletters you send or schedule will show up here.
+            </p>
+          </div>
+        </div>
+      )}
+
       <div className="flex flex-col gap-3">
-        {sends.map((item) => {
+        {visible.map((item) => {
           const isPending = item.status === "pending";
           const isConfirming = confirmDeleteId === item.sendId;
 
@@ -138,13 +199,13 @@ export default function NewsletterHistoryList({
               className="bg-white dark:bg-[#1a1f2e] rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.06)] dark:shadow-[0_4px_20px_rgba(0,0,0,0.3)] p-4 sm:p-5 flex flex-col gap-2.5"
             >
               <div className="flex items-start justify-between gap-3">
-                <p className="text-sm font-bold text-[#0f1e3d] dark:text-gray-100 font-nunito leading-snug flex-1">
+                <p className="text-sm font-bold text-[#0f1e3d] dark:text-gray-100 leading-snug flex-1">
                   {item.subject}
                 </p>
                 <StatusBadge status={item.status} />
               </div>
 
-              <div className="flex items-center gap-1.5 text-xs text-gray-400 dark:text-gray-500 font-nunito">
+              <div className="flex items-center gap-1.5 text-xs text-gray-400 dark:text-gray-500">
                 <CalendarClock size={11} className="flex-shrink-0" />
                 <span>
                   {item.status === "sent" && item.sentAt
@@ -155,21 +216,21 @@ export default function NewsletterHistoryList({
 
               {isConfirming ? (
                 <div className="flex items-center justify-between gap-3 pt-1">
-                  <p className="text-xs font-semibold text-[#0f1e3d] dark:text-gray-200 font-nunito">
+                  <p className="text-xs font-semibold text-[#0f1e3d] dark:text-gray-200">
                     {isPending ? "Cancel this scheduled newsletter?" : "Delete this from history?"}
                   </p>
                   <div className="flex items-center gap-2 flex-shrink-0">
                     <button
                       onClick={() => setConfirmDeleteId(null)}
                       disabled={isDeleting}
-                      className="text-xs font-bold font-nunito px-3 py-1.5 rounded-full bg-secondary dark:bg-[#1e3a5f] text-primary dark:text-[#93b8f0] hover:opacity-80 transition-opacity disabled:opacity-50 cursor-pointer"
+                      className="text-xs font-bold px-3 py-1.5 rounded-full bg-secondary dark:bg-[#1e3a5f] text-primary dark:text-[#93b8f0] hover:opacity-80 transition-opacity disabled:opacity-50 cursor-pointer"
                     >
                       Back
                     </button>
                     <button
                       onClick={() => handleDelete(item.sendId, item.status)}
                       disabled={isDeleting}
-                      className={`flex items-center gap-1.5 text-xs font-bold font-nunito px-3 py-1.5 rounded-full text-white hover:opacity-90 transition-opacity disabled:opacity-60 cursor-pointer ${
+                      className={`flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-full text-white hover:opacity-90 transition-opacity disabled:opacity-60 cursor-pointer ${
                         isPending ? "bg-amber-500" : "bg-[#DC2626]"
                       }`}
                     >

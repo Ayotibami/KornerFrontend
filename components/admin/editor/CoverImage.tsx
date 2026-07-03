@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 // Cover image component shown at the top of the story editor.
 // In write mode: shows an "Upload Image" / "Change Image" button overlaid on the image.
@@ -86,7 +86,7 @@ export default function CoverImage({
           <button
             onClick={() => ref.current?.click()}
             disabled={uploading}
-            className="absolute bottom-6 left-1/2 -translate-x-1/2 bg-white/90 dark:bg-[#1a1f2e]/90 text-[#0f1e3d] dark:text-gray-100 rounded-full px-6 py-2.5 font-bold text-sm shadow-md whitespace-nowrap z-10 cursor-pointer disabled:opacity-70 disabled:cursor-not-allowed"
+            className="absolute bottom-6 left-1/2 -translate-x-1/2 bg-white/90 dark:bg-[#1a1f2e]/90 text-[#0f1e3d] dark:text-gray-100 rounded-xl px-6 py-2.5 font-bold text-sm shadow-md whitespace-nowrap z-10 cursor-pointer disabled:opacity-70 disabled:cursor-not-allowed"
           >
             {uploading ? "Uploading…" : previewUrl ? "Change Image" : "Upload Image"}
           </button>

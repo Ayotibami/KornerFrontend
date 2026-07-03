@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 // Detail view for one admin, opened by clicking their avatar on the writers
 // page. Same visual shape as ProfileModal's view mode (avatar, name, email,
@@ -30,9 +30,9 @@ import type { AdminDetail } from "@/types/admin";
 type FetchState = "loading" | "loaded" | "error";
 
 const BTN_GOLD_SOFT =
-  "flex items-center justify-center gap-2 w-full bg-[#FFF8E1] dark:bg-[#3a2e05] text-[#C77F00] dark:text-[#FFC700] rounded-full px-4 py-2.5 text-sm font-bold font-nunito hover:opacity-80 transition-all duration-200 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed";
+  "flex items-center justify-center gap-2 w-full bg-[#FFF8E1] dark:bg-[#3a2e05] text-[#C77F00] dark:text-[#FFC700] rounded-xl px-4 py-2.5 text-sm font-bold hover:opacity-80 transition-all duration-200 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed";
 const BTN_RED_GHOST =
-  "flex items-center justify-center gap-2 w-full bg-[#FEE2E2] dark:bg-[#450a0a] text-[#DC2626] dark:text-[#FCA5A5] rounded-full px-4 py-2.5 text-sm font-bold font-nunito hover:opacity-80 transition-all duration-200 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed";
+  "flex items-center justify-center gap-2 w-full bg-[#FEE2E2] dark:bg-[#450a0a] text-[#DC2626] dark:text-[#FCA5A5] rounded-xl px-4 py-2.5 text-sm font-bold hover:opacity-80 transition-all duration-200 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed";
 
 export default function AdminDetailModal({
   adminId,
@@ -93,7 +93,7 @@ export default function AdminDetailModal({
       onClick={onClose}
     >
       <div
-        className="relative bg-white dark:bg-[#1a1f2e] rounded-2xl w-[90vw] max-w-[420px] p-6 shadow-[0_8px_32px_rgba(0,0,0,0.18)] dark:shadow-[0_8px_32px_rgba(0,0,0,0.5)] font-nunito"
+        className="relative bg-white dark:bg-[#1a1f2e] rounded-2xl w-[90vw] max-w-[420px] p-6 shadow-[0_8px_32px_rgba(0,0,0,0.18)] dark:shadow-[0_8px_32px_rgba(0,0,0,0.5)]"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between mb-6">

@@ -19,7 +19,7 @@ import { sendPushBroadcast } from "@/app/admin/push/action";
 import ImageUploader from "@/components/admin/editor/ImageUploader";
 
 const INPUT_BASE =
-  "w-full font-nunito text-[0.95rem] border-2 border-secondary dark:border-[#2a4a7a] bg-[#F0F5FF] dark:bg-[#1e2a3a] text-[#0f1e3d] dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-600 px-4 py-3 rounded-xl outline-none transition-[border-color,box-shadow,background-color] duration-200 focus:border-primary focus:bg-white dark:focus:bg-[#243347] focus:ring-2 focus:ring-primary/10 disabled:opacity-60 disabled:cursor-not-allowed";
+  "w-full text-[0.95rem] border-2 border-secondary dark:border-[#2a4a7a] bg-[#F0F5FF] dark:bg-[#1e2a3a] text-[#0f1e3d] dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-600 px-4 py-3 rounded-xl outline-none transition-[border-color,box-shadow,background-color] duration-200 focus:border-primary focus:bg-white dark:focus:bg-[#243347] focus:ring-2 focus:ring-primary/10 disabled:opacity-60 disabled:cursor-not-allowed";
 
 export default function PushComposer({
   players,
@@ -59,9 +59,9 @@ export default function PushComposer({
   const canSend = title.trim().length > 0 && message.trim().length > 0 && !isUploadingImage;
 
   return (
-    <div className="bg-white dark:bg-[#1a1f2e] rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.12)] dark:shadow-[0_4px_20px_rgba(0,0,0,0.4)] p-5 flex flex-col gap-4">
+    <div className="bg-white dark:bg-[#1a1f2e] rounded-2xl shadow-[0_2px_8px_rgba(0,0,0,0.06)] dark:shadow-[0_2px_8px_rgba(0,0,0,0.3)] p-5 flex flex-col gap-4">
       <div>
-        <p className="font-bold text-lg text-[#0f1e3d] dark:text-gray-50 font-nunito">
+        <p className="font-semibold text-lg text-[#0f1e3d] dark:text-gray-50">
           Send a broadcast
         </p>
         <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
@@ -146,7 +146,7 @@ export default function PushComposer({
         type="button"
         onClick={handleSend}
         disabled={!canSend || isSending}
-        className={`w-full py-2.5 rounded-full font-bold text-sm cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed transition-all duration-200 flex items-center justify-center gap-2 ${
+        className={`w-full py-2.5 rounded-xl font-semibold text-sm cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed transition-all duration-200 flex items-center justify-center gap-2 ${
           confirming
             ? "bg-[#DC2626] text-white hover:opacity-90"
             : "bg-primary text-white hover:opacity-90"

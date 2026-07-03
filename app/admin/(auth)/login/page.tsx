@@ -43,9 +43,11 @@ export default function LoginPage() {
         subtitle="Howfar? You don land for admin corner!"
       />
 
-      <form action={handleSubmit} className="flex flex-col gap-5">
+      <form action={handleSubmit} className="flex flex-col gap-4">
         {error && (
-          <p className="text-red-600 text-sm text-center">{error}</p>
+          <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800/40 rounded-xl px-4 py-3">
+            <p className="text-red-600 dark:text-red-400 text-sm text-center">{error}</p>
+          </div>
         )}
 
         <Input
@@ -63,31 +65,30 @@ export default function LoginPage() {
           disabled={isPending}
         />
 
+        <Link
+          href="/admin/forgot-password"
+          className="text-xs text-primary dark:text-[#93b8f0] font-semibold hover:opacity-70 transition-opacity self-end -mt-1"
+        >
+          Forgot password?
+        </Link>
+
         <Button type="submit" disabled={isPending}>
           {isPending ? (
             <span className="flex items-center justify-center gap-2">
-              <Loader2 size={16} className="animate-spin" /> Logging in...
+              <Loader2 size={16} className="animate-spin" /> Logging in…
             </span>
           ) : (
-            "Login"
+            "Log in"
           )}
         </Button>
       </form>
 
-      <div className="flex flex-col items-center gap-2">
-        <p className="text-center text-sm text-gray-500">
-          Not a Werey??{" "}
-          <Link href="/admin/signup" className="text-primary font-bold">
-            Sign up
-          </Link>
-        </p>
-        <Link
-          href="/admin/forgot-password"
-          className="text-sm text-primary dark:text-[#93b8f0] font-semibold hover:opacity-70 transition-opacity"
-        >
-          Forgot password?
+      <p className="text-center text-sm text-gray-500 dark:text-gray-400">
+        Not a Werey?{" "}
+        <Link href="/admin/signup" className="text-primary dark:text-[#93b8f0] font-semibold hover:opacity-70 transition-opacity">
+          Sign up
         </Link>
-      </div>
+      </p>
     </AuthCard>
   );
 }
