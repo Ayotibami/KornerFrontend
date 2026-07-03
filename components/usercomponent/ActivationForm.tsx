@@ -220,8 +220,8 @@ export default function ActivationForm() {
               </p>
             )}
 
-            <div style={{ width: "fit-content" }}>
-              <Button onClick={handleEmailSubmit} disabled={isPending}>
+            <div style={{ width: "fit-content", pointerEvents: isPending ? "none" : "auto", opacity: isPending ? 0.6 : 1 }}>
+              <Button onClick={handleEmailSubmit}>
                 {isPending ? "Sending…" : "Email me"}
               </Button>
             </div>
