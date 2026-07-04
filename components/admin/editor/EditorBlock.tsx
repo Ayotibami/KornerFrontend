@@ -40,12 +40,13 @@ function HeadingBlock({ block, mode, onChange }: { block: BlockData; mode: "writ
       />
     );
   }
+  const text = block.content.replace(/<[^>]*>/g, "").trim();
   return (
     <h2
       className="font-extrabold text-[#0f1e3d] dark:text-gray-50 m-0 leading-snug"
       style={{ fontSize: "clamp(1.2rem, 3vw, 1.75rem)" }}
     >
-      {block.content || "Heading goes here"}
+      {text || "Heading goes here"}
     </h2>
   );
 }

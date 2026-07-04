@@ -72,6 +72,10 @@ export default function AdminDetailModal({
 
   const handleRoleToggle = () => {
     if (!admin) return;
+    if (admin.is_protected) {
+      toast.error("you want to demote ceo ke ? you get mind o");
+      return;
+    }
     const nextRole = admin.role === "master" ? "writer" : "master";
     setIsChangingRole(true);
     setAdminRole(adminId, nextRole).then((result) => {
@@ -187,7 +191,7 @@ export default function AdminDetailModal({
               </div>
             </div>
 
-            {!isSelf && !admin.is_protected && (
+            {!isSelf && (
               <div className="flex flex-col gap-2 mt-6 pt-5 border-t border-slate-100 dark:border-slate-700">
                 <p className="font-semibold text-xs uppercase tracking-wide text-gray-400 dark:text-gray-500">
                   Manage
@@ -209,7 +213,13 @@ export default function AdminDetailModal({
                 </button>
                 <button
                   type="button"
-                  onClick={() => setIsDeleteOpen(true)}
+                  onClick={() => {
+                    if (admin.is_protected) {
+                      toast.error("you want to delete ceo ke ? you get mind o");
+                      return;
+                    }
+                    setIsDeleteOpen(true);
+                  }}
                   className={BTN_RED_GHOST}
                 >
                   <Trash2 size={16} />
