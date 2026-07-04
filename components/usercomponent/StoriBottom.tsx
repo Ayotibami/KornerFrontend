@@ -12,13 +12,15 @@ export default function StoriBottom({
   authorName,
   authorAvatar = "",
   authorBio,
-  title = "",   // story title — used as the pre-filled text when sharing to Twitter/WhatsApp
-  shareUrl = "", // pass a specific URL to share; if not passed, falls back to the current page URL
+  title = "",
+  excerpt = "",
+  shareUrl = "",
 }: {
   authorName: string;
   authorAvatar?: string;
   authorBio: string;
   title?: string;
+  excerpt?: string;
   shareUrl?: string;
 }) {
   // controls whether the "Copied!" tooltip is visible on the link icon
@@ -43,13 +45,17 @@ export default function StoriBottom({
   // WhatsApp takes a single "text" param that contains both title and URL together.
   // If a title exists we combine them: "Story Title https://thekorner.com/stories/..."
   // If no title, we just send the URL alone.
-  const encodedText = encodeURIComponent(title ? `${title} ${pageUrl}` : pageUrl);
+  const whatsappText = title
+    ? `Oya, It's Kappy , I don come again with another stori . You know say na my own work be that . Abeg you no just waste time , grab hot kunu or zobo and then hop in\n\n*${title}*\n\n${excerpt}\n\n${pageUrl}`
+    : pageUrl;
+  const encodedText = encodeURIComponent(whatsappText);
 
   // Each platform has a public web endpoint for sharing.
   // We construct the full URL by injecting our encoded story URL and title as query params.
   // Twitter accepts title and URL separately; WhatsApp wants them merged; Facebook only needs the URL.
   // (Facebook reads the page's og:title meta tag itself to build the preview — it ignores extra params.)
-  const twitterShareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(title)}&url=${encodedUrl}`;
+  const kappyLine = "Oya, It's Kappy , I don come again with another stori . You know say na my own work be that . Abeg you no just waste time , grab hot kunu or zobo and then hop in";
+  const twitterShareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(kappyLine)}&url=${encodedUrl}`;
   const whatsappShareUrl = `https://wa.me/?text=${encodedText}`;
   const facebookShareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`;
 

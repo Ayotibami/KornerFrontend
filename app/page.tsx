@@ -20,14 +20,21 @@ import { getPublicStories } from "@/lib/publicApi";
 export const metadata: Metadata = {
   title: "The Korner — Kampos talks you listen",
   description:
-    "Korner's is that chill corner on Kampos where we just get student life. From late-night gist about love and grades to real talks on career, money, and culture — it's Kampos talking your talk, straight from our hearts to yours.",
+    "Korner is that chill corner on Kampos where we just get student life. From late-night gist about love and grades to real talks on career, money, and culture — it's Kampos talking your talk, straight from our hearts to yours.",
   openGraph: {
     title: "The Korner — Kampos talks you listen",
     description:
       "Korner's is that chill corner on Kampos where we just get student life. From late-night gist about love and grades to real talks on career, money, and culture — it's Kampos talking your talk, straight from our hearts to yours.",
     url: "/",
     type: "website",
-    images: [{ url: "/images/og-default.png", width: 1200, height: 630, alt: "The Korner" }],
+    images: [
+      {
+        url: "/images/og-default.png",
+        width: 1200,
+        height: 630,
+        alt: "The Korner",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
@@ -36,22 +43,47 @@ export const metadata: Metadata = {
       "Korner's is that chill corner on Kampos where we just get student life. From late-night gist about love and grades to real talks on career, money, and culture.",
     images: ["/images/og-default.png"],
   },
+  alternates: {
+    canonical: `${process.env.NEXT_PUBLIC_BASE_URL}/`,
+  },
 };
 
 export default async function Home() {
   const { stories } = await getPublicStories(3, 0);
+  const base = process.env.NEXT_PUBLIC_BASE_URL!;
+
+  const jsonLd = [
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      name: "The Korner",
+      url: base,
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      name: "The Korner",
+      url: base,
+      logo: `${base}/images/logo.png`,
+    },
+  ];
 
   return (
-    <div
-      style={{
-        paddingTop: 16,
-        height: "100%",
-        display: "flex",
-        alignItems: "center",
-        backgroundColor: "#f1f5f9",
-        flexDirection: "column",
-      }}
-    >
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <div
+        style={{
+          paddingTop: 16,
+          height: "100%",
+          display: "flex",
+          alignItems: "center",
+          backgroundColor: "#f1f5f9",
+          flexDirection: "column",
+        }}
+      >
       <Navbar />
 
       {/* Full-screen hero: background image, big title, floating cards at bottom */}
@@ -75,5 +107,6 @@ export default async function Home() {
       {/* Footer with link columns and social icons */}
       <Footer />
     </div>
+    </>
   );
 }

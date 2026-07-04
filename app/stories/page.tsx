@@ -16,20 +16,33 @@ import type { Metadata } from "next";
 import { getPublicStories } from "@/lib/publicApi";
 
 export const metadata: Metadata = {
-  title: "Stories — The Korner",
-  description: "Student life, real talk, straight from Kampos — browse all Korner stories.",
+  title: "Stories from The Korner — Kampos talks you listen",
+  description:
+    "Student life, real talk, straight from Kampos — browse all Korner stories.",
   openGraph: {
-    title: "Stories — The Korner",
-    description: "Student life, real talk, straight from Kampos — browse all Korner stories.",
+    title: "Stories from The Korner — Kampos talks you listen",
+    description:
+      "Student life, real talk, straight from Kampos — browse all Korner stories.",
     url: "/stories",
     type: "website",
-    images: [{ url: "/images/og-default.png", width: 1200, height: 630, alt: "The Korner" }],
+    images: [
+      {
+        url: "/images/og-default.png",
+        width: 1200,
+        height: 630,
+        alt: "The Korner",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Stories — The Korner",
-    description: "Student life, real talk, straight from Kampos — browse all Korner stories.",
+    title: "Stories from The Korner — Kampos talks you listen",
+    description:
+      "Student life, real talk, straight from Kampos — browse all Korner stories.",
     images: ["/images/og-default.png"],
+  },
+  alternates: {
+    canonical: `${process.env.NEXT_PUBLIC_BASE_URL}/stories`,
   },
 };
 

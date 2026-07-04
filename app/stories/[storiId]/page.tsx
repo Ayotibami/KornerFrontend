@@ -32,10 +32,10 @@ export async function generateMetadata({
     : [{ url: `${base}/images/og-default.png`, width: 1200, height: 630, alt: "The Korner" }];
 
   return {
-    title: story.title,
+    title: `${story.title} | The Korner`,
     description: story.excerpt,
     openGraph: {
-      title: story.title,
+      title: `${story.title} | The Korner`,
       description: story.excerpt,
       url: `${base}/stories/${storiId}`,
       type: "article",
@@ -48,6 +48,9 @@ export async function generateMetadata({
       title: story.title,
       description: story.excerpt,
       images: story.cover_image ? [story.cover_image] : [`${base}/images/og-default.png`],
+    },
+    alternates: {
+      canonical: `${base}/stories/${storiId}`,
     },
   };
 }
@@ -109,6 +112,7 @@ export default async function StoriPage({
           authorAvatar={story.author_avatar}
           authorBio={story.author_bio ?? ""}
           title={story.title}
+          excerpt={story.excerpt}
         />
 
         <OtherStories excludeStoriId={storiId} />
