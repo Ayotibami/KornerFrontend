@@ -53,6 +53,10 @@ export default function WriterCard({
   };
 
   const handleUnverify = () => {
+    if (admin.is_protected) {
+      toast.error("You wan unverify ceo ke ? you get mind o");
+      return;
+    }
     startTransition(async () => {
       const result = await unverifyAdmin(admin.admin_id);
       if (result.ok) {

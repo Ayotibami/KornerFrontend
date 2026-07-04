@@ -18,6 +18,7 @@ export type AdminListItem = {
   avatar_url: string;
   is_verified: boolean;
   is_self: boolean;
+  is_protected: boolean;
   role: "master" | "writer";
 };
 
