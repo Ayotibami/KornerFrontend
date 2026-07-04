@@ -19,6 +19,7 @@
 // every row just in case its avatar gets clicked.
 
 import { useEffect, useState } from "react";
+import { useEscapeKey } from "@/hooks/useEscapeKey";
 import Image from "next/image";
 import { createPortal } from "react-dom";
 import { X, Loader2, ShieldCheck, ShieldAlert, Crown, Users, Trash2, Lock } from "lucide-react";
@@ -50,6 +51,7 @@ export default function AdminDetailModal({
   const [admin, setAdmin] = useState<AdminDetail | null>(null);
   const [isChangingRole, setIsChangingRole] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+  useEscapeKey(onClose, isOpen);
 
   useEffect(() => {
     // adminId never changes for a given modal instance (one per WriterCard

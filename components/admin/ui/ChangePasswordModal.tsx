@@ -1,6 +1,7 @@
 ﻿"use client";
 
 import { useState } from "react";
+import { useEscapeKey } from "@/hooks/useEscapeKey";
 import { createPortal } from "react-dom";
 import { Eye, EyeOff, X, LockKeyhole } from "lucide-react";
 import { toast } from "sonner";
@@ -17,6 +18,7 @@ const rules = (p: string) => ({
 });
 
 export default function ChangePasswordModal({ onClose }: { onClose: () => void }) {
+  useEscapeKey(onClose);
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");

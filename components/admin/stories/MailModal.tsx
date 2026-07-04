@@ -1,6 +1,7 @@
 ﻿"use client";
 
 import { useEffect, useRef, useState, useTransition } from "react";
+import { useEscapeKey } from "@/hooks/useEscapeKey";
 import MailBodyEditor from "@/components/admin/editor/MailBodyEditor";
 import { createPortal } from "react-dom";
 import { X, Mail, Loader2, Trash2, ChevronDown } from "lucide-react";
@@ -30,6 +31,7 @@ export default function MailModal({
   isOpen: boolean;
   onClose: () => void;
 }) {
+  useEscapeKey(onClose, isOpen);
   const [fetchState, setFetchState] = useState<FetchState>("loading");
   const [fetchError, setFetchError] = useState<string | null>(null);
   const [subject, setSubject] = useState("");

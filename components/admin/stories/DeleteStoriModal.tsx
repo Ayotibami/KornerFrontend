@@ -8,6 +8,7 @@
 // for visual consistency across the admin's modals.
 
 import { useState, useTransition } from "react";
+import { useEscapeKey } from "@/hooks/useEscapeKey";
 import { createPortal } from "react-dom";
 import { X, Trash2, Loader2 } from "lucide-react";
 import { toast } from "sonner";
@@ -37,6 +38,7 @@ export default function DeleteStoriModal({
 }) {
   const [confirmText, setConfirmText] = useState("");
   const [isDeleting, startDeleting] = useTransition();
+  useEscapeKey(onClose, isOpen);
 
   if (!isOpen) return null;
 

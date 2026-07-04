@@ -1,6 +1,7 @@
 ﻿"use client";
 
 import { useState } from "react";
+import { useEscapeKey } from "@/hooks/useEscapeKey";
 import { createPortal } from "react-dom";
 import { XCircle, Loader2 } from "lucide-react";
 
@@ -16,6 +17,7 @@ export default function RejectReasonModal({
   onConfirm: (reason: string) => void;
 }) {
   const [reason, setReason] = useState("");
+  useEscapeKey(onClose, isOpen);
 
   if (!isOpen) return null;
 

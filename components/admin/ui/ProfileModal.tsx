@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { Pencil, X, Crown, Feather } from "lucide-react";
 import { useState } from "react";
+import { useEscapeKey } from "@/hooks/useEscapeKey";
 import { useRouter } from "next/navigation";
 import { createPortal } from "react-dom";
 import { toast } from "sonner";
@@ -21,6 +22,7 @@ export default function ProfileModal({
   profile: AdminProfile | null;
   onClose: () => void;
 }) {
+  useEscapeKey(onClose);
   const [isEdit, setIsEdit] = useState(false);
   const [localName, setLocalName] = useState(profile?.admin_name ?? "");
   const [localBio, setLocalBio] = useState(profile?.bio ?? "");

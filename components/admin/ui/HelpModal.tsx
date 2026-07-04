@@ -2,8 +2,10 @@
 
 import { X, Eye, Pencil, SendHorizonal, RotateCcw, BookCheck, FeatherIcon } from "lucide-react";
 import { createPortal } from "react-dom";
+import { useEscapeKey } from "@/hooks/useEscapeKey";
 
 export default function HelpModal({ onClose }: { onClose: () => void }) {
+  useEscapeKey(onClose);
   return createPortal(
     <div
       className="fixed inset-0 z-[300] flex items-center justify-center bg-black/50 dark:bg-black/70 p-4"

@@ -1,6 +1,7 @@
 ﻿"use client";
 
-import { useEffect, useState, useTransition } from "react";
+import { useState, useTransition } from "react";
+import { useEscapeKey } from "@/hooks/useEscapeKey";
 import { createPortal } from "react-dom";
 import { X, CalendarClock, Loader2 } from "lucide-react";
 import { toast } from "sonner";
@@ -62,13 +63,7 @@ export default function NewsletterEditModal({
     });
   }, [isOpen, sendId]);
 
-  // Close on Escape key
-  useEffect(() => {
-    if (!isOpen) return;
-    const handle = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
-    document.addEventListener("keydown", handle);
-    return () => document.removeEventListener("keydown", handle);
-  }, [isOpen, onClose]);
+  useEscapeKey(onClose, isOpen);
 
   const scheduledAtIso = toScheduledAtIso(selectedDate, time);
   const canSave = Boolean(subject.trim() && body.trim() && scheduledAtIso && !uploadingImage);

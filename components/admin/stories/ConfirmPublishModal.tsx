@@ -11,6 +11,7 @@
 import type { ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { X, Loader2 } from "lucide-react";
+import { useEscapeKey } from "@/hooks/useEscapeKey";
 
 const BTN_GHOST =
   "flex items-center gap-2 bg-secondary dark:bg-[#1e3a5f] text-primary dark:text-[#93b8f0] rounded-xl px-6 py-2.5 text-sm font-bold hover:opacity-80 transition-all duration-200 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed";
@@ -36,6 +37,8 @@ export default function ConfirmPublishModal({
   onClose: () => void;
   onConfirm: () => void;
 }) {
+  useEscapeKey(onClose, isOpen);
+
   if (!isOpen) return null;
 
   const handleClose = () => {

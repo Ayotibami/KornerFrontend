@@ -15,6 +15,7 @@
 // state to "loading" synchronously at the top of the effect.
 
 import { useEffect, useState } from "react";
+import { useEscapeKey } from "@/hooks/useEscapeKey";
 import Image from "next/image";
 import { createPortal } from "react-dom";
 import { X, Send, Loader2, Users } from "lucide-react";
@@ -57,6 +58,8 @@ export default function SendNewsletterConfirmModal({
       }
     });
   }, [isOpen, count]);
+
+  useEscapeKey(onClose, isOpen);
 
   if (!isOpen) return null;
 
