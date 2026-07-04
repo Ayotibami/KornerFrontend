@@ -1,10 +1,5 @@
 "use client";
 
-// One row on the subscribers page — name, email, joined date, and a Remove
-// button. Removal is a single click + toast, not a heavy confirm-modal flow
-// like deleting a story — leaving a mailing list is low-stakes and instantly
-// reversible (they can just resubscribe).
-
 import { useState, useTransition } from "react";
 import { UserMinus, Loader2 } from "lucide-react";
 import { toast } from "sonner";
@@ -14,15 +9,17 @@ import type { Subscriber } from "@/types/subscriber";
 
 export default function SubscriberRow({ subscriber }: { subscriber: Subscriber }) {
   const [isRemoved, setIsRemoved] = useState(false);
+  const [isConfirming, setIsConfirming] = useState(false);
   const [isPending, startTransition] = useTransition();
 
-  const handleRemove = () => {
+  const handleConfirm = () => {
     startTransition(async () => {
       const result = await removeSubscriber(subscriber.email);
       if (result.ok) {
         setIsRemoved(true);
         toast.success(`${subscriber.name || subscriber.email} removed.`);
       } else {
+        setIsConfirming(false);
         toast.error(result.message);
       }
     });
@@ -44,15 +41,36 @@ export default function SubscriberRow({ subscriber }: { subscriber: Subscriber }
         </p>
       </div>
 
-      <button
-        type="button"
-        onClick={handleRemove}
-        disabled={isPending}
-        className="flex items-center gap-2 bg-[#FEE2E2] text-[#DC2626] dark:bg-[#450a0a] dark:text-[#FCA5A5] rounded-xl px-4 py-2 text-sm font-semibold hover:opacity-80 transition-all duration-200 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed flex-shrink-0"
-      >
-        {isPending ? <Loader2 size={16} className="animate-spin" /> : <UserMinus size={16} />}
-        Remove
-      </button>
+      {isConfirming ? (
+        <div className="flex items-center gap-2 flex-shrink-0">
+          <button
+            type="button"
+            onClick={() => setIsConfirming(false)}
+            disabled={isPending}
+            className="px-3 py-2 text-sm font-semibold rounded-xl bg-gray-100 dark:bg-white/10 text-gray-600 dark:text-gray-300 hover:opacity-80 transition-all cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
+          >
+            Cancel
+          </button>
+          <button
+            type="button"
+            onClick={handleConfirm}
+            disabled={isPending}
+            className="flex items-center gap-2 bg-[#DC2626] text-white rounded-xl px-4 py-2 text-sm font-semibold hover:opacity-90 transition-all cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
+          >
+            {isPending ? <Loader2 size={16} className="animate-spin" /> : <UserMinus size={16} />}
+            Confirm
+          </button>
+        </div>
+      ) : (
+        <button
+          type="button"
+          onClick={() => setIsConfirming(true)}
+          className="flex items-center gap-2 bg-[#FEE2E2] text-[#DC2626] dark:bg-[#450a0a] dark:text-[#FCA5A5] rounded-xl px-4 py-2 text-sm font-semibold hover:opacity-80 transition-all duration-200 cursor-pointer flex-shrink-0"
+        >
+          <UserMinus size={16} />
+          Remove
+        </button>
+      )}
     </div>
   );
 }
