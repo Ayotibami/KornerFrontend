@@ -54,8 +54,6 @@ export function useAutosave(
         setTimeout(() => setStatus((s) => (s === "saved" ? "idle" : s)), 2000);
       } else {
         setStatus("error");
-        // Fade the "Save failed" indicator after 3 seconds
-        setTimeout(() => setStatus((s) => (s === "error" ? "idle" : s)), 3000);
       }
     }, delayMs);
 
