@@ -149,6 +149,7 @@ export default function CreatePage() {
 
             <button
               title="Save as draft"
+              disabled={busy}
               className={`${FAB_TEAL} ${busy ? "opacity-60 cursor-not-allowed" : "cursor-pointer"}`}
               onClick={() => { if (!busy) handleDraft(); }}
             >

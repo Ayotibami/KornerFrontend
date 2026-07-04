@@ -115,9 +115,7 @@ export async function updateNewsletter(
   try {
     await apiRequest(`/newsletter/sends/${sendId}`, {
       method: "PATCH",
-      // image_url is always sent as a definite string ("" clears it) rather than
-      // omitted, since the edit modal always knows the full current state.
-      body: JSON.stringify({ subject, body, scheduled_at: scheduledAt, image_url: imageUrl ?? "" }),
+      body: JSON.stringify({ subject, body, scheduled_at: scheduledAt, image_url: imageUrl ?? null }),
     });
     return { ok: true, data: undefined };
   } catch (err: unknown) {
