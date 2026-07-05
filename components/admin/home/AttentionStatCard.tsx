@@ -18,6 +18,8 @@ export default async function AttentionStatCard() {
   const pendingCount = stories.filter((s) => s.status === "Pending").length;
   const unverifiedCount = admins.filter((a) => !a.is_verified).length;
 
+  if (pendingCount === 0 && unverifiedCount === 0) return null;
+
   return (
     <div className="bg-white dark:bg-[#1a1f2e] rounded-2xl border-l-4 border-[#DC2626] shadow-[0_2px_8px_rgba(0,0,0,0.06)] dark:shadow-[0_2px_8px_rgba(0,0,0,0.3)] p-5 flex flex-col gap-4 w-full">
       <div className="flex items-center justify-between">
