@@ -87,7 +87,7 @@ export default function CreatePage() {
     return result;
   }, [title, subTitle, excerpt, readTime, coverImage, blocks]);
 
-  const saveStatus = useAutosave(
+  const { status: saveStatus, cancel: cancelAutosave } = useAutosave(
     autosaveCallback,
     [title, subTitle, excerpt, readTime, coverImage, blocks],
     { enabled: title.trim().length > 0 },
@@ -99,6 +99,7 @@ export default function CreatePage() {
   const busy = isDrafting || uploadingCount > 0;
 
   const handleDraft = () => {
+    cancelAutosave();
     startDrafting(async () => {
       if (storiIdRef.current) {
         // Autosave already created the draft — do a final explicit save then go home
@@ -117,6 +118,7 @@ export default function CreatePage() {
 
   const handleSubmit = () => {
     if (isSubmitting || uploadingCount > 0) return;
+    cancelAutosave();
     startSubmitting(async () => {
       if (storiIdRef.current) {
         // Draft already exists — save current state then submit it
@@ -134,6 +136,7 @@ export default function CreatePage() {
 
   return (
     <div className="min-h-screen bg-[#f8f9fb] dark:bg-[#0f1117]">
+      <SaveIndicator status={saveStatus} />
       <div className="fixed z-[100] flex flex-row flex-nowrap items-center justify-center gap-2 overflow-x-auto px-1 bottom-4 left-1/2 -translate-x-1/2 max-w-[94vw] sm:flex-col sm:gap-2.5 sm:justify-start sm:overflow-visible sm:px-0 sm:bottom-auto sm:left-auto sm:translate-x-0 sm:max-w-none sm:top-20 sm:right-[clamp(12px,3vw,24px)]">
         {mode === "read" && (
           <>
@@ -209,7 +212,6 @@ export default function CreatePage() {
               <ArrowLeft size={16} />
               Go back
             </button>
-            <SaveIndicator status={saveStatus} />
           </div>
 
           {/* Page heading */}

@@ -3,8 +3,13 @@
 // Debounced autosave hook — fires `save` after `delayMs` of inactivity
 // in the watched deps, but skips the very first render so page-load
 // doesn't trigger a pointless save of the server's own data back to itself.
+//
+// Race-condition safety: `cancel()` clears any pending timer and increments
+// a generation counter. An in-flight save checks the counter before updating
+// state — if the counter changed (manual save started), the result is dropped.
+// Call `cancel()` at the top of every manual save handler.
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 export type SaveStatus = "idle" | "saving" | "saved" | "error";
 
@@ -21,10 +26,13 @@ export function useAutosave(
     enabled?: boolean;
     delayMs?: number;
   },
-): SaveStatus {
+): { status: SaveStatus; cancel: () => void } {
   const { enabled = true, delayMs = 3000 } = options ?? {};
   const [status, setStatus] = useState<SaveStatus>("idle");
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // Each save captures this number; if it changes before the save completes,
+  // the result is from a superseded autosave and gets discarded.
+  const generationRef = useRef(0);
 
   // Keep the save callback fresh on every render without it being a dep
   // of the debounce effect — if it were a dep, every render would restart
@@ -36,6 +44,13 @@ export function useAutosave(
   // being loaded into the editor, not a real user edit.
   const isMountedRef = useRef(false);
 
+  // Cancel any pending timer and invalidate any in-flight save result.
+  const cancel = useCallback(() => {
+    if (timerRef.current) clearTimeout(timerRef.current);
+    generationRef.current++;
+    setStatus("idle");
+  }, []);
+
   useEffect(() => {
     if (!isMountedRef.current) {
       isMountedRef.current = true;
@@ -46,8 +61,11 @@ export function useAutosave(
     if (timerRef.current) clearTimeout(timerRef.current);
 
     timerRef.current = setTimeout(async () => {
+      const gen = generationRef.current;
       setStatus("saving");
       const result = await saveRef.current();
+      // Discard result if a manual save already took over.
+      if (generationRef.current !== gen) return;
       if (result.ok) {
         setStatus("saved");
         // Fade the "Saved" indicator back to idle after 2 seconds
@@ -64,5 +82,5 @@ export function useAutosave(
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [...deps, enabled]);
 
-  return status;
+  return { status, cancel };
 }

@@ -218,7 +218,7 @@ export default function EditStoryEditor({
     () => autosaveExistingStory(storiId, title, subTitle, excerpt, readTime, coverImage, blocks),
     [storiId, title, subTitle, excerpt, readTime, coverImage, blocks],
   );
-  const saveStatus = useAutosave(autosaveCallback, [title, subTitle, excerpt, readTime, coverImage, blocks], {
+  const { status: saveStatus, cancel: cancelAutosave } = useAutosave(autosaveCallback, [title, subTitle, excerpt, readTime, coverImage, blocks], {
     enabled: isDirty,
   });
 
@@ -233,6 +233,7 @@ export default function EditStoryEditor({
   const busy = isUpdating || uploadingCount > 0;
 
   const handleUpdate = () => {
+    cancelAutosave();
     startUpdating(async () => {
       const result = await updateStory(
         storiId,
@@ -252,6 +253,7 @@ export default function EditStoryEditor({
   return (
     <div className="min-h-screen bg-[#f8f9fb] dark:bg-[#0f1117]">
       <MailModal storiId={storiId} isOpen={isMailOpen} onClose={() => setIsMailOpen(false)} />
+      <SaveIndicator status={saveStatus} />
       <div className="fixed z-[100] flex flex-row flex-nowrap items-center justify-center gap-2 overflow-x-auto px-1 bottom-4 left-1/2 -translate-x-1/2 max-w-[94vw] sm:flex-col sm:gap-2.5 sm:justify-start sm:overflow-visible sm:px-0 sm:bottom-auto sm:left-auto sm:translate-x-0 sm:max-w-none sm:top-20 sm:right-[clamp(12px,3vw,24px)]">
         {mode === "read" ? (
           // Read mode: submit for review (writers, draft only) + save as draft (only if dirty) + edit button
@@ -354,20 +356,17 @@ export default function EditStoryEditor({
               <ArrowLeft size={16} />
               Go back
             </button>
-            <div className="flex items-center gap-3">
-              <SaveIndicator status={saveStatus} />
-              <span
-                className={`text-xs font-semibold px-3 py-1 rounded-full flex-shrink-0 ${
-                  stori.status === "Draft"
-                    ? "bg-[#DBEAFE] text-[#1e40af] dark:bg-[#1e3a5f] dark:text-[#93c5fd]"
-                    : stori.status === "Pending"
-                      ? "bg-[#FEF3C7] text-[#92400E] dark:bg-[#422006] dark:text-[#FDE68A]"
-                      : "bg-[#D1FAE5] text-[#065F46] dark:bg-[#022C22] dark:text-[#6EE7B7]"
-                }`}
-              >
-                {stori.status}
-              </span>
-            </div>
+            <span
+              className={`text-xs font-semibold px-3 py-1 rounded-full flex-shrink-0 ${
+                stori.status === "Draft"
+                  ? "bg-[#DBEAFE] text-[#1e40af] dark:bg-[#1e3a5f] dark:text-[#93c5fd]"
+                  : stori.status === "Pending"
+                    ? "bg-[#FEF3C7] text-[#92400E] dark:bg-[#422006] dark:text-[#FDE68A]"
+                    : "bg-[#D1FAE5] text-[#065F46] dark:bg-[#022C22] dark:text-[#6EE7B7]"
+              }`}
+            >
+              {stori.status}
+            </span>
           </div>
 
         <CoverImage

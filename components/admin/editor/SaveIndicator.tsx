@@ -7,11 +7,11 @@ export default function SaveIndicator({ status }: { status: SaveStatus }) {
   if (status === "idle") return null;
 
   return (
-    <span className="flex items-center gap-1 text-xs font-medium transition-opacity">
+    <div className="fixed bottom-5 right-4 sm:right-6 z-[90] flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-full bg-white dark:bg-[#1a1f2e] shadow-[0_2px_12px_rgba(0,0,0,0.12)] dark:shadow-[0_2px_12px_rgba(0,0,0,0.4)] border border-gray-100 dark:border-gray-700 select-none">
       {status === "saving" && (
         <>
           <Loader2 size={11} className="animate-spin text-gray-400 dark:text-gray-500 flex-shrink-0" />
-          <span className="text-gray-400 dark:text-gray-500">Saving…</span>
+          <span className="text-gray-500 dark:text-gray-400">Saving…</span>
         </>
       )}
       {status === "saved" && (
@@ -26,6 +26,6 @@ export default function SaveIndicator({ status }: { status: SaveStatus }) {
           <span className="text-[#DC2626] dark:text-[#FCA5A5]">Save failed</span>
         </>
       )}
-    </span>
+    </div>
   );
 }
