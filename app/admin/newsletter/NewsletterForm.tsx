@@ -1,14 +1,12 @@
 ﻿"use client";
 
 import React, { useState, useRef, useTransition, useEffect } from "react";
-import { CalendarClock, Send, Eye } from "lucide-react";
+import { CalendarClock, Send } from "lucide-react";
 import { toast } from "sonner";
 import MailBodyEditor from "@/components/admin/editor/MailBodyEditor";
 import ScheduleFields, { formatScheduled, toScheduledAtIso } from "@/components/admin/newsletter/ScheduleFields";
 import HeaderImagePicker from "@/components/admin/newsletter/HeaderImagePicker";
 import SendNewsletterConfirmModal from "@/components/admin/newsletter/SendNewsletterConfirmModal";
-import EmailPreviewModal from "@/components/admin/EmailPreviewModal";
-import { buildNewsletterPreview } from "@/lib/emailPreview";
 import { sendNewsletter } from "./action";
 
 type Mode = "now" | "schedule";
@@ -37,7 +35,6 @@ export default function NewsletterForm({
   const subjectRef = useRef<HTMLInputElement>(null);
   const [isPending, startSending] = useTransition();
   const [previewOpen, setPreviewOpen] = useState(false);
-  const [emailPreviewOpen, setEmailPreviewOpen] = useState(false);
 
   // Reuses a sent newsletter's content as a fresh draft — schedule is
   // intentionally not carried over so a stale time can't slip through.
@@ -173,17 +170,8 @@ export default function NewsletterForm({
         />
       )}
 
-      {/* Submit row */}
-      <div className="flex justify-end items-center gap-3">
-        <button
-          type="button"
-          onClick={() => setEmailPreviewOpen(true)}
-          disabled={!subject.trim() || !body.trim() || isPending}
-          className="flex items-center gap-2 bg-secondary dark:bg-[#1e3a5f] text-primary dark:text-[#93b8f0] rounded-xl px-6 py-3 text-sm font-bold hover:opacity-80 transition-all duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          <Eye size={14} />
-          Preview email
-        </button>
+      {/* Submit — opens the preview/confirm modal rather than sending directly */}
+      <div className="flex justify-end">
         <button
           type="button"
           onClick={() => setPreviewOpen(true)}
@@ -196,12 +184,6 @@ export default function NewsletterForm({
           }
         </button>
       </div>
-
-      <EmailPreviewModal
-        html={buildNewsletterPreview(subject, body, imageUrl)}
-        isOpen={emailPreviewOpen}
-        onClose={() => setEmailPreviewOpen(false)}
-      />
 
       <SendNewsletterConfirmModal
         subject={subject}
