@@ -63,7 +63,7 @@ export default function FilterBar({ showSearch = false }: { showSearch?: boolean
 
   return (
     <div className="flex flex-col gap-2 px-3 sm:px-5 pt-1 pb-3">
-      <div className="relative">
+      <div className="relative max-w-sm mx-auto">
         <Search
           size={15}
           className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 pointer-events-none"
