@@ -57,6 +57,7 @@ export type MasterStory = Story & {
 // (/stories/public) — the reader-facing site's story grid.
 export type PublicStorySummary = {
   stori_id: string;
+  slug: string;
   title: string;
   subtitle: string;
   excerpt: string;

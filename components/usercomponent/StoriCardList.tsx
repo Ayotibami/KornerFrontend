@@ -38,7 +38,7 @@ export default function StoriCardList({
         // after the click-expand animation finishes (see StoriCard.tsx)
         <StoriCard
           key={story.stori_id}
-          href={`/stories/${story.stori_id}`}
+          href={`/stories/${story.slug}`}
           image={story.cover_image}
           authorAvatar={story.author_avatar}
           authorName={story.author_name}

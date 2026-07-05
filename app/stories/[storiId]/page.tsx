@@ -14,12 +14,18 @@ import { formatFullDate } from "@/lib/utils";
 // render pass (regardless of the no-store cache option used inside
 // getPublicStory), so calling it here AND in the page body below still only
 // hits the backend — and increments the view counter — once per visit.
+const extractUuid = (slug: string) => {
+  const match = slug.match(/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/);
+  return match ? match[0] : slug;
+};
+
 export async function generateMetadata({
   params,
 }: {
   params: Promise<{ storiId: string }>;
 }): Promise<Metadata> {
-  const { storiId } = await params;
+  const { storiId: slug } = await params;
+  const storiId = extractUuid(slug);
   const story = await getPublicStory(storiId);
 
   if (!story) {
@@ -37,7 +43,7 @@ export async function generateMetadata({
     openGraph: {
       title: `${story.title} | The Korner`,
       description: story.excerpt,
-      url: `${base}/stories/${storiId}`,
+      url: `${base}/stories/${story.slug}`,
       type: "article",
       images: coverImage,
       authors: [story.author_name],
@@ -50,7 +56,7 @@ export async function generateMetadata({
       images: story.cover_image ? [story.cover_image] : [`${base}/images/og-default.png`],
     },
     alternates: {
-      canonical: `${base}/stories/${storiId}`,
+      canonical: `${base}/stories/${story.slug}`,
     },
   };
 }
@@ -60,7 +66,8 @@ export default async function StoriPage({
 }: {
   params: Promise<{ storiId: string }>;
 }) {
-  const { storiId } = await params;
+  const { storiId: slug } = await params;
+  const storiId = extractUuid(slug);
   const story = await getPublicStory(storiId);
 
   if (!story) notFound();
@@ -74,7 +81,7 @@ export default async function StoriPage({
     author: { "@type": "Person", name: story.author_name },
     publisher: { "@type": "Organization", name: "The Korner" },
     datePublished: story.created_at,
-    url: `${process.env.NEXT_PUBLIC_BASE_URL}/stories/${storiId}`,
+    url: `${process.env.NEXT_PUBLIC_BASE_URL}/stories/${story.slug}`,
   };
 
   return (
@@ -115,7 +122,7 @@ export default async function StoriPage({
           excerpt={story.excerpt}
         />
 
-        <OtherStories excludeStoriId={storiId} />
+        <OtherStories excludeStoriId={story.stori_id} />
 
         <ActivationForm />
       </div>
