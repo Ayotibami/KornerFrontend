@@ -3,12 +3,14 @@
 import { useEffect, useState, useTransition } from "react";
 import { useEscapeKey } from "@/hooks/useEscapeKey";
 import { createPortal } from "react-dom";
-import { X, CalendarClock, Loader2 } from "lucide-react";
+import { X, CalendarClock, Loader2, Eye } from "lucide-react";
 import { toast } from "sonner";
 import MailBodyEditor from "@/components/admin/editor/MailBodyEditor";
 import ScheduleFields, { toScheduledAtIso } from "@/components/admin/newsletter/ScheduleFields";
 import HeaderImagePicker from "@/components/admin/newsletter/HeaderImagePicker";
 import { getNewsletter, updateNewsletter } from "@/app/admin/newsletter/action";
+import EmailPreviewModal from "@/components/admin/EmailPreviewModal";
+import { buildNewsletterPreview } from "@/lib/emailPreview";
 
 type FetchState = "loading" | "ready" | "error";
 
@@ -40,6 +42,7 @@ export default function NewsletterEditModal({
   const [selectedDate, setSelectedDate] = useState<Date | undefined>();
   const [time, setTime] = useState("");
   const [isSaving, startSaving] = useTransition();
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
 
   // Fetch the full send (with body) every time the modal opens
   useEffect(() => {
@@ -81,7 +84,14 @@ export default function NewsletterEditModal({
 
   if (!isOpen) return null;
 
-  return createPortal(
+  return (
+    <>
+      <EmailPreviewModal
+        html={buildNewsletterPreview(subject, body, imageUrl)}
+        isOpen={isPreviewOpen}
+        onClose={() => setIsPreviewOpen(false)}
+      />
+      {createPortal(
     <div
       className="fixed inset-0 z-[300] flex items-center justify-center bg-black/50 dark:bg-black/70 p-4"
       onClick={onClose}
@@ -191,6 +201,14 @@ export default function NewsletterEditModal({
               <button className={BTN_GHOST} onClick={onClose} disabled={isSaving}>
                 Cancel
               </button>
+              <button
+                className={BTN_GHOST}
+                onClick={() => setIsPreviewOpen(true)}
+                disabled={isSaving}
+              >
+                <Eye size={14} />
+                Preview
+              </button>
               <button className={BTN_PRIMARY} onClick={handleSave} disabled={isSaving || !canSave}>
                 {isSaving
                   ? <><Loader2 size={14} className="animate-spin" /> Saving…</>
@@ -203,5 +221,7 @@ export default function NewsletterEditModal({
       </div>
     </div>,
     document.body,
+      )}
+    </>
   );
 }

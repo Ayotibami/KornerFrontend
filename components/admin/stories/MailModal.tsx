@@ -4,9 +4,11 @@ import { useEffect, useRef, useState, useTransition } from "react";
 import { useEscapeKey } from "@/hooks/useEscapeKey";
 import MailBodyEditor from "@/components/admin/editor/MailBodyEditor";
 import { createPortal } from "react-dom";
-import { X, Mail, Loader2, Trash2, ChevronDown } from "lucide-react";
+import { X, Mail, Loader2, Trash2, ChevronDown, Eye } from "lucide-react";
 import { toast } from "sonner";
 import { getMail, createMail, updateMail, deleteMail } from "@/app/admin/stories/[storiId]/mailAction";
+import EmailPreviewModal from "@/components/admin/EmailPreviewModal";
+import { buildStoryMailPreview } from "@/lib/emailPreview";
 
 type FetchState = "loading" | "found" | "not-found" | "error";
 
@@ -41,6 +43,7 @@ export default function MailModal({
   const [infoOpen, setInfoOpen] = useState(false);
   const [isSaving, startSaving] = useTransition();
   const [isDeleting, startDeleting] = useTransition();
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const subjectRef = useRef<HTMLInputElement>(null);
 
   const insertNameInSubject = () => {
@@ -125,7 +128,14 @@ export default function MailModal({
   const isForm = fetchState === "found" || fetchState === "not-found";
   const busy = isSaving || isDeleting;
 
-  return createPortal(
+  return (
+    <>
+      <EmailPreviewModal
+        html={buildStoryMailPreview(subject, body)}
+        isOpen={isPreviewOpen}
+        onClose={() => setIsPreviewOpen(false)}
+      />
+      {createPortal(
     <div
       className="fixed inset-0 z-[300] flex items-center justify-center bg-black/50 dark:bg-black/70 p-4"
       onClick={onClose}
@@ -316,16 +326,26 @@ export default function MailModal({
                     Delete
                   </button>
                 )}
-                <button
-                  className={BTN_PRIMARY}
-                  onClick={handleSave}
-                  disabled={busy || !subject.trim() || !body.trim()}
-                >
-                  {isSaving
-                    ? <><Loader2 size={14} className="animate-spin" /> Saving…</>
-                    : fetchState === "not-found" ? "Create Mail" : "Save Changes"
-                  }
-                </button>
+                <div className="flex items-center gap-3">
+                  <button
+                    className={BTN_GHOST}
+                    onClick={() => setIsPreviewOpen(true)}
+                    disabled={busy || !subject.trim() || !body.trim()}
+                  >
+                    <Eye size={14} />
+                    Preview
+                  </button>
+                  <button
+                    className={BTN_PRIMARY}
+                    onClick={handleSave}
+                    disabled={busy || !subject.trim() || !body.trim()}
+                  >
+                    {isSaving
+                      ? <><Loader2 size={14} className="animate-spin" /> Saving…</>
+                      : fetchState === "not-found" ? "Create Mail" : "Save Changes"
+                    }
+                  </button>
+                </div>
               </div>
             )}
           </div>
@@ -333,5 +353,7 @@ export default function MailModal({
       </div>
     </div>,
     document.body,
+      )}
+    </>
   );
 }
