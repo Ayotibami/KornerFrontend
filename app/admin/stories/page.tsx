@@ -12,12 +12,12 @@ import { Suspense } from "react";
 export default async function AllStoriesPage({
   searchParams,
 }: {
-  searchParams: Promise<{ status?: string; mine?: string; admin?: string; page?: string }>;
+  searchParams: Promise<{ status?: string; mine?: string; admin?: string; page?: string; search?: string }>;
 }) {
   const profile = await getProfile();
   if (profile?.role !== "master") redirect("/admin/home");
 
-  const { status, mine, admin, page: pageParam } = await searchParams;
+  const { status, mine, admin, page: pageParam, search } = await searchParams;
   const activeStatus = status ?? "Draft";
   const scope = admin ? "admin" : mine === "true" ? "mine" : "all";
   const page = Math.max(parseInt(pageParam ?? "1") || 1, 1);
@@ -26,6 +26,7 @@ export default async function AllStoriesPage({
     const qp = new URLSearchParams({ status: activeStatus });
     if (mine === "true") qp.set("mine", "true");
     if (admin) qp.set("admin", admin);
+    if (search) qp.set("search", search);
     if (p > 1) qp.set("page", String(p));
     return `/admin/stories?${qp}`;
   };
@@ -46,13 +47,14 @@ export default async function AllStoriesPage({
         </div>
 
         <Suspense>
-          <FilterBar />
+          <FilterBar showSearch />
         </Suspense>
       </div>
 
-      <div className="pt-[164px] pb-5">
+      <div className="pt-[216px] pb-5">
         <MasterStoriesList
           status={activeStatus}
+          search={search}
           scope={scope}
           adminId={admin}
           page={page}

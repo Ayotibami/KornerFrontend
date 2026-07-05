@@ -14,12 +14,14 @@ const PAGE_SIZE = 20;
 
 export default async function MasterStoriesList({
   status,
+  search,
   scope = "all",
   adminId,
   page = 1,
   buildHref,
 }: {
   status?: string;
+  search?: string;
   scope?: "all" | "mine" | "admin";
   adminId?: string;
   page?: number;
@@ -29,6 +31,7 @@ export default async function MasterStoriesList({
 
   const qp = new URLSearchParams({ limit: String(PAGE_SIZE), offset: String(offset) });
   if (status) qp.set("status", status);
+  if (search) qp.set("search", search);
 
   const endpoint =
     scope === "mine"
