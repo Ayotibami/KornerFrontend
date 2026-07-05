@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Clock, Eye, Loader2, Mail, Rocket, EyeOff, CheckCircle2, XCircle, Trash2 } from "lucide-react";
 import { toast } from "sonner";
-import { capitalize, formatDate } from "@/lib/utils";
+import { capitalize, formatDate, formatLongDateTime } from "@/lib/utils";
 import {
   publishStoriMaster,
   unpublishStoriMaster,
@@ -178,11 +178,11 @@ export default function MasterStoryCard({ story }: { story: MasterStory }) {
             {/* Footer — mt-auto pins it to the bottom */}
             <div className="flex items-center justify-between pt-3 mt-auto border-t border-gray-100 dark:border-white/[0.06]">
               <div className="flex flex-col gap-1 min-w-0">
-                <p className="text-[11px] font-medium text-gray-400 dark:text-gray-500">
+                <p className="text-[12.5px] font-medium text-gray-500 dark:text-gray-400">
                   Updated {formatDate(story.updated_at)}
                 </p>
                 <p className="text-[11px] text-gray-400 dark:text-gray-500">
-                  Created {formatDate(story.created_at)}
+                  Created {formatLongDateTime(story.created_at)}
                 </p>
                 <div className="flex items-center gap-3 text-[11px] text-gray-400 dark:text-gray-500">
                   <span className="flex items-center gap-1">
