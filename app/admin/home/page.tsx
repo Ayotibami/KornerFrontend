@@ -8,6 +8,7 @@ import AdminsStatCard from "@/components/admin/home/AdminsStatCard";
 import SubscribersStatCard from "@/components/admin/home/SubscribersStatCard";
 import PushStatCard from "@/components/admin/home/PushStatCard";
 import TopWritersCard from "@/components/admin/home/TopWritersCard";
+import AuditLogCard from "@/components/admin/home/AuditLogCard";
 import FilterBar from "@/components/admin/stories/FilterBar";
 import SpeedDialFAB from "@/components/admin/SpeedDialFAB";
 import getProfile from "@/app/admin/home/action";
@@ -33,6 +34,7 @@ export default async function HomePage({
           <SubscribersStatCard />
           <PushStatCard />
           <TopWritersCard />
+          <AuditLogCard />
         </div>
       ) : (
         <>
