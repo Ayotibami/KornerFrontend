@@ -181,6 +181,9 @@ export default function MasterStoryCard({ story }: { story: MasterStory }) {
                 <p className="text-[11px] font-medium text-gray-400 dark:text-gray-500">
                   Updated {formatDate(story.updated_at)}
                 </p>
+                <p className="text-[11px] text-gray-400 dark:text-gray-500">
+                  Created {formatDate(story.created_at)}
+                </p>
                 <div className="flex items-center gap-3 text-[11px] text-gray-400 dark:text-gray-500">
                   <span className="flex items-center gap-1">
                     <Clock size={11} className="text-primary" />
