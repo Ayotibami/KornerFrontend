@@ -210,7 +210,7 @@ export default function StoriCard({
           }}
         >
           {image && (
-            <Image src={image} alt={title} fill style={{ objectFit: "cover" }} unoptimized />
+            <Image src={image} alt={title} fill style={{ objectFit: "cover" }} sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw" />
           )}
         </div>
         <div
@@ -285,7 +285,7 @@ export default function StoriCard({
                     alt="avatar"
                     fill
                     style={{ objectFit: "cover" }}
-                    unoptimized
+                    sizes="28px"
                   />
                 )}
               </div>

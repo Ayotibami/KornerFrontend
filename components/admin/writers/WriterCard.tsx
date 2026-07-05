@@ -101,7 +101,7 @@ export default function WriterCard({
               alt={admin.admin_name}
               fill
               className="object-cover"
-              unoptimized
+              sizes="48px"
             />
           )}
         </button>

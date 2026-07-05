@@ -96,7 +96,7 @@ export default async function AdminsStatCard() {
                   alt={admin.admin_name}
                   fill
                   className="object-cover"
-                  unoptimized
+                  sizes="(max-width: 640px) 36px, 40px"
                 />
               )}
             </div>

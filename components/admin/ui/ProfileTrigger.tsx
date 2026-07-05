@@ -39,7 +39,7 @@ export default function ProfileTrigger({
                 fill
                 alt="Admin avatar"
                 className="object-cover"
-                unoptimized
+                sizes="40px"
               />
             )}
           </button>

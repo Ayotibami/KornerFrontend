@@ -9,7 +9,7 @@ export default function Avatar({ url }: { url?: string }) {
   return (
     <div className="relative w-[50px] h-[50px] rounded-full border-2 border-primary bg-secondary overflow-hidden flex-shrink-0">
       {url && (
-        <Image src={url} fill alt="Admin avatar" className="object-cover" unoptimized />
+        <Image src={url} fill alt="Admin avatar" className="object-cover" sizes="50px" />
       )}
     </div>
   );

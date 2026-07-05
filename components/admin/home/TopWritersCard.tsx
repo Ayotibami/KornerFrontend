@@ -82,7 +82,7 @@ export default async function TopWritersCard() {
                       alt={admin.admin_name}
                       fill
                       className="object-cover"
-                      unoptimized
+                      sizes="28px"
                     />
                   )}
                 </div>

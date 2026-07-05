@@ -116,7 +116,7 @@ export default function SendNewsletterConfirmModal({
           <div className="rounded-xl border border-slate-200 dark:border-slate-700 overflow-hidden">
             {imageUrl && (
               <div className="relative w-full h-[160px] bg-slate-100 dark:bg-[#0f1117]">
-                <Image src={imageUrl} alt="" fill className="object-cover" unoptimized />
+                <Image src={imageUrl} alt="" fill className="object-cover" sizes="560px" />
               </div>
             )}
             <div className="p-4 flex flex-col gap-2">

@@ -151,7 +151,7 @@ function ImageBlock({
           alt="Story image"
           fill
           style={{ objectFit: "cover" }}
-          unoptimized
+          sizes="(max-width: 768px) 100vw, 768px"
         />
       ) : null}
     </div>

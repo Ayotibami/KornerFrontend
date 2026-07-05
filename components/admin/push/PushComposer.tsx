@@ -126,7 +126,7 @@ export default function PushComposer({
         <div className="rounded-xl border border-[#DC2626]/30 dark:border-[#DC2626]/40 overflow-hidden">
           {imageUrl && (
             <div className="relative w-full h-[140px] bg-slate-100 dark:bg-[#0f1117]">
-              <Image src={imageUrl} alt="" fill className="object-cover" unoptimized />
+              <Image src={imageUrl} alt="" fill className="object-cover" sizes="(max-width: 640px) 100vw, 640px" />
             </div>
           )}
           <div className="p-4 flex flex-col gap-2">

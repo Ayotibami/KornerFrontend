@@ -10,6 +10,7 @@ import PushStatCard from "@/components/admin/home/PushStatCard";
 import TopWritersCard from "@/components/admin/home/TopWritersCard";
 import AuditLogCard from "@/components/admin/home/AuditLogCard";
 import MetricsCard from "@/components/admin/home/MetricsCard";
+import StatCardSkeleton from "@/components/admin/home/StatCardSkeleton";
 import FilterBar from "@/components/admin/stories/FilterBar";
 import SpeedDialFAB from "@/components/admin/SpeedDialFAB";
 import getProfile from "@/app/admin/home/action";
@@ -29,14 +30,30 @@ export default async function HomePage({
     <div className="flex flex-col">
       {isMaster ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-4 sm:p-6">
-          <AttentionStatCard />
-          <StoriesStatCard />
-          <AdminsStatCard />
-          <SubscribersStatCard />
-          <PushStatCard />
-          <TopWritersCard />
-          <AuditLogCard />
-          <MetricsCard />
+          <Suspense fallback={<StatCardSkeleton />}>
+            <AttentionStatCard />
+          </Suspense>
+          <Suspense fallback={<StatCardSkeleton />}>
+            <StoriesStatCard />
+          </Suspense>
+          <Suspense fallback={<StatCardSkeleton />}>
+            <AdminsStatCard />
+          </Suspense>
+          <Suspense fallback={<StatCardSkeleton />}>
+            <SubscribersStatCard />
+          </Suspense>
+          <Suspense fallback={<StatCardSkeleton />}>
+            <PushStatCard />
+          </Suspense>
+          <Suspense fallback={<StatCardSkeleton />}>
+            <TopWritersCard />
+          </Suspense>
+          <Suspense fallback={<StatCardSkeleton />}>
+            <AuditLogCard />
+          </Suspense>
+          <Suspense fallback={<StatCardSkeleton />}>
+            <MetricsCard />
+          </Suspense>
         </div>
       ) : (
         <>

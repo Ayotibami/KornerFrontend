@@ -141,7 +141,7 @@ export default function AdminDetailModal({
                     fill
                     alt={admin.admin_name}
                     className="object-cover"
-                    unoptimized
+                    sizes="96px"
                   />
                 )}
               </div>
