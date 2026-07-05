@@ -2,56 +2,62 @@
 //   "all"   -> /master/stories               (every story, every admin)
 //   "mine"  -> /stories/adminstories          (just the logged-in master's own)
 //   "admin" -> /master/admins/:adminId/stories (one specific other admin's)
-// Whichever scope, it renders through MasterStoryCard. "mine" and "admin"
-// both come from endpoints with no admin_name/avatar_url, so the author row
-// on the card stays hidden for those — is_own_story is true only for "mine"
-// (every row genuinely is), false for "admin" (viewing someone else's).
-//
-// This used to be two separate components (MasterStoriesList + MyStoriesList)
-// — merged once the only real difference came down to "which endpoint" and
-// "is_own_story already true vs computed per-row," since duplicating the
-// grid/empty-state JSX for that wasn't worth it. "admin" scope is the same
-// reasoning extended one step further.
+// Status filtering and pagination are both handled server-side via query params.
 
 import { apiRequest } from "@/lib/api";
 import MasterStoryCard from "./MasterStoryCard";
 import StoriesEmptyState from "./StoriesEmptyState";
+import Pagination from "@/components/admin/Pagination";
 import type { MasterStory, Story } from "@/types/story";
+
+const PAGE_SIZE = 20;
 
 export default async function MasterStoriesList({
   status,
   scope = "all",
   adminId,
+  page = 1,
+  buildHref,
 }: {
   status?: string;
   scope?: "all" | "mine" | "admin";
   adminId?: string;
+  page?: number;
+  buildHref: (page: number) => string;
 }) {
+  const offset = (page - 1) * PAGE_SIZE;
+
+  const qp = new URLSearchParams({ limit: String(PAGE_SIZE), offset: String(offset) });
+  if (status) qp.set("status", status);
+
   const endpoint =
     scope === "mine"
-      ? "/stories/adminstories"
+      ? `/stories/adminstories?${qp}`
       : scope === "admin"
-        ? `/master/admins/${adminId}/stories`
-        : "/master/stories";
+        ? `/master/admins/${adminId}/stories?${qp}`
+        : `/master/stories?${qp}`;
+
   const res = await apiRequest(endpoint);
   const data = await res.json();
 
-  const allStories: MasterStory[] =
+  const stories: MasterStory[] =
     scope === "all"
       ? (data.stories as MasterStory[] ?? [])
       : (data.stories as Story[] ?? []).map((s) => ({ ...s, is_own_story: scope === "mine" }));
 
-  const stories = status
-    ? allStories.filter((s) => s.status === status)
-    : allStories;
+  const total: number = data.total ?? 0;
+  const totalPages = Math.ceil(total / PAGE_SIZE);
 
-  if (stories.length === 0) return <StoriesEmptyState status={status} hasAnyStories={allStories.length > 0} />;
+  if (stories.length === 0) return <StoriesEmptyState status={status} hasAnyStories={false} />;
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 p-3 sm:p-4 w-full">
-      {stories.map((story) => (
-        <MasterStoryCard story={story} key={story.stori_id} />
-      ))}
+    <div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 p-3 sm:p-4 w-full">
+        {stories.map((story) => (
+          <MasterStoryCard story={story} key={story.stori_id} />
+        ))}
+      </div>
+      <Pagination currentPage={page} totalPages={totalPages} buildHref={buildHref} />
     </div>
   );
 }

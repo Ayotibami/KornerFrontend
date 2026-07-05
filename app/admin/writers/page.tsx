@@ -1,46 +1,39 @@
-// Master's writers page — reached by clicking the Admins/Writers card on the
-// home dashboard. Lists every admin with their avatar, verified status, and
-// a Verify/Unverify button.
-//
-// No layout.tsx — this is a brand new top-level folder with no nested
-// subroutes to protect from a cascading Navbar (unlike app/admin/stories/,
-// which has create/ and [storiId]/ that intentionally have none). Still
-// rendering Navbar directly here rather than adding a layout, just to keep
-// the pattern consistent with how /admin/stories/page.tsx does it.
+export const dynamic = "force-dynamic";
 
 import { redirect } from "next/navigation";
 import Navbar from "@/components/admin/Navbar";
 import WriterCard from "@/components/admin/writers/WriterCard";
+import Pagination from "@/components/admin/Pagination";
 import { apiRequest } from "@/lib/api";
 import getProfile from "@/app/admin/home/action";
 import type { AdminListItem } from "@/types/admin";
-import type { MasterStory } from "@/types/story";
 
-export default async function WritersPage() {
+const PAGE_SIZE = 20;
+
+export default async function WritersPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ page?: string }>;
+}) {
   const profile = await getProfile();
   if (profile?.role !== "master") redirect("/admin/home");
 
-  const [adminsRes, storiesRes] = await Promise.all([
-    apiRequest("/master/admins"),
-    apiRequest("/master/stories"),
-  ]);
-  const adminsData = await adminsRes.json();
-  const storiesData = await storiesRes.json();
-  const admins: AdminListItem[] = adminsData.admins ?? [];
-  const stories: MasterStory[] = storiesData.stories ?? [];
+  const { page: pageParam } = await searchParams;
+  const page = Math.max(parseInt(pageParam ?? "1") || 1, 1);
+  const offset = (page - 1) * PAGE_SIZE;
 
-  // Story counts per writer — no dedicated backend endpoint, just grouping
-  // the already-fetched full list, same approach as StoriesStatCard's counts.
-  const storyCountByAdminId = stories.reduce<Record<string, number>>((counts, story) => {
-    if (!story.admin_id) return counts;
-    counts[story.admin_id] = (counts[story.admin_id] ?? 0) + 1;
-    return counts;
-  }, {});
+  const res = await apiRequest(`/master/admins?limit=${PAGE_SIZE}&offset=${offset}`);
+  const data = await res.json();
+  const admins: AdminListItem[] = data.admins ?? [];
+  const total: number = data.total ?? 0;
+  const totalPages = Math.ceil(total / PAGE_SIZE);
 
-  // Two zones — masters on top, writers below — rather than just "me vs
-  // everyone." Within the masters zone, the logged-in master's own row is
-  // always first (there's usually only one master anyway, but this keeps
-  // it correct if there's ever more than one).
+  const buildHref = (p: number) =>
+    p > 1 ? `/admin/writers?page=${p}` : "/admin/writers";
+
+  // story_count now comes directly from the API (computed via SQL subquery),
+  // so there's no need to fetch the full stories list just to count per writer.
+
   const masters = [...admins.filter((a) => a.role === "master")].sort(
     (a, b) => (b.is_self ? 1 : 0) - (a.is_self ? 1 : 0),
   );
@@ -53,6 +46,11 @@ export default async function WritersPage() {
       <div className="pt-[88px] pb-10 px-4 sm:px-6 max-w-2xl mx-auto flex flex-col gap-3">
         <p className="text-xl font-bold text-[#0f1e3d] dark:text-gray-50 mb-1">
           Writers
+          {total > 0 && (
+            <span className="ml-2 text-sm font-normal text-gray-400 dark:text-gray-500">
+              {total.toLocaleString()} total
+            </span>
+          )}
         </p>
 
         {masters.length > 0 && (
@@ -63,7 +61,7 @@ export default async function WritersPage() {
             {masters.map((admin) => (
               <WriterCard
                 admin={admin}
-                storyCount={storyCountByAdminId[admin.admin_id] ?? 0}
+                storyCount={admin.story_count}
                 key={admin.admin_id}
               />
             ))}
@@ -77,10 +75,12 @@ export default async function WritersPage() {
         {writers.map((admin) => (
           <WriterCard
             admin={admin}
-            storyCount={storyCountByAdminId[admin.admin_id] ?? 0}
+            storyCount={admin.story_count}
             key={admin.admin_id}
           />
         ))}
+
+        <Pagination currentPage={page} totalPages={totalPages} buildHref={buildHref} />
       </div>
     </div>
   );

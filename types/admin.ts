@@ -20,6 +20,7 @@ export type AdminListItem = {
   is_self: boolean;
   is_protected: boolean;
   role: "master" | "writer";
+  story_count: number;
 };
 
 // Shape returned by the master-only GET /master/admins/:adminId — the full

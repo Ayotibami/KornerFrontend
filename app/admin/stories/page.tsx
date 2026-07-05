@@ -12,14 +12,23 @@ import { Suspense } from "react";
 export default async function AllStoriesPage({
   searchParams,
 }: {
-  searchParams: Promise<{ status?: string; mine?: string; admin?: string }>;
+  searchParams: Promise<{ status?: string; mine?: string; admin?: string; page?: string }>;
 }) {
   const profile = await getProfile();
   if (profile?.role !== "master") redirect("/admin/home");
 
-  const { status, mine, admin } = await searchParams;
+  const { status, mine, admin, page: pageParam } = await searchParams;
   const activeStatus = status ?? "Draft";
   const scope = admin ? "admin" : mine === "true" ? "mine" : "all";
+  const page = Math.max(parseInt(pageParam ?? "1") || 1, 1);
+
+  const buildHref = (p: number) => {
+    const qp = new URLSearchParams({ status: activeStatus });
+    if (mine === "true") qp.set("mine", "true");
+    if (admin) qp.set("admin", admin);
+    if (p > 1) qp.set("page", String(p));
+    return `/admin/stories?${qp}`;
+  };
 
   return (
     <div className="min-h-screen bg-[#f8f9fb] dark:bg-[#0f1117]">
@@ -42,7 +51,13 @@ export default async function AllStoriesPage({
       </div>
 
       <div className="pt-[164px] pb-5">
-        <MasterStoriesList status={activeStatus} scope={scope} adminId={admin} />
+        <MasterStoriesList
+          status={activeStatus}
+          scope={scope}
+          adminId={admin}
+          page={page}
+          buildHref={buildHref}
+        />
       </div>
     </div>
   );

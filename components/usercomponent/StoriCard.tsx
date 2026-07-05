@@ -6,6 +6,7 @@
 
 import { nunito } from "@/lib/font";
 import Image from "next/image";
+import Link from "next/link";
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 
@@ -26,9 +27,9 @@ export default function StoriCard({
   date: string;
   href: string;
 }) {
-  // cardRef attaches to the card's outer div so we can measure its position on screen.
+  // cardRef attaches to the card's outer element so we can measure its position on screen.
   // We need this to know where to place the expansion overlay when the user clicks.
-  const cardRef = useRef<HTMLDivElement>(null);
+  const cardRef = useRef<HTMLAnchorElement>(null);
 
   // useRouter gives us router.push() to navigate programmatically.
   // We need this instead of a <Link> because we want to delay navigation
@@ -65,7 +66,10 @@ export default function StoriCard({
   const [hovered, setHovered] = useState(false);
 
   // ── CLICK HANDLER ─────────────────────────────────────────────────────────────
-  const handleClick = () => {
+  // e.preventDefault() stops the <Link>'s instant navigation — we handle it
+  // manually via router.push after the animation finishes.
+  const handleClick = (e: React.MouseEvent) => {
+    e.preventDefault();
     if (!cardRef.current) return;
 
     // Step 1: Snapshot the card's current position on screen.
@@ -175,7 +179,8 @@ export default function StoriCard({
           Without this, rotate() pivots from the element's center, which looks like
           the card is spinning in place. "bottom center" makes it pivot from the bottom
           edge, like a pendulum or a sign hanging from a nail — much more natural. */}
-      <div
+      <Link
+        href={href}
         ref={cardRef}
         onClick={handleClick}
         onMouseEnter={() => setHovered(true)}
@@ -193,6 +198,8 @@ export default function StoriCard({
           cursor: "pointer",
           animation: hovered ? "card-sway 0.5s ease-in-out infinite" : "none",
           transformOrigin: "bottom center",
+          textDecoration: "none",
+          color: "inherit",
         }}
       >
         <div
@@ -309,7 +316,7 @@ export default function StoriCard({
             </p>
           </div>
         </div>
-      </div>
+      </Link>
     </>
   );
 }
