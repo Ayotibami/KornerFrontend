@@ -90,9 +90,14 @@ export default async function SubscribersStatCard() {
       href="/admin/subscribers"
       className="bg-white dark:bg-[#1a1f2e] rounded-2xl border-l-4 border-[#FFC700] shadow-[0_2px_8px_rgba(0,0,0,0.06)] dark:shadow-[0_2px_8px_rgba(0,0,0,0.3)] p-5 flex flex-col gap-4 w-full transition-all duration-200 hover:shadow-[0_6px_20px_rgba(0,0,0,0.09)] dark:hover:shadow-[0_6px_20px_rgba(0,0,0,0.45)] hover:-translate-y-0.5"
     >
-      <p className="font-semibold text-base text-[#0f1e3d] dark:text-gray-100">
-        Subscribers
-      </p>
+      <div className="flex items-center justify-between">
+        <p className="font-semibold text-base text-[#0f1e3d] dark:text-gray-100">
+          Subscribers
+        </p>
+        <div className="w-8 h-8 rounded-xl flex items-center justify-center bg-[#FEE2E2] dark:bg-[#450a0a]">
+          <Mail size={14} className="text-[#DC2626] dark:text-[#FCA5A5]" />
+        </div>
+      </div>
 
       <div className="flex flex-col gap-1">
         {rows.map(({ icon, iconBg, iconColor, label, valueEl }) => (

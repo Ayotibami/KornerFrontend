@@ -46,9 +46,14 @@ export default async function TopWritersCard() {
 
   return (
     <div className="bg-white dark:bg-[#1a1f2e] rounded-2xl border-l-4 border-[#FFC700] shadow-[0_2px_8px_rgba(0,0,0,0.06)] dark:shadow-[0_2px_8px_rgba(0,0,0,0.3)] p-5 flex flex-col gap-4 w-full">
-      <p className="font-semibold text-base text-[#0f1e3d] dark:text-gray-100">
-        Top Writers
-      </p>
+      <div className="flex items-center justify-between">
+        <p className="font-semibold text-base text-[#0f1e3d] dark:text-gray-100">
+          Top Writers
+        </p>
+        <div className="w-8 h-8 rounded-xl flex items-center justify-center bg-[#FFF8E1] dark:bg-[#3a2e05]">
+          <Trophy size={14} className="text-[#C77F00] dark:text-[#FFC700]" />
+        </div>
+      </div>
 
       {ranked.length === 0 ? (
         <p className="text-sm text-gray-400 dark:text-gray-500">

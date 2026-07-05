@@ -13,9 +13,14 @@ export default async function PushStatCard() {
       href="/admin/push"
       className="bg-white dark:bg-[#1a1f2e] rounded-2xl border-l-4 border-[#FFC700] shadow-[0_2px_8px_rgba(0,0,0,0.06)] dark:shadow-[0_2px_8px_rgba(0,0,0,0.3)] p-5 flex flex-col gap-4 w-full transition-all duration-200 hover:shadow-[0_6px_20px_rgba(0,0,0,0.09)] dark:hover:shadow-[0_6px_20px_rgba(0,0,0,0.45)] hover:-translate-y-0.5"
     >
-      <p className="font-semibold text-base text-[#0f1e3d] dark:text-gray-100">
-        Push
-      </p>
+      <div className="flex items-center justify-between">
+        <p className="font-semibold text-base text-[#0f1e3d] dark:text-gray-100">
+          Push
+        </p>
+        <div className="w-8 h-8 rounded-xl flex items-center justify-center bg-[#DBEAFE] dark:bg-[#1e3a5f]">
+          <Bell size={14} className="text-[#1e40af] dark:text-[#93c5fd]" />
+        </div>
+      </div>
 
       <div className="flex flex-col gap-1">
         <div className="flex items-center justify-between py-1.5">

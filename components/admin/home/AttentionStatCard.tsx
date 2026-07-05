@@ -1,5 +1,5 @@
 ﻿import Link from "next/link";
-import { Clock, ShieldAlert } from "lucide-react";
+import { AlertTriangle, Clock, ShieldAlert } from "lucide-react";
 import { apiRequest } from "@/lib/api";
 import type { MasterStory } from "@/types/story";
 
@@ -20,9 +20,14 @@ export default async function AttentionStatCard() {
 
   return (
     <div className="bg-white dark:bg-[#1a1f2e] rounded-2xl border-l-4 border-[#DC2626] shadow-[0_2px_8px_rgba(0,0,0,0.06)] dark:shadow-[0_2px_8px_rgba(0,0,0,0.3)] p-5 flex flex-col gap-4 w-full">
-      <p className="font-semibold text-base text-[#0f1e3d] dark:text-gray-100">
-        Needs Attention
-      </p>
+      <div className="flex items-center justify-between">
+        <p className="font-semibold text-base text-[#0f1e3d] dark:text-gray-100">
+          Needs Attention
+        </p>
+        <div className="w-8 h-8 rounded-xl flex items-center justify-center bg-[#FEE2E2] dark:bg-[#450a0a]">
+          <AlertTriangle size={14} className="text-[#DC2626] dark:text-[#FCA5A5]" />
+        </div>
+      </div>
 
       <div className="flex flex-col gap-1">
         <Link
