@@ -47,7 +47,7 @@ export default function EmailPreviewModal({
 
         <div className="flex-1 overflow-hidden" style={{ minHeight: 0 }}>
           <iframe
-            srcdoc={html}
+            srcDoc={html}
             title="Email Preview"
             sandbox="allow-same-origin"
             className="w-full h-full border-0"
