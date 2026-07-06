@@ -178,11 +178,11 @@ export default function CreatePage() {
 
           {/* Recovery banner */}
           {recoveryStoriId && (
-            <div className="flex items-center justify-between gap-3 bg-[#FEF3C7] dark:bg-[#422006] border border-[#FDE68A]/40 rounded-2xl px-4 py-3">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 bg-[#FEF3C7] dark:bg-[#422006] border border-[#FDE68A]/40 rounded-2xl px-4 py-3">
               <p className="text-sm font-semibold text-[#92400E] dark:text-[#FDE68A]">
                 You have a draft in progress from your last session.
               </p>
-              <div className="flex items-center gap-2 flex-shrink-0">
+              <div className="flex items-center gap-2">
                 <button
                   onClick={() => {
                     localStorage.removeItem(DRAFT_KEY);
