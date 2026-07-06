@@ -111,6 +111,16 @@ export default function EditStoryEditor({
     moveBlock,
   } = useStoryEditor();
 
+  const DRAFT_KEY = `korner-edit-draft-${storiId}`;
+  const [recoveryData, setRecoveryData] = useState<{
+    title: string;
+    subTitle: string;
+    excerpt: string;
+    readTime: string;
+    coverImage: string | null;
+    blocks: EditorBlock[];
+  } | null>(null);
+
   // ─── Initial snapshot ref ─────────────────────────────────────────────────
   // A ref is a value that persists across re-renders without causing a re-render
   // itself (unlike useState). We use it to hold the story's starting state so we
@@ -170,6 +180,31 @@ export default function EditStoryEditor({
     initialCoverRef.current    = stori.coverImage ?? null;
     initialBlocksRef.current   = transformedBlocks;
 
+    // Check for locally-saved state from a previous session that never made
+    // it to the server — show the recovery banner if anything differs.
+    const saved = localStorage.getItem(`korner-edit-draft-${storiId}`);
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        const blocksDiffer =
+          JSON.stringify((parsed.blocks ?? []).map(blockWithoutId)) !==
+          JSON.stringify(transformedBlocks.map(blockWithoutId));
+        const fieldsDiffer =
+          parsed.title      !== (stori.title      ?? "") ||
+          parsed.subTitle   !== (stori.subtitle   ?? "") ||
+          parsed.excerpt    !== (stori.excerpt    ?? "") ||
+          parsed.readTime   !== (stori.readingTime ?? "") ||
+          parsed.coverImage !== (stori.coverImage ?? null);
+        if (blocksDiffer || fieldsDiffer) {
+          setRecoveryData(parsed);
+        } else {
+          localStorage.removeItem(`korner-edit-draft-${storiId}`);
+        }
+      } catch {
+        localStorage.removeItem(`korner-edit-draft-${storiId}`);
+      }
+    }
+
     return () => {
       // Reset to neutral state so the next story's first render is always clean
       setMode("read");
@@ -203,6 +238,26 @@ export default function EditStoryEditor({
   // isDirty is true if ANY field has changed from the original server data.
   // The save button renders only when isDirty is true.
   const isDirty = simpleFieldsChanged || blocksChanged;
+
+  // Write the current editor state to localStorage on every change so it can
+  // be recovered if the browser closes before autosave reaches the server.
+  // Only writes when the content actually differs from the server state —
+  // no point storing what the server already has.
+  useEffect(() => {
+    const isCurrentlyDirty =
+      title     !== initialTitleRef.current    ||
+      subTitle  !== initialSubTitleRef.current ||
+      excerpt   !== initialExcerptRef.current  ||
+      readTime  !== initialReadTimeRef.current ||
+      coverImage !== initialCoverRef.current   ||
+      JSON.stringify(blocks.map(blockWithoutId)) !==
+        JSON.stringify(initialBlocksRef.current.map(blockWithoutId));
+    if (!isCurrentlyDirty) return;
+    localStorage.setItem(
+      `korner-edit-draft-${storiId}`,
+      JSON.stringify({ title, subTitle, excerpt, readTime, coverImage, blocks }),
+    );
+  }, [storiId, title, subTitle, excerpt, readTime, coverImage, blocks]);
 
   // If the user came here from the create page's autosave recovery banner
   // (localStorage stored the created storiId), clear that pointer now —
@@ -244,9 +299,12 @@ export default function EditStoryEditor({
         coverImage,
         blocks,
       );
-      if (result.ok) toast.success("Story updated.");
-      else toast.error(result.message);
-      // Unlike create, we stay on the page after saving so the admin can keep editing.
+      if (result.ok) {
+        toast.success("Story updated.");
+        localStorage.removeItem(DRAFT_KEY);
+      } else {
+        toast.error(result.message);
+      }
     });
   };
 
@@ -344,6 +402,39 @@ export default function EditStoryEditor({
               <div>
                 <p className="text-sm font-semibold text-[#92400E] dark:text-[#FDE68A]">Returned for revision</p>
                 <p className="text-sm text-[#92400E] dark:text-[#FDE68A] mt-0.5">{stori.rejectionReason}</p>
+              </div>
+            </div>
+          )}
+
+          {recoveryData && (
+            <div className="flex items-center justify-between gap-3 bg-[#FEF3C7] dark:bg-[#422006] border border-[#FDE68A]/40 rounded-2xl px-4 py-3">
+              <p className="text-sm font-semibold text-[#92400E] dark:text-[#FDE68A]">
+                You have unsaved local changes from your last session.
+              </p>
+              <div className="flex items-center gap-2 flex-shrink-0">
+                <button
+                  onClick={() => {
+                    localStorage.removeItem(DRAFT_KEY);
+                    setRecoveryData(null);
+                  }}
+                  className="text-xs font-medium px-3 py-1.5 rounded-lg bg-white/60 dark:bg-black/20 text-[#92400E] dark:text-[#FDE68A] hover:opacity-80 transition-opacity cursor-pointer"
+                >
+                  Dismiss
+                </button>
+                <button
+                  onClick={() => {
+                    setTitle(recoveryData.title);
+                    setSubTitle(recoveryData.subTitle);
+                    setExcerpt(recoveryData.excerpt);
+                    setReadTime(recoveryData.readTime);
+                    setCoverImage(recoveryData.coverImage);
+                    setBlocks(recoveryData.blocks);
+                    setRecoveryData(null);
+                  }}
+                  className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-[#92400E] dark:bg-[#FDE68A] text-white dark:text-[#422006] hover:opacity-90 transition-opacity cursor-pointer"
+                >
+                  Restore →
+                </button>
               </div>
             </div>
           )}
