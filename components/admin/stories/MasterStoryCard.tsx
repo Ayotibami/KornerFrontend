@@ -176,7 +176,7 @@ export default function MasterStoryCard({
                 className={`absolute top-2.5 left-2.5 z-10 w-6 h-6 rounded-full flex items-center justify-center transition-all duration-200 ${
                   isSelected
                     ? "bg-[#065F46] dark:bg-[#6EE7B7] shadow-md scale-110"
-                    : "bg-white/70 dark:bg-black/50 border-2 border-white/60 dark:border-white/20 opacity-0 group-hover:opacity-100"
+                    : "bg-white/70 dark:bg-black/50 border-2 border-white/60 dark:border-white/20 opacity-100 sm:opacity-0 sm:group-hover:opacity-100"
                 }`}
               >
                 {isSelected && <Check size={13} className="text-white dark:text-[#022C22]" />}
