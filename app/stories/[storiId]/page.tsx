@@ -9,11 +9,7 @@ import ActivationForm from "@/components/usercomponent/ActivationForm";
 import Footer from "@/components/usercomponent/Footer";
 import { getPublicStory } from "@/lib/publicApi";
 import { formatFullDate } from "@/lib/utils";
-
-// Next.js automatically memoizes identical fetch() calls within a single
-// render pass (regardless of the no-store cache option used inside
-// getPublicStory), so calling it here AND in the page body below still only
-// hits the backend — and increments the view counter — once per visit.
+import ViewTracker from "@/components/ViewTracker";
 const extractUuid = (slug: string) => {
   const match = slug.match(/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/);
   return match ? match[0] : slug;
@@ -86,6 +82,7 @@ export default async function StoriPage({
 
   return (
     <>
+      <ViewTracker storiId={storiId} />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
