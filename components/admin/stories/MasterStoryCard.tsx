@@ -29,10 +29,12 @@ export default function MasterStoryCard({
   story,
   isSelected = false,
   onToggle,
+  selectionMode = false,
 }: {
   story: MasterStory;
   isSelected?: boolean;
   onToggle?: (id: string) => void;
+  selectionMode?: boolean;
 }) {
   const isDraft = story.status === "Draft";
   const isPending = story.status === "Pending";
@@ -142,7 +144,16 @@ export default function MasterStoryCard({
         onConfirm={confirmAction === "approve" ? doApprove : doPublish}
       />
 
-      <Link href={`/admin/stories/${story.stori_id}`} className="block group h-full">
+      <Link
+        href={`/admin/stories/${story.stori_id}`}
+        className="block group h-full"
+        onClick={(e) => {
+          if (selectionMode) {
+            e.preventDefault();
+            onToggle?.(story.stori_id);
+          }
+        }}
+      >
         <div className="h-full flex flex-col bg-white dark:bg-[#1a1f2e] rounded-2xl overflow-hidden shadow-[0_2px_8px_rgba(0,0,0,0.06)] dark:shadow-[0_2px_8px_rgba(0,0,0,0.3)] transition-all duration-200 hover:shadow-[0_6px_20px_rgba(0,0,0,0.1)] dark:hover:shadow-[0_6px_20px_rgba(0,0,0,0.45)] hover:-translate-y-0.5">
 
           {/* Author row (only when known) */}

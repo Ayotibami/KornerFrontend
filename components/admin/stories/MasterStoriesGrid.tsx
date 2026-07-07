@@ -34,6 +34,7 @@ export default function MasterStoriesGrid({
             story={story}
             isSelected={selectedIds.has(story.stori_id)}
             onToggle={toggle}
+            selectionMode={selectedIds.size > 0}
           />
         ))}
       </div>
