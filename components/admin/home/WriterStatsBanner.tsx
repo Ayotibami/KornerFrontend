@@ -1,17 +1,16 @@
 import { BookText, PenLine, Clock, CheckCircle2, Eye } from "lucide-react";
 import { apiRequest } from "@/lib/api";
-import type { Story } from "@/types/story";
 
 export default async function WriterStatsBanner() {
-  const res = await apiRequest("/stories/adminstories");
+  const res = await apiRequest("/stories/adminstories/counts");
   const data = await res.json();
-  const stories: Story[] = data.stories ?? [];
+  const counts = data.counts ?? { total: 0, draft: 0, pending: 0, published: 0, totalViews: 0 };
 
   const stats = [
     {
       icon: <BookText size={16} />,
       label: "Total",
-      value: stories.length,
+      value: counts.total,
       iconBg: "bg-secondary dark:bg-[#1e3a5f]",
       iconColor: "text-primary dark:text-[#93b8f0]",
       valueColor: "text-[#0f1e3d] dark:text-gray-50",
@@ -19,7 +18,7 @@ export default async function WriterStatsBanner() {
     {
       icon: <PenLine size={16} />,
       label: "Draft",
-      value: stories.filter((s) => s.status === "Draft").length,
+      value: counts.draft,
       iconBg: "bg-[#DBEAFE] dark:bg-[#1e3a5f]",
       iconColor: "text-[#1e40af] dark:text-[#93c5fd]",
       valueColor: "text-[#1e40af] dark:text-[#93c5fd]",
@@ -27,7 +26,7 @@ export default async function WriterStatsBanner() {
     {
       icon: <Clock size={16} />,
       label: "Pending",
-      value: stories.filter((s) => s.status === "Pending").length,
+      value: counts.pending,
       iconBg: "bg-[#FEF3C7] dark:bg-[#422006]",
       iconColor: "text-[#92400E] dark:text-[#FDE68A]",
       valueColor: "text-[#92400E] dark:text-[#FDE68A]",
@@ -35,7 +34,7 @@ export default async function WriterStatsBanner() {
     {
       icon: <CheckCircle2 size={16} />,
       label: "Published",
-      value: stories.filter((s) => s.status === "Published").length,
+      value: counts.published,
       iconBg: "bg-[#D1FAE5] dark:bg-[#022C22]",
       iconColor: "text-[#065F46] dark:text-[#6EE7B7]",
       valueColor: "text-[#065F46] dark:text-[#6EE7B7]",
@@ -43,7 +42,7 @@ export default async function WriterStatsBanner() {
     {
       icon: <Eye size={16} />,
       label: "Views",
-      value: stories.reduce((sum, s) => sum + (s.views ?? 0), 0),
+      value: counts.totalViews,
       iconBg: "bg-gray-100 dark:bg-[#1e2a3a]",
       iconColor: "text-gray-500 dark:text-gray-400",
       valueColor: "text-gray-700 dark:text-gray-300",

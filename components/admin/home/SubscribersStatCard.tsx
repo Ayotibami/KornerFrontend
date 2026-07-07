@@ -1,37 +1,23 @@
-﻿import Link from "next/link";
+import Link from "next/link";
 import { Mail, UserPlus, Clock, Send } from "lucide-react";
 import { apiRequest } from "@/lib/api";
 import { formatDate } from "@/lib/utils";
-import type { Subscriber } from "@/types/subscriber";
 
 type SendItem = {
   status: string;
   sent_at: string | null;
 };
 
-const ONE_WEEK_MS = 7 * 24 * 60 * 60 * 1000;
-
-function isWithinLastWeek(dateStr: string): boolean {
-  return Date.now() - new Date(dateStr).getTime() <= ONE_WEEK_MS;
-}
-
 export default async function SubscribersStatCard() {
-  const [subscribersRes, sendsRes] = await Promise.all([
-    apiRequest("/user/subscribers"),
+  const [statsRes, sendsRes] = await Promise.all([
+    apiRequest("/user/subscribers/stats"),
     apiRequest("/newsletter/sends"),
   ]);
-  const subscribersData = await subscribersRes.json();
+  const statsData = await statsRes.json();
   const sendsData = await sendsRes.json();
-  const subscribers: Subscriber[] = subscribersData.subscribers ?? [];
+
+  const stats = statsData.stats ?? { total: 0, newThisWeek: 0, lastJoined: null };
   const sends: SendItem[] = sendsData.sends ?? [];
-
-  const newThisWeek = subscribers.filter((s) => isWithinLastWeek(s.joined_at)).length;
-
-  const lastJoined = subscribers.length > 0
-    ? [...subscribers].sort(
-        (a, b) => new Date(b.joined_at).getTime() - new Date(a.joined_at).getTime(),
-      )[0]
-    : null;
 
   const lastSent = sends
     .filter((s) => s.status === "sent" && s.sent_at)
@@ -43,10 +29,9 @@ export default async function SubscribersStatCard() {
       iconBg: "bg-[#FEE2E2] dark:bg-[#450a0a]",
       iconColor: "text-[#DC2626] dark:text-[#FCA5A5]",
       label: "Total",
-      value: subscribers.length,
       valueEl: (
         <span className="text-xs font-semibold rounded-xl px-2.5 py-0.5 min-w-[2rem] text-center bg-[#FFF8E1] dark:bg-[#3a2e05] text-[#C77F00] dark:text-[#FFC700]">
-          {subscribers.length}
+          {stats.total}
         </span>
       ),
     },
@@ -57,7 +42,7 @@ export default async function SubscribersStatCard() {
       label: "New this week",
       valueEl: (
         <span className="text-xs font-semibold rounded-xl px-2.5 py-0.5 min-w-[2rem] text-center bg-[#D1FAE5] dark:bg-[#022C22] text-[#065F46] dark:text-[#6EE7B7]">
-          {newThisWeek}
+          {stats.newThisWeek}
         </span>
       ),
     },
@@ -68,7 +53,7 @@ export default async function SubscribersStatCard() {
       label: "Last joined",
       valueEl: (
         <span className="text-xs font-medium text-gray-500 dark:text-gray-400">
-          {lastJoined ? formatDate(lastJoined.joined_at) : "—"}
+          {stats.lastJoined ? formatDate(stats.lastJoined) : "—"}
         </span>
       ),
     },

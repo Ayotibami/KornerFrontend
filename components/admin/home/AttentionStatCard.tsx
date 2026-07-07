@@ -1,21 +1,19 @@
-﻿import Link from "next/link";
+import Link from "next/link";
 import { AlertTriangle, Clock, ShieldAlert } from "lucide-react";
 import { apiRequest } from "@/lib/api";
-import type { MasterStory } from "@/types/story";
 
 type AdminListItem = { is_verified: boolean };
 
 export default async function AttentionStatCard() {
-  const [storiesRes, adminsRes] = await Promise.all([
-    apiRequest("/master/stories"),
-    apiRequest("/master/admins"),
+  const [countsRes, adminsRes] = await Promise.all([
+    apiRequest("/master/stories/counts"),
+    apiRequest("/master/admins?limit=100"),
   ]);
-  const storiesData = await storiesRes.json();
+  const countsData = await countsRes.json();
   const adminsData = await adminsRes.json();
-  const stories: MasterStory[] = storiesData.stories ?? [];
-  const admins: AdminListItem[] = adminsData.admins ?? [];
 
-  const pendingCount = stories.filter((s) => s.status === "Pending").length;
+  const pendingCount: number = countsData.counts?.pending ?? 0;
+  const admins: AdminListItem[] = adminsData.admins ?? [];
   const unverifiedCount = admins.filter((a) => !a.is_verified).length;
 
   if (pendingCount === 0 && unverifiedCount === 0) return null;

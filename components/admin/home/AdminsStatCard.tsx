@@ -41,7 +41,7 @@ function scatterAroundRing(admins: AdminListItem[]): Positioned[] {
 }
 
 export default async function AdminsStatCard() {
-  const res = await apiRequest("/master/admins");
+  const res = await apiRequest("/master/admins?limit=100");
   const data = await res.json();
   const admins: AdminListItem[] = data.admins ?? [];
 
