@@ -1,14 +1,14 @@
-﻿import Link from "next/link";
+import Link from "next/link";
 import Image from "next/image";
 import { Trophy } from "lucide-react";
 import { apiRequest } from "@/lib/api";
-import type { MasterStory } from "@/types/story";
 
-type AdminListItem = {
+type TopWriter = {
   admin_id: string;
   admin_name: string;
   avatar_url: string;
   role: "master" | "writer";
+  published_count: number;
 };
 
 const RANK_COLORS = [
@@ -18,31 +18,9 @@ const RANK_COLORS = [
 ];
 
 export default async function TopWritersCard() {
-  const [storiesRes, adminsRes] = await Promise.all([
-    apiRequest("/master/stories"),
-    apiRequest("/master/admins"),
-  ]);
-  const storiesData = await storiesRes.json();
-  const adminsData = await adminsRes.json();
-  const stories: MasterStory[] = storiesData.stories ?? [];
-  const admins: AdminListItem[] = adminsData.admins ?? [];
-
-  const writerById = new Map(
-    admins.filter((a) => a.role === "writer").map((a) => [a.admin_id, a]),
-  );
-
-  const publishedCountByAdminId = stories.reduce<Record<string, number>>((counts, story) => {
-    if (story.status !== "Published" || !story.admin_id || !writerById.has(story.admin_id)) {
-      return counts;
-    }
-    counts[story.admin_id] = (counts[story.admin_id] ?? 0) + 1;
-    return counts;
-  }, {});
-
-  const ranked = Object.entries(publishedCountByAdminId)
-    .map(([adminId, count]) => ({ admin: writerById.get(adminId)!, count }))
-    .sort((a, b) => b.count - a.count)
-    .slice(0, 5);
+  const res = await apiRequest("/master/top-writers");
+  const data = await res.json();
+  const writers: TopWriter[] = data.writers ?? [];
 
   return (
     <div className="bg-white dark:bg-[#1a1f2e] rounded-2xl border-l-4 border-[#FFC700] shadow-[0_2px_8px_rgba(0,0,0,0.06)] dark:shadow-[0_2px_8px_rgba(0,0,0,0.3)] p-5 flex flex-col gap-4 w-full">
@@ -55,16 +33,16 @@ export default async function TopWritersCard() {
         </div>
       </div>
 
-      {ranked.length === 0 ? (
+      {writers.length === 0 ? (
         <p className="text-sm text-gray-400 dark:text-gray-500">
           No published stories yet.
         </p>
       ) : (
         <div className="flex flex-col gap-1">
-          {ranked.map(({ admin, count }, i) => (
+          {writers.map(({ admin_id, admin_name, avatar_url, published_count }, i) => (
             <Link
-              key={admin.admin_id}
-              href={`/admin/stories?admin=${admin.admin_id}&status=Published`}
+              key={admin_id}
+              href={`/admin/stories?admin=${admin_id}&status=Published`}
               className="flex items-center justify-between rounded-xl px-2 py-2 -mx-2 transition-colors hover:bg-gray-50 dark:hover:bg-white/[0.04]"
             >
               <div className="flex items-center gap-2.5 min-w-0">
@@ -76,10 +54,10 @@ export default async function TopWritersCard() {
                   {i < 3 ? <Trophy size={13} /> : i + 1}
                 </div>
                 <div className="relative w-7 h-7 rounded-full overflow-hidden bg-slate-200 dark:bg-[#2d3748] flex-shrink-0 ring-1 ring-white dark:ring-[#1a1f2e]">
-                  {admin.avatar_url && (
+                  {avatar_url && (
                     <Image
-                      src={admin.avatar_url}
-                      alt={admin.admin_name}
+                      src={avatar_url}
+                      alt={admin_name}
                       fill
                       className="object-cover"
                       sizes="28px"
@@ -87,11 +65,11 @@ export default async function TopWritersCard() {
                   )}
                 </div>
                 <span className="text-sm font-medium text-gray-700 dark:text-gray-200 truncate">
-                  {admin.admin_name}
+                  {admin_name}
                 </span>
               </div>
               <span className="text-xs font-semibold rounded-xl px-2.5 py-0.5 min-w-[2rem] text-center bg-[#D1FAE5] dark:bg-[#022C22] text-[#065F46] dark:text-[#6EE7B7] flex-shrink-0">
-                {count}
+                {published_count}
               </span>
             </Link>
           ))}
