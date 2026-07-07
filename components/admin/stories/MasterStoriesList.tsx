@@ -55,7 +55,7 @@ export default async function MasterStoriesList({
 
   return (
     <>
-      <MasterStoriesGrid stories={stories} status={status ?? "Draft"} />
+      <MasterStoriesGrid key={status ?? "Draft"} stories={stories} status={status ?? "Draft"} />
       <Pagination currentPage={page} totalPages={totalPages} buildHref={buildHref} />
     </>
   );

@@ -35,7 +35,7 @@ export default async function AllStoriesPage({
     <div className="min-h-screen bg-[#f8f9fb] dark:bg-[#0f1117]">
       <Navbar profile={profile} />
 
-      <div className="fixed top-16 left-0 right-0 z-[4] flex flex-col bg-[#f8f9fb]/90 dark:bg-[#0f1117]/90 backdrop-blur-sm">
+      <div className="fixed top-16 left-0 right-0 z-20 flex flex-col bg-[#f8f9fb]/90 dark:bg-[#0f1117]/90 backdrop-blur-sm">
         <div className="px-3 sm:px-5 pt-2">
           <Link
             href="/admin/home"
