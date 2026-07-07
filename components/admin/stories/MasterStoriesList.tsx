@@ -5,9 +5,8 @@
 // Status filtering and pagination are both handled server-side via query params.
 
 import { apiRequest } from "@/lib/api";
-import MasterStoryCard from "./MasterStoryCard";
+import MasterStoriesGrid from "./MasterStoriesGrid";
 import StoriesEmptyState from "./StoriesEmptyState";
-import Pagination from "@/components/admin/Pagination";
 import type { MasterStory, Story } from "@/types/story";
 
 const PAGE_SIZE = 20;
@@ -54,13 +53,12 @@ export default async function MasterStoriesList({
   if (stories.length === 0) return <StoriesEmptyState status={status} hasAnyStories={false} />;
 
   return (
-    <div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 p-3 sm:p-4 w-full">
-        {stories.map((story) => (
-          <MasterStoryCard story={story} key={story.stori_id} />
-        ))}
-      </div>
-      <Pagination currentPage={page} totalPages={totalPages} buildHref={buildHref} />
-    </div>
+    <MasterStoriesGrid
+      stories={stories}
+      status={status ?? "Draft"}
+      totalPages={totalPages}
+      currentPage={page}
+      buildHref={buildHref}
+    />
   );
 }

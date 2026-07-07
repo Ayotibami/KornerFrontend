@@ -3,7 +3,7 @@
 import { useState, useTransition } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Clock, Eye, Loader2, Mail, Rocket, EyeOff, CheckCircle2, XCircle, Trash2 } from "lucide-react";
+import { Check, Clock, Eye, Loader2, Mail, Rocket, EyeOff, CheckCircle2, XCircle, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { capitalize, formatDate, formatLongDateTime } from "@/lib/utils";
 import {
@@ -25,7 +25,15 @@ const BLUE_SOFT = "bg-[#DBEAFE] text-[#1e40af] dark:bg-[#1e3a5f] dark:text-[#93c
 const RED_SOFT = "bg-[#FEE2E2] text-[#DC2626] dark:bg-[#450a0a] dark:text-[#FCA5A5]";
 const RED_SOLID = "bg-[#DC2626] text-white";
 
-export default function MasterStoryCard({ story }: { story: MasterStory }) {
+export default function MasterStoryCard({
+  story,
+  isSelected = false,
+  onToggle,
+}: {
+  story: MasterStory;
+  isSelected?: boolean;
+  onToggle?: (id: string) => void;
+}) {
   const isDraft = story.status === "Draft";
   const isPending = story.status === "Pending";
   const isPublished = story.status === "Published";
@@ -161,6 +169,19 @@ export default function MasterStoryCard({ story }: { story: MasterStory }) {
             <span className={`absolute top-2.5 right-2.5 text-[11px] font-semibold px-2.5 py-1 rounded-lg backdrop-blur-sm ${statusBadge}`}>
               {capitalize(story.status)}
             </span>
+            {onToggle && (
+              <button
+                onClick={(e) => { e.preventDefault(); e.stopPropagation(); onToggle(story.stori_id); }}
+                aria-label={isSelected ? "Deselect story" : "Select story"}
+                className={`absolute top-2.5 left-2.5 z-10 w-6 h-6 rounded-full flex items-center justify-center transition-all duration-200 ${
+                  isSelected
+                    ? "bg-[#065F46] dark:bg-[#6EE7B7] shadow-md scale-110"
+                    : "bg-white/70 dark:bg-black/50 border-2 border-white/60 dark:border-white/20 opacity-0 group-hover:opacity-100"
+                }`}
+              >
+                {isSelected && <Check size={13} className="text-white dark:text-[#022C22]" />}
+              </button>
+            )}
           </div>
 
           {/* Content — flex-1 fills remaining height */}
