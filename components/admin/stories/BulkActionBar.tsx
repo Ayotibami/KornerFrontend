@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useTransition } from "react";
-import { CheckSquare, Square, Rocket, Trash2, EyeOff, CheckCircle2, XCircle, Loader2, X } from "lucide-react";
+import { CheckSquare, Square, Rocket, Trash2, AlertTriangle, EyeOff, CheckCircle2, XCircle, Loader2, X } from "lucide-react";
 import { toast } from "sonner";
 import {
   bulkPublishStories,
@@ -10,7 +10,7 @@ import {
   bulkRejectStories,
 } from "@/app/admin/stories/bulkAction";
 
-const ACTION_BTN = "flex items-center gap-1.5 text-xs font-bold px-3 py-2 rounded-xl transition-all duration-150 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed";
+const ACTION_BTN = "w-9 h-9 flex items-center justify-center rounded-xl transition-all duration-150 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed";
 
 export default function BulkActionBar({
   selectedIds,
@@ -100,13 +100,13 @@ export default function BulkActionBar({
         <button
           onClick={allSelected ? onClearAll : onSelectAll}
           disabled={isPending}
-          className="flex items-center gap-1.5 text-xs font-semibold text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors cursor-pointer disabled:opacity-50 flex-shrink-0"
+          title={allSelected ? "Deselect all" : "Select all"}
+          className="w-9 h-9 flex items-center justify-center text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors cursor-pointer disabled:opacity-50 flex-shrink-0"
         >
           {allSelected
-            ? <CheckSquare size={15} className="text-primary dark:text-[#93b8f0]" />
-            : <Square size={15} />
+            ? <CheckSquare size={16} className="text-primary dark:text-[#93b8f0]" />
+            : <Square size={16} />
           }
-          <span className="hidden sm:inline">{allSelected ? "Deselect all" : "Select all"}</span>
         </button>
 
         {/* Divider */}
@@ -128,11 +128,10 @@ export default function BulkActionBar({
           <button
             onClick={handlePublish}
             disabled={isPending}
+            title="Publish all"
             className={`${ACTION_BTN} bg-[#D1FAE5] dark:bg-[#022C22] text-[#065F46] dark:text-[#6EE7B7] hover:opacity-80`}
           >
-            {isPending ? <Loader2 size={13} className="animate-spin" /> : <Rocket size={13} />}
-            <span className="hidden sm:inline">Publish all</span>
-            <span className="sm:hidden">Publish</span>
+            {isPending ? <Loader2 size={15} className="animate-spin" /> : <Rocket size={15} />}
           </button>
         )}
 
@@ -141,20 +140,18 @@ export default function BulkActionBar({
             <button
               onClick={handlePublish}
               disabled={isPending}
+              title="Approve all"
               className={`${ACTION_BTN} bg-[#D1FAE5] dark:bg-[#022C22] text-[#065F46] dark:text-[#6EE7B7] hover:opacity-80`}
             >
-              {isPending ? <Loader2 size={13} className="animate-spin" /> : <CheckCircle2 size={13} />}
-              <span className="hidden sm:inline">Approve all</span>
-              <span className="sm:hidden">Approve</span>
+              {isPending ? <Loader2 size={15} className="animate-spin" /> : <CheckCircle2 size={15} />}
             </button>
             <button
               onClick={handleReject}
               disabled={isPending}
+              title="Reject all"
               className={`${ACTION_BTN} bg-[#DBEAFE] dark:bg-[#1e3a5f] text-[#1e40af] dark:text-[#93c5fd] hover:opacity-80`}
             >
-              {isPending ? <Loader2 size={13} className="animate-spin" /> : <XCircle size={13} />}
-              <span className="hidden sm:inline">Reject all</span>
-              <span className="sm:hidden">Reject</span>
+              {isPending ? <Loader2 size={15} className="animate-spin" /> : <XCircle size={15} />}
             </button>
           </>
         )}
@@ -163,28 +160,29 @@ export default function BulkActionBar({
           <button
             onClick={handleUnpublish}
             disabled={isPending}
+            title="Unpublish all"
             className={`${ACTION_BTN} bg-[#DBEAFE] dark:bg-[#1e3a5f] text-[#1e40af] dark:text-[#93c5fd] hover:opacity-80`}
           >
-            {isPending ? <Loader2 size={13} className="animate-spin" /> : <EyeOff size={13} />}
-            <span className="hidden sm:inline">Unpublish all</span>
-            <span className="sm:hidden">Unpublish</span>
+            {isPending ? <Loader2 size={15} className="animate-spin" /> : <EyeOff size={15} />}
           </button>
         )}
 
-        {/* Delete — two-click confirm */}
+        {/* Delete — two-click confirm; icon swaps to AlertTriangle on first click */}
         <button
           onClick={handleDelete}
           disabled={isPending}
+          title={confirmDelete ? "Tap again to confirm delete" : "Delete all"}
           className={`${ACTION_BTN} ${
             confirmDelete
               ? "bg-[#DC2626] text-white shadow-[0_0_0_3px_rgba(220,38,38,0.2)]"
               : "bg-[#FEE2E2] dark:bg-[#450a0a] text-[#DC2626] dark:text-[#FCA5A5] hover:opacity-80"
           }`}
         >
-          {isPending ? <Loader2 size={13} className="animate-spin" /> : <Trash2 size={13} />}
-          {confirmDelete
-            ? <><span className="hidden sm:inline">Confirm delete</span><span className="sm:hidden">Confirm</span></>
-            : <><span className="hidden sm:inline">Delete all</span><span className="sm:hidden">Delete</span></>
+          {isPending
+            ? <Loader2 size={15} className="animate-spin" />
+            : confirmDelete
+              ? <AlertTriangle size={15} />
+              : <Trash2 size={15} />
           }
         </button>
 
