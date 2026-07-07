@@ -19,7 +19,7 @@ type Positioned = {
 const RING_RADIUS_PERCENT = 38;
 const JITTER_PERCENT = 4;
 const ANGLE_JITTER_FACTOR = 0.25;
-const AVATAR_COUNT = 10;
+const AVATAR_COUNT = 12;
 
 function pickRandom<T>(arr: T[], n: number): T[] {
   return [...arr].sort(() => Math.random() - 0.5).slice(0, n);
@@ -41,9 +41,10 @@ function scatterAroundRing(admins: AdminListItem[]): Positioned[] {
 }
 
 export default async function AdminsStatCard() {
-  const res = await apiRequest("/master/admins?limit=100");
+  const res = await apiRequest("/master/admins?limit=12");
   const data = await res.json();
   const admins: AdminListItem[] = data.admins ?? [];
+  const totalAdmins: number = data.total ?? admins.length;
 
   const selected = pickRandom(admins, Math.min(AVATAR_COUNT, admins.length));
   const positioned = scatterAroundRing(selected);
@@ -72,7 +73,7 @@ export default async function AdminsStatCard() {
           </span>
         </div>
         <span className="text-xs font-semibold rounded-xl px-2.5 py-0.5 min-w-[2rem] text-center bg-[#FFF8E1] dark:bg-[#3a2e05] text-[#C77F00] dark:text-[#FFC700]">
-          {admins.length}
+          {totalAdmins}
         </span>
       </div>
 
