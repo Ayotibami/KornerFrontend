@@ -42,6 +42,7 @@
 import { useCallback, useEffect, useRef, useState, useTransition } from "react";
 import { ArrowLeft, BookCheck, Eye, Loader2, Mail, Pencil, SendHorizonal } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { useStoryEditor } from "@/context/StoryEditorContext";
 import CoverImage from "@/components/admin/editor/CoverImage";
@@ -110,6 +111,7 @@ export default function EditStoryEditor({
     deleteBlock,
     moveBlock,
   } = useStoryEditor();
+  const router = useRouter();
 
   const DRAFT_KEY = `korner-edit-draft-${storiId}`;
   const [recoveryData, setRecoveryData] = useState<{
@@ -441,7 +443,7 @@ export default function EditStoryEditor({
 
           <div className="flex items-center justify-between">
             <button
-              onClick={() => { window.location.href = "/admin/home"; }}
+              onClick={() => router.back()}
               className="flex items-center gap-1.5 text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors cursor-pointer"
             >
               <ArrowLeft size={16} />
