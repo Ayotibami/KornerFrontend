@@ -3,21 +3,14 @@
 import { useState } from "react";
 import MasterStoryCard from "./MasterStoryCard";
 import BulkActionBar from "./BulkActionBar";
-import Pagination from "@/components/admin/Pagination";
 import type { MasterStory } from "@/types/story";
 
 export default function MasterStoriesGrid({
   stories,
   status,
-  totalPages,
-  currentPage,
-  buildHref,
 }: {
   stories: MasterStory[];
   status: string;
-  totalPages: number;
-  currentPage: number;
-  buildHref: (page: number) => string;
 }) {
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
 
@@ -44,7 +37,6 @@ export default function MasterStoriesGrid({
           />
         ))}
       </div>
-      <Pagination currentPage={currentPage} totalPages={totalPages} buildHref={buildHref} />
       <BulkActionBar
         selectedIds={[...selectedIds]}
         totalCount={stories.length}

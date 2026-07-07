@@ -6,6 +6,7 @@
 
 import { apiRequest } from "@/lib/api";
 import MasterStoriesGrid from "./MasterStoriesGrid";
+import Pagination from "@/components/admin/Pagination";
 import StoriesEmptyState from "./StoriesEmptyState";
 import type { MasterStory, Story } from "@/types/story";
 
@@ -53,12 +54,9 @@ export default async function MasterStoriesList({
   if (stories.length === 0) return <StoriesEmptyState status={status} hasAnyStories={false} />;
 
   return (
-    <MasterStoriesGrid
-      stories={stories}
-      status={status ?? "Draft"}
-      totalPages={totalPages}
-      currentPage={page}
-      buildHref={buildHref}
-    />
+    <>
+      <MasterStoriesGrid stories={stories} status={status ?? "Draft"} />
+      <Pagination currentPage={page} totalPages={totalPages} buildHref={buildHref} />
+    </>
   );
 }
