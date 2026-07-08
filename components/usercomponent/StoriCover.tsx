@@ -167,13 +167,25 @@ export default function StoriCover({
           backgroundSize: "cover",
           backgroundPosition: "center",
           backgroundRepeat: "no-repeat",
-          // animation is applied when isDancing is true (while typing is happening).
-          // Switches to "none" once phase === "done" — cover settles and stays still.
+          position: "relative",
+          overflow: "hidden",
           animation: isDancing
             ? "cover-dance 0.9s ease-in-out infinite"
             : "none",
         }}
       >
+        {/* Gradient scrim — transparent at top, dark at bottom where the text sits.
+            Ensures title/author/subtitle are always legible regardless of image brightness. */}
+        {coverImage && (
+          <div
+            style={{
+              position: "absolute",
+              inset: 0,
+              background: "linear-gradient(to bottom, rgba(0,0,0,0.0) 20%, rgba(0,0,0,0.55) 65%, rgba(0,0,0,0.75) 100%)",
+              pointerEvents: "none",
+            }}
+          />
+        )}
         {/* Title — only renders once at least 1 character has been typed.
             title.slice(0, titleChars) reveals the string incrementally. */}
         {titleChars > 0 && (
