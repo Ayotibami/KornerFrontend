@@ -15,7 +15,7 @@ const BASE_URL = process.env.API_URL ?? "";
 // Listing is side-effect free, so it's fine to let Next cache it briefly —
 // every visitor doesn't need a fresh DB hit on every page load.
 export async function getPublicStories(
-  limit = 12,
+  limit = 20,
   offset = 0,
 ): Promise<{ stories: PublicStorySummary[]; hasMore: boolean }> {
   const res = await fetch(

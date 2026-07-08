@@ -46,7 +46,7 @@ export const metadata: Metadata = {
   },
 };
 
-const PAGE_SIZE = 12;
+const PAGE_SIZE = 20;
 
 export default async function Page() {
   const { stories, hasMore } = await getPublicStories(PAGE_SIZE, 0);
