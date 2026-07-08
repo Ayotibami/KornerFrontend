@@ -1,7 +1,7 @@
-import { nunito } from "@/lib/font";
 import Link from "next/link";
 import Button from "@/components/admincomponent/Button";
 import StoriCardList from "./StoriCardList";
+import OtherStoriesHeading from "./OtherStoriesHeading";
 import { getPublicStories } from "@/lib/publicApi";
 
 // Shown at the bottom of an individual story page.
@@ -23,18 +23,7 @@ export default async function OtherStories({ excludeStoriId }: { excludeStoriId:
         padding: "clamp(16px, 4vw, 32px) 0",
       }}
     >
-      <h2
-        style={{
-          fontFamily: nunito.style.fontFamily,
-          fontSize: "clamp(1.3rem, 4vw, 2rem)",
-          fontWeight: 800,
-          color: "#0f1e3d",
-          margin: 0,
-          textAlign: "center",
-        }}
-      >
-        You no go like see other Stories?
-      </h2>
+      <OtherStoriesHeading />
 
       {/* Shows 3 cards as a teaser — same limit used in PeepSection */}
       <StoriCardList stories={stories} limit={3} />
