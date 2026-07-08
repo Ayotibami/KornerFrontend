@@ -174,8 +174,8 @@ export default function StoriCover({
             : "none",
         }}
       >
-        {/* Gradient scrim — transparent at top, dark at bottom where the text sits.
-            Ensures title/author/subtitle are always legible regardless of image brightness. */}
+        {/* Gradient scrim — sits below the text via zIndex: 0.
+            Transparent at top, dark at bottom where the text lives. */}
         {coverImage && (
           <div
             style={{
@@ -183,9 +183,14 @@ export default function StoriCover({
               inset: 0,
               background: "linear-gradient(to bottom, rgba(0,0,0,0.0) 20%, rgba(0,0,0,0.55) 65%, rgba(0,0,0,0.75) 100%)",
               pointerEvents: "none",
+              zIndex: 0,
             }}
           />
         )}
+
+        {/* Content wrapper — zIndex: 1 keeps it above the gradient scrim */}
+        <div style={{ position: "relative", zIndex: 1, display: "flex", flexDirection: "column", gap: 20 }}>
+
         {/* Title — only renders once at least 1 character has been typed.
             title.slice(0, titleChars) reveals the string incrementally. */}
         {titleChars > 0 && (
@@ -332,6 +337,8 @@ export default function StoriCover({
             )}
           </div>
         )}
+
+        </div>{/* end content wrapper */}
       </div>
     </>
   );
