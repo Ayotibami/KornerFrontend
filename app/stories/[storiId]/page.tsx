@@ -3,12 +3,15 @@ import type { Metadata } from "next";
 export const revalidate = 60;
 import { notFound } from "next/navigation";
 import GoBackButton from "@/components/usercomponent/GoBackButton";
+import DarkModeToggle from "@/components/usercomponent/DarkModeToggle";
+import StoriPageShell from "@/components/usercomponent/StoriPageShell";
 import StoriCover from "@/components/usercomponent/StoriCover";
 import StoriBody from "@/components/usercomponent/StoriBody";
 import StoriBottom from "@/components/usercomponent/StoriBottom";
 import OtherStories from "@/components/usercomponent/OtherStories";
 import ActivationForm from "@/components/usercomponent/ActivationForm";
 import Footer from "@/components/usercomponent/Footer";
+import { StoryThemeProvider } from "@/context/StoryThemeContext";
 import { getPublicStory } from "@/lib/publicApi";
 import { formatFullDate } from "@/lib/utils";
 import ViewTracker from "@/components/ViewTracker";
@@ -83,23 +86,15 @@ export default async function StoriPage({
   };
 
   return (
-    <>
+    <StoryThemeProvider>
       <ViewTracker storiId={storiId} />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <div
-        style={{
-          display: "flex",
-          padding: 20,
-          flexDirection: "column",
-          backgroundColor: "white",
-          alignItems: "center",
-          gap: 20,
-        }}
-      >
+      <StoriPageShell>
         <GoBackButton href="/stories" />
+        <DarkModeToggle />
 
         <h1 style={{ position: "absolute", left: "-9999px", width: 1, height: 1, overflow: "hidden" }}>
           {story.title}
@@ -128,8 +123,8 @@ export default async function StoriPage({
         <OtherStories excludeStoriId={story.stori_id} />
 
         <ActivationForm />
-      </div>
+      </StoriPageShell>
       <Footer />
-    </>
+    </StoryThemeProvider>
   );
 }
