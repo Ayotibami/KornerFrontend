@@ -274,6 +274,24 @@ export default function EditStoryEditor({
       <SaveIndicator status={saveStatus} />
       <div className="fixed z-[100] flex flex-row flex-nowrap items-center justify-center gap-2 overflow-x-auto px-1 bottom-4 left-1/2 -translate-x-1/2 max-w-[94vw] sm:flex-col sm:gap-2.5 sm:justify-start sm:overflow-visible sm:px-0 sm:bottom-auto sm:left-auto sm:translate-x-0 sm:max-w-none sm:top-20 sm:right-[clamp(12px,3vw,24px)]">
         {mode === "read" ? (
+          <button
+            title="Edit story"
+            className={`${FAB_BLUE} cursor-pointer`}
+            onClick={() => setMode("write")}
+          >
+            <Pencil size={20} />
+          </button>
+        ) : (
+          <button
+            title="Preview story"
+            className={`${FAB_VIOLET} cursor-pointer`}
+            onClick={() => setMode("read")}
+          >
+            <Eye size={20} />
+          </button>
+        )}
+
+        {mode === "read" && (
           <>
             {role === "writer" && stori.status === "Draft" && (
               <button
@@ -307,23 +325,7 @@ export default function EditStoryEditor({
                 )}
               </button>
             )}
-
-            <button
-              title="Edit story"
-              className={`${FAB_BLUE} cursor-pointer`}
-              onClick={() => setMode("write")}
-            >
-              <Pencil size={20} />
-            </button>
           </>
-        ) : (
-          <button
-            title="Preview story"
-            className={`${FAB_VIOLET} cursor-pointer`}
-            onClick={() => setMode("read")}
-          >
-            <Eye size={20} />
-          </button>
         )}
 
         {role === "master" && (

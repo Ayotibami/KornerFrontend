@@ -186,6 +186,14 @@ export default function CreatePage() {
     <div className="min-h-screen bg-[#f8f9fb] dark:bg-[#0f1117]">
       <SaveIndicator status={saveStatus} />
       <div className="fixed z-[100] flex flex-row flex-nowrap items-center justify-center gap-2 overflow-x-auto px-1 bottom-4 left-1/2 -translate-x-1/2 max-w-[94vw] sm:flex-col sm:gap-2.5 sm:justify-start sm:overflow-visible sm:px-0 sm:bottom-auto sm:left-auto sm:translate-x-0 sm:max-w-none sm:top-20 sm:right-[clamp(12px,3vw,24px)]">
+        <button
+          title={mode === "write" ? "Preview story" : "Edit story"}
+          className={`${mode === "write" ? FAB_VIOLET : FAB_BLUE} cursor-pointer`}
+          onClick={() => setMode(mode === "write" ? "read" : "write")}
+        >
+          {mode === "write" ? <Eye size={20} /> : <Pencil size={20} />}
+        </button>
+
         {mode === "read" && (
           <>
             {isWriter && (
@@ -208,14 +216,6 @@ export default function CreatePage() {
             </button>
           </>
         )}
-
-        <button
-          title={mode === "write" ? "Preview story" : "Edit story"}
-          className={`${mode === "write" ? FAB_VIOLET : FAB_BLUE} cursor-pointer`}
-          onClick={() => setMode(mode === "write" ? "read" : "write")}
-        >
-          {mode === "write" ? <Eye size={20} /> : <Pencil size={20} />}
-        </button>
       </div>
 
       <div
