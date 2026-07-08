@@ -80,7 +80,7 @@ export default function StoryCard({ story }: { story: Story }) {
             </p>
 
             {/* Footer — mt-auto keeps it pinned to the bottom */}
-            <div className="flex items-center justify-between pt-3 mt-auto border-t border-gray-100 dark:border-white/[0.06]">
+            <div className="flex flex-col gap-2 pt-3 mt-auto border-t border-gray-100 dark:border-white/[0.06] sm:flex-row sm:items-center sm:justify-between">
               <div className="flex flex-col gap-1 min-w-0">
                 <p className="text-[11px] font-medium text-gray-400 dark:text-gray-500">
                   Updated {formatDate(story.updated_at)}

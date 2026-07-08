@@ -211,7 +211,7 @@ export default function MasterStoryCard({
             </p>
 
             {/* Footer — mt-auto pins it to the bottom */}
-            <div className="flex items-center justify-between pt-3 mt-auto border-t border-gray-100 dark:border-white/[0.06]">
+            <div className="flex flex-col gap-2 pt-3 mt-auto border-t border-gray-100 dark:border-white/[0.06] sm:flex-row sm:items-center sm:justify-between">
               <div className="flex flex-col gap-1 min-w-0">
                 <p className="text-[12.5px] font-medium text-gray-500 dark:text-gray-400">
                   Updated {formatDate(story.updated_at)}
