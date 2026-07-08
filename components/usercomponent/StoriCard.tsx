@@ -79,7 +79,7 @@ export default function StoriCard({
         onMouseLeave={() => setHovered(false)}
         style={{
           width: "100%",
-          height: 500,
+          height: 440,
           borderTopLeftRadius: 24,
           borderTopRightRadius: 24,
           borderBottomLeftRadius: 0,
