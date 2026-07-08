@@ -79,6 +79,7 @@ export default function StoriCard({
         onMouseLeave={() => setHovered(false)}
         style={{
           width: "100%",
+          height: 500,
           borderTopLeftRadius: 24,
           borderTopRightRadius: 24,
           borderBottomLeftRadius: 0,
@@ -95,10 +96,10 @@ export default function StoriCard({
           transformOrigin: "bottom center",
         }}
       >
-        {/* Cover image — fixed height, never collapses */}
+        {/* Cover image */}
         <div
           style={{
-            height: "clamp(160px, 40vw, 210px)",
+            height: "55%",
             backgroundColor: "#e2e8f0",
             position: "relative",
             flexShrink: 0,
