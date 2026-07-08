@@ -127,9 +127,11 @@ function QuoteBlock({ content }: { content: string }) {
 function ImageBlock({
   content,
   image_url,
+  storyTitle,
 }: {
   content: string;
   image_url?: string;
+  storyTitle: string;
 }) {
   // image_url is the primary source; content is used as fallback.
   // If neither exists, we render the grey placeholder div only (no <Image>).
@@ -154,7 +156,7 @@ function ImageBlock({
       {src ? (
         <Image
           src={src}
-          alt="Story image"
+          alt={storyTitle}
           fill
           style={{ objectFit: "cover" }}
           sizes="(max-width: 768px) 100vw, 768px"
@@ -166,7 +168,7 @@ function ImageBlock({
 
 // ── MAIN COMPONENT ───────────────────────────────────────────────────────────
 
-export default function StoriBody({ blocks }: { blocks: Block[] }) {
+export default function StoriBody({ blocks, title }: { blocks: Block[]; title: string }) {
   if (!blocks || blocks.length === 0) return null;
 
   // Sort by position before rendering so the order is always correct
@@ -200,6 +202,7 @@ export default function StoriBody({ blocks }: { blocks: Block[] }) {
               key={block.id}
               content={block.content}
               image_url={block.image_url}
+              storyTitle={title}
             />
           );
         return null; // unknown block types are silently ignored

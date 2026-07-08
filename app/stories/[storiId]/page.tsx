@@ -113,7 +113,7 @@ export default async function StoriPage({
           date={formatFullDate(story.created_at)}
         />
 
-        <StoriBody blocks={story.blocks} />
+        <StoriBody blocks={story.blocks} title={story.title} />
 
         <StoriBottom
           authorName={story.author_name}
