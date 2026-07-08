@@ -44,7 +44,7 @@ function MiniChart({
   label: string;
 }) {
   const total = data.reduce((s, d) => s + d.count, 0);
-  const peak = Math.max(...data.map((d) => d.count));
+  const peak = data.length > 0 ? Math.max(...data.map((d) => d.count)) : 0;
 
   // Show every 7th tick so the x-axis doesn't crowd on mobile
   const tickDates = data.filter((_, i) => i % 7 === 0).map((d) => d.date);
@@ -54,12 +54,12 @@ function MiniChart({
       <div className="flex items-baseline justify-between">
         <p className="text-xs font-medium text-gray-500 dark:text-gray-400">{label}</p>
         <div className="flex items-center gap-2">
-          <span className="text-[11px] text-gray-400 dark:text-gray-500">peak {peak}</span>
+          <span className="text-[11px] text-gray-400 dark:text-gray-500">peak {peak > 0 ? peak : "—"}</span>
           <span className="text-sm font-semibold text-[#0f1e3d] dark:text-gray-100">{total.toLocaleString()}</span>
         </div>
       </div>
       <ResponsiveContainer width="100%" height={130}>
-        <LineChart data={data} margin={{ top: 4, right: 4, bottom: 0, left: -28 }}>
+        <LineChart data={data} margin={{ top: 4, right: 4, bottom: 0, left: 0 }}>
           <CartesianGrid
             strokeDasharray="3 3"
             stroke="currentColor"
