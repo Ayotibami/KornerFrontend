@@ -30,6 +30,7 @@ function HeadingBlock({ content }: { content: string }) {
         color: "#0f1e3d",
         margin: 0,
         lineHeight: 1.3,
+        textTransform: "capitalize",
       }}
     >
       {content}
@@ -52,6 +53,7 @@ function HeadingBlock({ content }: { content: string }) {
 const RICH_HTML_CSS = `
   .stori-rich-html p { margin: 0; }
   .stori-rich-html p + p { margin-top: 0.5em; }
+  .stori-rich-html p::first-letter { text-transform: uppercase; }
   .stori-rich-html ul,
   .stori-rich-html ol  { padding-left: 1.5em; margin: 0.4em 0; }
   .stori-rich-html ul  { list-style-type: disc; }
@@ -117,6 +119,7 @@ function QuoteBlock({ content }: { content: string }) {
           fontStyle: "italic",
           color: "#112C4A",
           lineHeight: 1.7,
+          textTransform: "capitalize",
         }}
         dangerouslySetInnerHTML={{ __html: content }}
       />
