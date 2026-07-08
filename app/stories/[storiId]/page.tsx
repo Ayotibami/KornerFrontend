@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+
+export const revalidate = 60;
 import { notFound } from "next/navigation";
 import GoBackButton from "@/components/usercomponent/GoBackButton";
 import StoriCover from "@/components/usercomponent/StoriCover";
