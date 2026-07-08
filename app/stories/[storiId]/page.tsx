@@ -99,6 +99,10 @@ export default async function StoriPage({
       >
         <GoBackButton href="/stories" />
 
+        <h1 style={{ position: "absolute", left: "-9999px", width: 1, height: 1, overflow: "hidden" }}>
+          {story.title}
+        </h1>
+
         <StoriCover
           title={story.title}
           subtitle={story.subtitle}
