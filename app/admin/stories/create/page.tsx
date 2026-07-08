@@ -3,16 +3,16 @@
 // Create story page — the main editor for new stories.
 // Reads all state from StoryEditorContext (provided by the layout above it).
 //
+// Image upload is deferred: picking a file just shows a local blob preview.
+// The actual Cloudinary upload happens on Save so no orphaned images are created
+// while the admin drafts and refines their image choice.
+//
 // Autosave behaviour:
 //   Three seconds after the user stops typing (and a title exists), the page
 //   automatically creates a Draft in the backend and stores its ID in
 //   localStorage ("korner-create-draft-id"). From that point on, every
 //   subsequent autosave PATCHes that draft rather than creating more drafts.
 //   The URL stays at /create — no mid-write redirect.
-//
-//   If the user closes the browser before manually saving, reopening /create
-//   shows a recovery banner: "You have a draft in progress — Continue editing."
-//   Clicking it navigates to the existing draft's edit page on any device.
 
 import { useCallback, useRef, useState, useTransition } from "react";
 import { ArrowLeft, BookCheck, Eye, FeatherIcon, Loader2, Pencil, SendHorizonal } from "lucide-react";
@@ -28,7 +28,9 @@ import { useAutosave } from "@/hooks/useAutosave";
 import SaveIndicator from "@/components/admin/editor/SaveIndicator";
 import createStory from "./action";
 import submitForReview from "./submitForReview";
-import { submitStoryForReview } from "@/app/admin/stories/[storiId]/action";
+import { submitStoryForReview, updateStory } from "@/app/admin/stories/[storiId]/action";
+import { uploadToCloudinary } from "@/lib/cloudinary";
+import type { EditorBlock } from "@/context/StoryEditorContext";
 
 const DRAFT_KEY = "korner-create-draft-id";
 
@@ -49,10 +51,9 @@ export default function CreatePage() {
     excerpt, setExcerpt,
     readTime, setReadTime,
     coverImage, setCoverImage,
-    blocks,
-    uploadingCount,
-    incrementUploading,
-    decrementUploading,
+    blocks, setBlocks,
+    pendingCoverFile, setPendingCoverFile,
+    pendingBlockFiles, setPendingBlockFile, clearPendingFiles,
     insertBlock,
     updateBlock,
     updateImageBlock,
@@ -61,24 +62,17 @@ export default function CreatePage() {
   } = useStoryEditor();
 
   // ── Recovery banner ────────────────────────────────────────────────────
-  // Lazy initializer reads localStorage once at mount; avoids the
-  // react-hooks/set-state-in-effect lint error from calling setState inside useEffect.
   const [recoveryStoriId, setRecoveryStoriId] = useState<string | null>(() =>
     typeof window !== "undefined" ? localStorage.getItem(DRAFT_KEY) : null
   );
 
   // ── Autosave ───────────────────────────────────────────────────────────
-  // storiIdRef tracks the backend ID of the draft created by the first
-  // autosave. Subsequent autosaves PATCH that same draft instead of creating
-  // a new one. A ref (not state) so updating it doesn't cause a re-render.
   const storiIdRef = useRef<string | null>(null);
 
   const autosaveCallback = useCallback(async () => {
     if (storiIdRef.current) {
-      // Draft already exists — just update it
       return autosaveExistingStory(storiIdRef.current, title, subTitle, excerpt, readTime, coverImage, blocks);
     }
-    // First autosave — create the Draft in the backend
     const result = await autosaveNewStory(title, subTitle, excerpt, readTime, coverImage, blocks);
     if (result.ok) {
       storiIdRef.current = result.data.storiId;
@@ -87,49 +81,103 @@ export default function CreatePage() {
     return result;
   }, [title, subTitle, excerpt, readTime, coverImage, blocks]);
 
+  const hasPendingFiles = pendingCoverFile !== null || Object.keys(pendingBlockFiles).length > 0;
+
   const { status: saveStatus, cancel: cancelAutosave } = useAutosave(
     autosaveCallback,
     [title, subTitle, excerpt, readTime, coverImage, blocks],
     { enabled: title.trim().length > 0 },
   );
 
+  // ── Upload pending files before save ──────────────────────────────────
+  // Uploads any pending image files (deferred from when user picked them),
+  // returns an updated blocks array and cover image URL + publicId.
+  const uploadPendingFiles = async (currentBlocks: EditorBlock[]) => {
+    let finalCoverImage = coverImage;
+    let coverPublicId: string | undefined;
+
+    if (pendingCoverFile) {
+      const result = await uploadToCloudinary(pendingCoverFile);
+      finalCoverImage = result.url;
+      coverPublicId = result.publicId;
+    }
+
+    const updatedBlocks = await Promise.all(
+      currentBlocks.map(async (block) => {
+        const file = pendingBlockFiles[block.id];
+        if (file) {
+          const result = await uploadToCloudinary(file);
+          return { ...block, image_url: result.url, image_public_id: result.publicId };
+        }
+        return block;
+      }),
+    );
+
+    return { finalCoverImage, coverPublicId, updatedBlocks };
+  };
+
   // ── Manual save handlers ───────────────────────────────────────────────
   const [isDrafting, startDrafting] = useTransition();
   const [isSubmitting, startSubmitting] = useTransition();
-  const busy = isDrafting || uploadingCount > 0;
+  const busy = isDrafting;
 
   const handleDraft = () => {
     cancelAutosave();
     startDrafting(async () => {
-      if (storiIdRef.current) {
-        // Autosave already created the draft — do a final explicit save then go home
-        localStorage.removeItem(DRAFT_KEY);
-        const result = await autosaveExistingStory(storiIdRef.current, title, subTitle, excerpt, readTime, coverImage, blocks);
-        if (!result.ok) { toast.error(result.message); return; }
-        window.location.href = "/admin/home";
-      } else {
-        // Nothing autosaved yet — use the original create action
-        const result = await createStory(title, subTitle, excerpt, readTime, coverImage, blocks);
-        if (!result.ok) toast.error(result.message);
-        // On success createStory redirects, so nothing more to do
+      try {
+        const { finalCoverImage, coverPublicId, updatedBlocks } = await uploadPendingFiles(blocks);
+
+        if (storiIdRef.current) {
+          localStorage.removeItem(DRAFT_KEY);
+          // Use updateStory (not autosaveExistingStory) so cover_image_public_id is stored
+          const result = await updateStory(
+            storiIdRef.current, title, subTitle, excerpt, readTime, finalCoverImage, coverPublicId, updatedBlocks,
+          );
+          if (!result.ok) { toast.error(result.message); return; }
+          if (finalCoverImage !== coverImage) setCoverImage(finalCoverImage);
+          setBlocks(updatedBlocks);
+          clearPendingFiles();
+          window.location.href = "/admin/home";
+        } else {
+          const result = await createStory(
+            title, subTitle, excerpt, readTime, finalCoverImage, coverPublicId, updatedBlocks,
+          );
+          if (!result.ok) { toast.error(result.message); return; }
+          clearPendingFiles();
+        }
+      } catch {
+        toast.error("Image upload failed. Please try again.");
       }
     });
   };
 
   const handleSubmit = () => {
-    if (isSubmitting || uploadingCount > 0) return;
+    if (isSubmitting) return;
     cancelAutosave();
     startSubmitting(async () => {
-      if (storiIdRef.current) {
-        // Draft already exists — save current state then submit it
-        localStorage.removeItem(DRAFT_KEY);
-        const saveResult = await autosaveExistingStory(storiIdRef.current, title, subTitle, excerpt, readTime, coverImage, blocks);
-        if (!saveResult.ok) { toast.error("Failed to save before submitting"); return; }
-        await submitStoryForReview(storiIdRef.current); // redirects on success
-      } else {
-        // Nothing autosaved — use the original combined create+submit action
-        const result = await submitForReview(title, subTitle, excerpt, readTime, coverImage, blocks);
-        if (!result.ok) toast.error(result.message);
+      try {
+        const { finalCoverImage, coverPublicId, updatedBlocks } = await uploadPendingFiles(blocks);
+
+        if (storiIdRef.current) {
+          localStorage.removeItem(DRAFT_KEY);
+          // Use updateStory (not autosaveExistingStory) so cover_image_public_id is stored
+          const saveResult = await updateStory(
+            storiIdRef.current, title, subTitle, excerpt, readTime, finalCoverImage, coverPublicId, updatedBlocks,
+          );
+          if (!saveResult.ok) { toast.error("Failed to save before submitting"); return; }
+          if (finalCoverImage !== coverImage) setCoverImage(finalCoverImage);
+          setBlocks(updatedBlocks);
+          clearPendingFiles();
+          await submitStoryForReview(storiIdRef.current);
+        } else {
+          const result = await submitForReview(
+            title, subTitle, excerpt, readTime, finalCoverImage, coverPublicId, updatedBlocks,
+          );
+          if (!result.ok) { toast.error(result.message); return; }
+          clearPendingFiles();
+        }
+      } catch {
+        toast.error("Image upload failed. Please try again.");
       }
     });
   };
@@ -143,7 +191,7 @@ export default function CreatePage() {
             {isWriter && (
               <button
                 title="Submit for review"
-                className={`${FAB_AMBER} ${isSubmitting || uploadingCount > 0 ? "opacity-60 cursor-not-allowed" : "cursor-pointer"}`}
+                className={`${FAB_AMBER} ${isSubmitting ? "opacity-60 cursor-not-allowed" : "cursor-pointer"}`}
                 onClick={handleSubmit}
               >
                 {isSubmitting ? <Loader2 size={20} className="animate-spin" /> : <SendHorizonal size={20} />}
@@ -163,8 +211,8 @@ export default function CreatePage() {
 
         <button
           title={mode === "write" ? "Preview story" : "Edit story"}
-          className={`${mode === "write" ? FAB_VIOLET : FAB_BLUE} ${uploadingCount > 0 ? "opacity-60 cursor-not-allowed" : "cursor-pointer"}`}
-          onClick={() => { if (uploadingCount === 0) setMode(mode === "write" ? "read" : "write"); }}
+          className={`${mode === "write" ? FAB_VIOLET : FAB_BLUE} cursor-pointer`}
+          onClick={() => setMode(mode === "write" ? "read" : "write")}
         >
           {mode === "write" ? <Eye size={20} /> : <Pencil size={20} />}
         </button>
@@ -232,9 +280,7 @@ export default function CreatePage() {
           <CoverImage
             mode={mode}
             url={coverImage}
-            onChange={setCoverImage}
-            onUploadStart={incrementUploading}
-            onUploadEnd={decrementUploading}
+            onFilePicked={setPendingCoverFile}
           />
 
           <div className="flex flex-col gap-5">
@@ -252,8 +298,7 @@ export default function CreatePage() {
             onDelete={deleteBlock}
             onInsert={insertBlock}
             onMove={moveBlock}
-            onUploadStart={incrementUploading}
-            onUploadEnd={decrementUploading}
+            onImageFilePicked={setPendingBlockFile}
           />
         </div>
       </div>

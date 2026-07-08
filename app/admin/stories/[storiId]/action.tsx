@@ -19,6 +19,7 @@ export type StoriBlock = {
   blockType: string;
   content: string;
   image_url: string;
+  imagePublicId?: string;
   position: number;
 };
 
@@ -58,6 +59,7 @@ export async function updateStory(
   excerpt: string,
   reading_time: string,
   cover_image: string | null,
+  cover_image_public_id: string | undefined,
   blocks: EditorBlock[],
 ): Promise<ApiResult<void>> {
   try {
@@ -69,12 +71,13 @@ export async function updateStory(
         excerpt,
         reading_time,
         cover_image,
+        cover_image_public_id: cover_image_public_id ?? null,
         stori_blocks: blocks.map((b) => ({
           block_type: b.block_type,
           content: b.content,
           image_url: b.image_url,
+          image_public_id: b.image_public_id ?? null,
           position: b.position,
-          // `b.id` is client-only — not sent to the API
         })),
       }),
     });

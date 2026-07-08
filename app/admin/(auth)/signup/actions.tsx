@@ -24,7 +24,8 @@ export default async function signUp(formData: FormData): Promise<ApiResult<void
         name: formData.get("name"),
         email: formData.get("email"),
         password: formData.get("password"),
-        avatar_url: formData.get("avatar_url"), // Cloudinary URL, appended by the page before calling this
+        avatar_url: formData.get("avatar_url"),
+        avatar_public_id: formData.get("avatar_public_id") || null,
       }),
     });
 

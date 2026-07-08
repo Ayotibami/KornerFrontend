@@ -13,15 +13,17 @@
 import React, { useState, useContext } from "react";
 import type { BlockType } from "@/types/story";
 
-// EditorBlock extends the API's Block type with a client-side `id` field.
+// EditorBlock extends the API's Block type with client-side fields.
 // `id` is a UUID generated with crypto.randomUUID() and used as the React key.
-// It is NOT sent to the API — the API uses `position` for ordering.
+// `image_public_id` is the Cloudinary public_id for image blocks — returned
+// by the server on load and sent back on save for orphan cleanup.
 export type EditorBlock = {
   id: string;
   block_type: BlockType;
-  content: string;    // HTML string for text blocks; empty for image blocks
-  image_url: string;  // Cloudinary URL for image blocks; empty otherwise
-  position: number;   // 1-based display order
+  content: string;        // HTML string for text blocks; empty for image blocks
+  image_url: string;      // Cloudinary URL for image blocks; empty otherwise
+  image_public_id?: string; // tracked for Cloudinary cleanup; undefined on new blocks
+  position: number;       // 1-based display order
 };
 
 type StoryEditorContextType = {
@@ -39,12 +41,13 @@ type StoryEditorContextType = {
   setCoverImage: React.Dispatch<React.SetStateAction<string | null>>;
   blocks: EditorBlock[];
   setBlocks: React.Dispatch<React.SetStateAction<EditorBlock[]>>;
-  // uploadingCount tracks how many image uploads are in progress.
-  // The save/update buttons stay disabled while uploadingCount > 0
-  // to prevent saving with temporary blob URLs instead of permanent Cloudinary URLs.
-  uploadingCount: number;
-  incrementUploading: () => void;
-  decrementUploading: () => void;
+  // Pending files — set when user picks a new image but before Save is clicked.
+  // Uploads happen on Save so only the final chosen image is ever sent to Cloudinary.
+  pendingCoverFile: File | null;
+  setPendingCoverFile: (file: File | null) => void;
+  pendingBlockFiles: Record<string, File>; // keyed by block.id
+  setPendingBlockFile: (blockId: string, file: File | null) => void;
+  clearPendingFiles: () => void;
   insertBlock: (type: BlockType, atPosition: number) => void;
   updateBlock: (pos: number, value: string) => void;
   updateImageBlock: (pos: number, url: string) => void;
@@ -73,21 +76,26 @@ export default function StoryEditorProvider({
   const [readTime, setReadTime] = useState("");
   const [coverImage, setCoverImage] = useState<string | null>(null);
   const [blocks, setBlocks] = useState<EditorBlock[]>([]);
-  const [uploadingCount, setUploadingCount] = useState(0);
+  const [pendingCoverFile, setPendingCoverFile] = useState<File | null>(null);
+  const [pendingBlockFiles, setPendingBlockFilesState] = useState<Record<string, File>>({});
 
-  // Math.max(0, ...) prevents uploadingCount from going below zero
-  // in case a component calls decrementUploading more times than increment.
-  const incrementUploading = () => setUploadingCount((c) => c + 1);
-  const decrementUploading = () => setUploadingCount((c) => Math.max(0, c - 1));
+  const setPendingBlockFile = (blockId: string, file: File | null) => {
+    setPendingBlockFilesState((prev) => {
+      if (file === null) {
+        const { [blockId]: _, ...rest } = prev;
+        return rest;
+      }
+      return { ...prev, [blockId]: file };
+    });
+  };
+
+  const clearPendingFiles = () => {
+    setPendingCoverFile(null);
+    setPendingBlockFilesState({});
+  };
 
   // Inserts a new block at `atPosition`, shifting all existing blocks
   // at or after that position up by 1 to make room.
-  //
-  // Uses the functional setBlocks((prev) => ...) updater pattern rather than
-  // reading `blocks` directly from the closure. This is critical: if multiple
-  // state updates happen in the same render cycle, the closure snapshot of
-  // `blocks` could be stale, causing lost updates. The functional updater
-  // always receives the latest state from React.
   const insertBlock = (type: BlockType, atPosition: number) => {
     setBlocks((prev) => {
       const shifted = prev.map((block) =>
@@ -100,14 +108,13 @@ export default function StoryEditorProvider({
         block_type: type,
         content: "",
         image_url: "",
+        image_public_id: undefined,
         position: atPosition,
       };
       return [...shifted, newBlock].sort((a, b) => a.position - b.position);
     });
   };
 
-  // Updates the text content of a block at a given position.
-  // Image blocks are excluded — they use updateImageBlock instead.
   const updateBlock = (pos: number, value: string) => {
     setBlocks((prev) =>
       prev.map((block) =>
@@ -118,8 +125,6 @@ export default function StoryEditorProvider({
     );
   };
 
-  // Updates the Cloudinary URL of an image block at a given position.
-  // Separated from updateBlock because image blocks have no `content`.
   const updateImageBlock = (pos: number, url: string) => {
     setBlocks((prev) =>
       prev.map((block) =>
@@ -128,20 +133,20 @@ export default function StoryEditorProvider({
     );
   };
 
-  // Removes a block and renumbers all remaining blocks so positions stay
-  // sequential (1, 2, 3…). Without renumbering, positions would have gaps
-  // and insertBlock's shift logic would break.
   const deleteBlock = (pos: number) => {
     setBlocks((prev) => {
+      const blockToDelete = prev.find((b) => b.position === pos);
+      if (blockToDelete) {
+        setPendingBlockFilesState((files) => {
+          const { [blockToDelete.id]: _, ...rest } = files;
+          return rest;
+        });
+      }
       const filtered = prev.filter((block) => block.position !== pos);
       return filtered.map((block, index) => ({ ...block, position: index + 1 }));
     });
   };
 
-  // Moves a block from wherever activeId is to wherever overId is, using the
-  // client-side UUID (block.id) that dnd-kit tracks during a drag gesture.
-  // Positions are renumbered sequentially after the move so they stay
-  // contiguous — same guarantee as deleteBlock.
   const moveBlock = (activeId: string, overId: string) => {
     setBlocks((prev) => {
       const activeIndex = prev.findIndex((b) => b.id === activeId);
@@ -164,9 +169,10 @@ export default function StoryEditorProvider({
         readTime, setReadTime,
         coverImage, setCoverImage,
         blocks, setBlocks,
-        uploadingCount,
-        incrementUploading,
-        decrementUploading,
+        pendingCoverFile, setPendingCoverFile,
+        pendingBlockFiles,
+        setPendingBlockFile,
+        clearPendingFiles,
         insertBlock,
         updateBlock,
         updateImageBlock,

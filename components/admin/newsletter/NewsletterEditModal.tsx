@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useEffect, useState, useTransition } from "react";
 import { useEscapeKey } from "@/hooks/useEscapeKey";
@@ -9,6 +9,7 @@ import MailBodyEditor from "@/components/admin/editor/MailBodyEditor";
 import ScheduleFields, { toScheduledAtIso } from "@/components/admin/newsletter/ScheduleFields";
 import HeaderImagePicker from "@/components/admin/newsletter/HeaderImagePicker";
 import { getNewsletter, updateNewsletter } from "@/app/admin/newsletter/action";
+import { uploadToCloudinary } from "@/lib/cloudinary";
 
 type FetchState = "loading" | "ready" | "error";
 
@@ -36,7 +37,8 @@ export default function NewsletterEditModal({
   const [subject, setSubject] = useState("");
   const [body, setBody] = useState("");
   const [imageUrl, setImageUrl] = useState<string | null>(null);
-  const [uploadingImage, setUploadingImage] = useState(false);
+  const [originalImageUrl, setOriginalImageUrl] = useState<string | null>(null);
+  const [pendingImageFile, setPendingImageFile] = useState<File | null>(null);
   const [selectedDate, setSelectedDate] = useState<Date | undefined>();
   const [time, setTime] = useState("");
   const [isSaving, startSaving] = useTransition();
@@ -46,6 +48,7 @@ export default function NewsletterEditModal({
     if (!isOpen) return;
     setFetchState("loading");
     setFetchError(null);
+    setPendingImageFile(null);
 
     getNewsletter(sendId).then((result) => {
       if (!result.ok) {
@@ -57,6 +60,7 @@ export default function NewsletterEditModal({
       setSubject(result.data.subject);
       setBody(result.data.body);
       setImageUrl(result.data.imageUrl);
+      setOriginalImageUrl(result.data.imageUrl);
       setSelectedDate(scheduled);
       setTime(`${String(scheduled.getHours()).padStart(2, "0")}:${String(scheduled.getMinutes()).padStart(2, "0")}`);
       setFetchState("ready");
@@ -66,16 +70,37 @@ export default function NewsletterEditModal({
   useEscapeKey(onClose, isOpen);
 
   const scheduledAtIso = toScheduledAtIso(selectedDate, time);
-  const canSave = Boolean(subject.trim() && body.trim() && scheduledAtIso && !uploadingImage);
+  const canSave = Boolean(subject.trim() && body.trim() && scheduledAtIso);
 
   const handleSave = () => {
     if (!scheduledAtIso) return;
     startSaving(async () => {
-      const result = await updateNewsletter(sendId, subject, body, scheduledAtIso, imageUrl);
-      if (!result.ok) { toast.error(result.message); return; }
-      toast.success("Newsletter updated.");
-      onSaved();
-      onClose();
+      try {
+        // Only send image fields when the image was actually changed.
+        // Sending image_url when unchanged would overwrite image_public_id with null in the DB.
+        let finalImageUrl: string | null | undefined;
+        let imagePublicId: string | null = null;
+
+        if (pendingImageFile) {
+          const uploaded = await uploadToCloudinary(pendingImageFile);
+          finalImageUrl = uploaded.url;
+          imagePublicId = uploaded.publicId;
+        } else if (imageUrl !== originalImageUrl) {
+          // Image was explicitly removed (imageUrl is null, originalImageUrl was a URL)
+          finalImageUrl = imageUrl;
+        } else {
+          // Image unchanged — pass undefined so the backend skips the image fields entirely
+          finalImageUrl = undefined;
+        }
+
+        const result = await updateNewsletter(sendId, subject, body, scheduledAtIso, finalImageUrl, imagePublicId);
+        if (!result.ok) { toast.error(result.message); return; }
+        toast.success("Newsletter updated.");
+        onSaved();
+        onClose();
+      } catch {
+        toast.error("Image upload failed. Please try again.");
+      }
     });
   };
 
@@ -139,9 +164,8 @@ export default function NewsletterEditModal({
               {/* Cover image */}
               <HeaderImagePicker
                 url={imageUrl}
-                onChange={setImageUrl}
-                onUploadStart={() => setUploadingImage(true)}
-                onUploadEnd={() => setUploadingImage(false)}
+                onFilePicked={setPendingImageFile}
+                onRemove={() => { setImageUrl(null); setPendingImageFile(null); }}
                 disabled={isSaving}
               />
 

@@ -25,7 +25,7 @@ export default function StoryCard({ story }: { story: Story }) {
     e.stopPropagation();
     if (isReverting) return;
     startReverting(async () => {
-      const result = await updateStory(story.stori_id, story.title, story.subtitle, story.excerpt, story.reading_time, story.cover_image, []);
+      const result = await updateStory(story.stori_id, story.title, story.subtitle, story.excerpt, story.reading_time, story.cover_image, undefined, []);
       if (result.ok) toast.success("Story reverted to draft.");
       else toast.error(result.message);
     });

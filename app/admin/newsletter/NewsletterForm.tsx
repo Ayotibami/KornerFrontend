@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import React, { useState, useRef, useTransition, useEffect } from "react";
 import { CalendarClock, Send } from "lucide-react";
@@ -8,6 +8,7 @@ import ScheduleFields, { formatScheduled, toScheduledAtIso } from "@/components/
 import HeaderImagePicker from "@/components/admin/newsletter/HeaderImagePicker";
 import SendNewsletterConfirmModal from "@/components/admin/newsletter/SendNewsletterConfirmModal";
 import { sendNewsletter } from "./action";
+import { uploadToCloudinary } from "@/lib/cloudinary";
 
 type Mode = "now" | "schedule";
 
@@ -25,13 +26,13 @@ export default function NewsletterForm({
   prefill?: { subject: string; body: string; imageUrl: string | null } | null;
   onSent?: () => void;
 }) {
-  const [subject, setSubject]           = useState("");
-  const [body, setBody]                 = useState("");
-  const [imageUrl, setImageUrl]         = useState<string | null>(null);
-  const [uploadingImage, setUploadingImage] = useState(false);
-  const [mode, setMode]                 = useState<Mode>("now");
-  const [selectedDate, setSelectedDate] = useState<Date | undefined>();
-  const [time, setTime]                 = useState("");
+  const [subject, setSubject]             = useState("");
+  const [body, setBody]                   = useState("");
+  const [imageUrl, setImageUrl]           = useState<string | null>(null);
+  const [pendingImageFile, setPendingImageFile] = useState<File | null>(null);
+  const [mode, setMode]                   = useState<Mode>("now");
+  const [selectedDate, setSelectedDate]   = useState<Date | undefined>();
+  const [time, setTime]                   = useState("");
   const subjectRef = useRef<HTMLInputElement>(null);
   const [isPending, startSending] = useTransition();
   const [previewOpen, setPreviewOpen] = useState(false);
@@ -43,6 +44,7 @@ export default function NewsletterForm({
     setSubject(prefill.subject);
     setBody(prefill.body);
     setImageUrl(prefill.imageUrl);
+    setPendingImageFile(null);
     setMode("now");
     setSelectedDate(undefined);
     setTime("");
@@ -62,24 +64,38 @@ export default function NewsletterForm({
   };
 
   const scheduledLabel = mode === "schedule" ? formatScheduled(selectedDate, time) : null;
-  const canSubmit = subject.trim() && body.trim() && !uploadingImage && (mode === "now" || Boolean(scheduledLabel));
+  const canSubmit = subject.trim() && body.trim() && (mode === "now" || Boolean(scheduledLabel));
 
   const handleConfirmSend = () => {
     const scheduledAt = mode === "schedule" ? toScheduledAtIso(selectedDate, time) : null;
     if (mode === "schedule" && !scheduledAt) return;
 
     startSending(async () => {
-      const result = await sendNewsletter(subject, body, scheduledAt, imageUrl);
-      if (!result.ok) { toast.error(result.message); return; }
-      toast.success(mode === "now" ? "Newsletter sent." : "Newsletter scheduled.");
-      setPreviewOpen(false);
-      setSubject("");
-      setBody("");
-      setImageUrl(null);
-      setSelectedDate(undefined);
-      setTime("");
-      setMode("now");
-      onSent?.();
+      try {
+        let finalImageUrl = imageUrl;
+        let imagePublicId: string | null = null;
+
+        if (pendingImageFile) {
+          const uploaded = await uploadToCloudinary(pendingImageFile);
+          finalImageUrl = uploaded.url;
+          imagePublicId = uploaded.publicId;
+        }
+
+        const result = await sendNewsletter(subject, body, scheduledAt, finalImageUrl, imagePublicId);
+        if (!result.ok) { toast.error(result.message); return; }
+        toast.success(mode === "now" ? "Newsletter sent." : "Newsletter scheduled.");
+        setPreviewOpen(false);
+        setSubject("");
+        setBody("");
+        setImageUrl(null);
+        setPendingImageFile(null);
+        setSelectedDate(undefined);
+        setTime("");
+        setMode("now");
+        onSent?.();
+      } catch {
+        toast.error("Image upload failed. Please try again.");
+      }
     });
   };
 
@@ -89,9 +105,8 @@ export default function NewsletterForm({
       {/* Cover image */}
       <HeaderImagePicker
         url={imageUrl}
-        onChange={setImageUrl}
-        onUploadStart={() => setUploadingImage(true)}
-        onUploadEnd={() => setUploadingImage(false)}
+        onFilePicked={setPendingImageFile}
+        onRemove={() => { setImageUrl(null); setPendingImageFile(null); }}
         disabled={isPending}
       />
 

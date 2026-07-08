@@ -60,6 +60,7 @@ export async function sendNewsletter(
   body: string,
   scheduledAt: string | null,
   imageUrl: string | null,
+  imagePublicId: string | null,
 ): Promise<ApiResult<void>> {
   try {
     await apiRequest("/newsletter/send", {
@@ -68,6 +69,7 @@ export async function sendNewsletter(
         subject,
         body,
         image_url: imageUrl,
+        image_public_id: imagePublicId,
         ...(scheduledAt ? { scheduled_at: scheduledAt } : {}),
       }),
     });
@@ -110,12 +112,25 @@ export async function updateNewsletter(
   subject: string,
   body: string,
   scheduledAt: string,
-  imageUrl: string | null,
+  // undefined = image unchanged (don't send to backend at all)
+  // null      = image explicitly removed
+  // string    = new image URL
+  imageUrl: string | null | undefined,
+  imagePublicId: string | null,
 ): Promise<ApiResult<void>> {
   try {
     await apiRequest(`/newsletter/sends/${sendId}`, {
       method: "PATCH",
-      body: JSON.stringify({ subject, body, scheduled_at: scheduledAt, image_url: imageUrl ?? null }),
+      body: JSON.stringify({
+        subject,
+        body,
+        scheduled_at: scheduledAt,
+        // Only include image fields when the image was actually changed or removed.
+        // Omitting them lets the backend leave image_url and image_public_id untouched.
+        ...(imageUrl !== undefined
+          ? { image_url: imageUrl, image_public_id: imagePublicId ?? null }
+          : {}),
+      }),
     });
     return { ok: true, data: undefined };
   } catch (err: unknown) {

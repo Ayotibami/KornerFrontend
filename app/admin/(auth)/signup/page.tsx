@@ -35,6 +35,7 @@ export default function SignupPage() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const [avatarPublicId, setAvatarPublicId] = useState<string | null>(null);
   const [avatarUploading, setAvatarUploading] = useState(false);
   const [error, setError] = useState("");
 
@@ -60,8 +61,9 @@ export default function SignupPage() {
       return;
     }
 
-    // Attach the Cloudinary URL to the form before sending to the server
+    // Attach the Cloudinary URL and public_id to the form before sending to the server
     formData.append("avatar_url", avatarUrl);
+    if (avatarPublicId) formData.append("avatar_public_id", avatarPublicId);
 
     startTransition(async () => {
       const result = await signUp(formData);
@@ -83,7 +85,13 @@ export default function SignupPage() {
 
       {/* Avatar picker is outside the form so its async upload doesn't block form submit */}
       <div className="flex justify-center">
-        <AvatarPicker setAvatarUrl={setAvatarUrl} onUploadingChange={setAvatarUploading} />
+        <AvatarPicker
+          onUploadComplete={({ url, publicId }) => {
+            setAvatarUrl(url);
+            setAvatarPublicId(publicId);
+          }}
+          onUploadingChange={setAvatarUploading}
+        />
       </div>
 
       <form action={handleSubmit} className="flex flex-col gap-4">

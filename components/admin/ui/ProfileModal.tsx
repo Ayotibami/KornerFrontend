@@ -27,6 +27,7 @@ export default function ProfileModal({
   const [localName, setLocalName] = useState(profile?.admin_name ?? "");
   const [localBio, setLocalBio] = useState(profile?.bio ?? "");
   const [localAvatarUrl, setLocalAvatarUrl] = useState<string>(profile?.avatar_url ?? "");
+  const [localAvatarPublicId, setLocalAvatarPublicId] = useState<string>("");
   const [avatarUploading, setAvatarUploading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [isChangePasswordOpen, setIsChangePasswordOpen] = useState(false);
@@ -37,7 +38,7 @@ export default function ProfileModal({
   const handleSave = async () => {
     if (!localName.trim()) { toast.error("Name is required."); return; }
     setSaving(true);
-    const result = await updateProfile(localName, localBio, localAvatarUrl);
+    const result = await updateProfile(localName, localBio, localAvatarUrl, localAvatarPublicId || undefined);
     setSaving(false);
     if (!result.ok) { toast.error(result.message); return; }
     toast.success("Profile updated.");
@@ -69,7 +70,10 @@ export default function ProfileModal({
                 <div className="flex justify-center">
                   <AvatarPicker
                     initialUrl={localAvatarUrl ?? undefined}
-                    setAvatarUrl={(url) => setLocalAvatarUrl(url)}
+                    onUploadComplete={({ url, publicId }) => {
+                      setLocalAvatarUrl(url);
+                      setLocalAvatarPublicId(publicId);
+                    }}
                     onUploadingChange={setAvatarUploading}
                   />
                 </div>

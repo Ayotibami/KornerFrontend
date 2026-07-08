@@ -17,6 +17,7 @@ import { Send, Loader2, Bell } from "lucide-react";
 import { toast } from "sonner";
 import { sendPushBroadcast } from "@/app/admin/push/action";
 import ImageUploader from "@/components/admin/editor/ImageUploader";
+import { uploadToCloudinary } from "@/lib/cloudinary";
 
 const INPUT_BASE =
   "w-full text-[0.95rem] border-2 border-secondary dark:border-[#2a4a7a] bg-[#F0F5FF] dark:bg-[#1e2a3a] text-[#0f1e3d] dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-600 px-4 py-3 rounded-xl outline-none transition-[border-color,box-shadow,background-color] duration-200 focus:border-primary focus:bg-white dark:focus:bg-[#243347] focus:ring-2 focus:ring-primary/10 disabled:opacity-60 disabled:cursor-not-allowed";
@@ -31,10 +32,16 @@ export default function PushComposer({
   const [title, setTitle] = useState("");
   const [message, setMessage] = useState("");
   const [url, setUrl] = useState("");
-  const [imageUrl, setImageUrl] = useState("");
-  const [isUploadingImage, setIsUploadingImage] = useState(false);
+  const [displayImageUrl, setDisplayImageUrl] = useState("");
+  const [pendingImageFile, setPendingImageFile] = useState<File | null>(null);
   const [confirming, setConfirming] = useState(false);
   const [isSending, startSending] = useTransition();
+
+  const handleImageFilePicked = (file: File) => {
+    setPendingImageFile(file);
+    setDisplayImageUrl(URL.createObjectURL(file));
+    setConfirming(false);
+  };
 
   const handleSend = () => {
     if (!confirming) {
@@ -42,21 +49,32 @@ export default function PushComposer({
       return;
     }
     startSending(async () => {
-      const result = await sendPushBroadcast(title, message, url.trim() || undefined, imageUrl || undefined);
-      if (result.ok) {
-        toast.success("Push notification sent.");
-        setTitle("");
-        setMessage("");
-        setUrl("");
-        setImageUrl("");
-        setConfirming(false);
-      } else {
-        toast.error(result.message);
+      try {
+        let finalImageUrl: string | undefined;
+        if (pendingImageFile) {
+          const uploaded = await uploadToCloudinary(pendingImageFile);
+          finalImageUrl = uploaded.url;
+        }
+
+        const result = await sendPushBroadcast(title, message, url.trim() || undefined, finalImageUrl);
+        if (result.ok) {
+          toast.success("Push notification sent.");
+          setTitle("");
+          setMessage("");
+          setUrl("");
+          setDisplayImageUrl("");
+          setPendingImageFile(null);
+          setConfirming(false);
+        } else {
+          toast.error(result.message);
+        }
+      } catch {
+        toast.error("Image upload failed. Please try again.");
       }
     });
   };
 
-  const canSend = title.trim().length > 0 && message.trim().length > 0 && !isUploadingImage;
+  const canSend = title.trim().length > 0 && message.trim().length > 0;
 
   return (
     <div className="bg-white dark:bg-[#1a1f2e] rounded-2xl shadow-[0_2px_8px_rgba(0,0,0,0.06)] dark:shadow-[0_2px_8px_rgba(0,0,0,0.3)] p-5 flex flex-col gap-4">
@@ -115,18 +133,16 @@ export default function PushComposer({
         </label>
         <ImageUploader
           mode="write"
-          url={imageUrl}
-          onChange={(uploadedUrl) => { setImageUrl(uploadedUrl); setConfirming(false); }}
-          onUploadStart={() => setIsUploadingImage(true)}
-          onUploadEnd={() => setIsUploadingImage(false)}
+          url={displayImageUrl}
+          onFilePicked={handleImageFilePicked}
         />
       </div>
 
       {confirming && (
         <div className="rounded-xl border border-[#DC2626]/30 dark:border-[#DC2626]/40 overflow-hidden">
-          {imageUrl && (
+          {displayImageUrl && (
             <div className="relative w-full h-[140px] bg-slate-100 dark:bg-[#0f1117]">
-              <Image src={imageUrl} alt="" fill className="object-cover" sizes="(max-width: 640px) 100vw, 640px" />
+              <Image src={displayImageUrl} alt="" fill className="object-cover" sizes="(max-width: 640px) 100vw, 640px" unoptimized />
             </div>
           )}
           <div className="p-4 flex flex-col gap-2">

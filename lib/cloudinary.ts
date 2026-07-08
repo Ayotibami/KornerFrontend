@@ -4,18 +4,10 @@
 const CLOUD_NAME = "dbyxdhnjb";
 const UPLOAD_PRESET = "wh6vvgfv";
 
-// Uploads a file directly to Cloudinary from the browser and returns the secure CDN URL.
-//
-// Called from: CoverImage, ImageUploader (story blocks), and AvatarPicker.
-// All three follow the same upload pattern:
-//   1. Show an optimistic local blob preview immediately for fast feedback.
-//   2. Upload in the background — increment uploadingCount so the save button stays disabled.
-//   3. On success: update state with the permanent Cloudinary URL.
-//   4. On failure: revert the preview and show a toast.
-//   5. In `finally`: always decrement uploadingCount so the save button re-enables.
-//
+// Uploads a file directly to Cloudinary from the browser.
+// Returns both the secure CDN URL and the public_id needed for server-side deletion.
 // Throws on failure — callers must catch and handle.
-export async function uploadToCloudinary(file: File): Promise<string> {
+export async function uploadToCloudinary(file: File): Promise<{ url: string; publicId: string }> {
   const formData = new FormData();
   formData.append("file", file);
   formData.append("upload_preset", UPLOAD_PRESET);
@@ -31,9 +23,9 @@ export async function uploadToCloudinary(file: File): Promise<string> {
 
   const data = await res.json();
 
-  if (!data.secure_url) {
-    throw new Error("Cloudinary returned no URL");
+  if (!data.secure_url || !data.public_id) {
+    throw new Error("Cloudinary returned incomplete data");
   }
 
-  return data.secure_url as string;
+  return { url: data.secure_url as string, publicId: data.public_id as string };
 }

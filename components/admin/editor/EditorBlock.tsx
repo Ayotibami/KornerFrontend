@@ -111,14 +111,13 @@ function QuoteBlock({ block, mode, onChange }: { block: BlockData; mode: "write"
 }
 
 export default function EditorBlock({
-  block, mode, onChange, onImageUpload, onUploadStart, onUploadEnd,
+  block, mode, onChange, onImageUpload, onImageFilePicked,
 }: {
   block: BlockData;
   mode: "write" | "read";
   onChange: (value: string) => void;
   onImageUpload: (url: string) => void;
-  onUploadStart: () => void;
-  onUploadEnd: () => void;
+  onImageFilePicked: (file: File) => void;
 }) {
   switch (block.block_type) {
     case "heading":
@@ -128,6 +127,6 @@ export default function EditorBlock({
     case "quote":
       return <QuoteBlock block={block} mode={mode} onChange={onChange} />;
     case "image":
-      return <ImageUploader mode={mode} url={block.image_url} onChange={onImageUpload} onUploadStart={onUploadStart} onUploadEnd={onUploadEnd} />;
+      return <ImageUploader mode={mode} url={block.image_url} onFilePicked={onImageFilePicked} />;
   }
 }

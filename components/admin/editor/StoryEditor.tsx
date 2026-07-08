@@ -45,15 +45,13 @@ function SortableBlock({
   onUpdate,
   onImageUpload,
   onDelete,
-  onUploadStart,
-  onUploadEnd,
+  onImageFilePicked,
 }: {
   block: BlockData;
   onUpdate: (pos: number, value: string) => void;
   onImageUpload: (pos: number, url: string) => void;
   onDelete: (pos: number) => void;
-  onUploadStart: () => void;
-  onUploadEnd: () => void;
+  onImageFilePicked: (blockId: string, file: File) => void;
 }) {
   const {
     attributes,
@@ -98,8 +96,7 @@ function SortableBlock({
           mode="write"
           onChange={(val) => onUpdate(block.position, val)}
           onImageUpload={(url) => onImageUpload(block.position, url)}
-          onUploadStart={onUploadStart}
-          onUploadEnd={onUploadEnd}
+          onImageFilePicked={(file) => onImageFilePicked(block.id, file)}
         />
       </div>
 
@@ -122,8 +119,7 @@ export default function StoryEditor({
   onDelete,
   onInsert,
   onMove,
-  onUploadStart,
-  onUploadEnd,
+  onImageFilePicked,
 }: {
   blocks: BlockData[];
   mode: "write" | "read";
@@ -132,8 +128,7 @@ export default function StoryEditor({
   onDelete: (pos: number) => void;
   onInsert: (type: BlockType, atPosition: number) => void;
   onMove: (activeId: string, overId: string) => void;
-  onUploadStart: () => void;
-  onUploadEnd: () => void;
+  onImageFilePicked: (blockId: string, file: File) => void;
 }) {
   // Activation distance of 5px prevents a tap from being misread as a drag
   // — the pointer must move 5px before dnd-kit treats it as a drag gesture.
@@ -158,8 +153,7 @@ export default function StoryEditor({
             mode={mode}
             onChange={(val) => onUpdate(block.position, val)}
             onImageUpload={(url) => onImageUpload(block.position, url)}
-            onUploadStart={onUploadStart}
-            onUploadEnd={onUploadEnd}
+            onImageFilePicked={(file) => onImageFilePicked(block.id, file)}
           />
         ))}
       </div>
@@ -187,8 +181,7 @@ export default function StoryEditor({
                 onUpdate={onUpdate}
                 onImageUpload={onImageUpload}
                 onDelete={onDelete}
-                onUploadStart={onUploadStart}
-                onUploadEnd={onUploadEnd}
+                onImageFilePicked={onImageFilePicked}
               />
               {/* Insert row after each block */}
               <BlockControls onInsert={(type) => onInsert(type, block.position + 1)} />

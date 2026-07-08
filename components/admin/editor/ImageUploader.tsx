@@ -1,35 +1,28 @@
-﻿"use client";
+"use client";
 
 // Inline 16:9 image block for the story body.
-// Upload flow: blob preview → Cloudinary → final URL (see lib/cloudinary.ts for full pattern).
+// Deferred-upload design: shows a blob preview immediately, calls onFilePicked(file)
+// so the parent can store the file and upload it on Save.
 
 import Image from "next/image";
-import { useRef, useState } from "react";
-import { uploadToCloudinary } from "@/lib/cloudinary";
-import { toast } from "sonner";
+import { useEffect, useRef, useState } from "react";
 
-export default function ImageUploader({ mode, url, onChange, onUploadStart, onUploadEnd }: {
-  mode: "write" | "read"; url: string; onChange: (url: string) => void;
-  onUploadStart: () => void; onUploadEnd: () => void;
+export default function ImageUploader({ mode, url, onFilePicked }: {
+  mode: "write" | "read";
+  url: string;
+  onFilePicked: (file: File) => void;
 }) {
   const [previewUrl, setPreviewUrl] = useState<string>(url);
-  const [uploading, setUploading] = useState(false);
   const ref = useRef<HTMLInputElement>(null);
 
-  const handleFile = async (file: File) => {
+  // Sync when parent resets or prefills the URL (e.g. after save or form reset).
+  useEffect(() => {
+    setPreviewUrl(url);
+  }, [url]);
+
+  const handleFile = (file: File) => {
     setPreviewUrl(URL.createObjectURL(file));
-    setUploading(true);
-    onUploadStart();
-    try {
-      const cloudUrl = await uploadToCloudinary(file);
-      onChange(cloudUrl);
-    } catch {
-      setPreviewUrl(url);
-      toast.error("Image upload failed. Please try again.");
-    } finally {
-      setUploading(false);
-      onUploadEnd();
-    }
+    onFilePicked(file);
   };
 
   return (
@@ -44,14 +37,23 @@ export default function ImageUploader({ mode, url, onChange, onUploadStart, onUp
         {mode === "write" && (
           <button
             onClick={() => ref.current?.click()}
-            disabled={uploading}
-            className="absolute bottom-3 left-1/2 -translate-x-1/2 bg-white/90 dark:bg-[#1a1f2e]/90 text-[#0f1e3d] dark:text-gray-100 rounded-xl px-6 py-2.5 font-bold text-sm shadow-md whitespace-nowrap z-10 cursor-pointer disabled:opacity-70 disabled:cursor-not-allowed"
+            className="absolute bottom-3 left-1/2 -translate-x-1/2 bg-white/90 dark:bg-[#1a1f2e]/90 text-[#0f1e3d] dark:text-gray-100 rounded-xl px-6 py-2.5 font-bold text-sm shadow-md whitespace-nowrap z-10 cursor-pointer"
           >
-            {uploading ? "Uploading…" : previewUrl ? "Change Image" : "Upload Image"}
+            {previewUrl ? "Change Image" : "Upload Image"}
           </button>
         )}
       </div>
-      <input type="file" hidden ref={ref} accept="image/*" onChange={(e) => { const f = e.target.files?.[0]; if (f) handleFile(f); }} />
+      <input
+        type="file"
+        hidden
+        ref={ref}
+        accept="image/*"
+        onChange={(e) => {
+          const f = e.target.files?.[0];
+          if (f) handleFile(f);
+          e.target.value = "";
+        }}
+      />
     </>
   );
 }

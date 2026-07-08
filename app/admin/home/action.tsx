@@ -46,11 +46,12 @@ export async function updateProfile(
   name: string,
   bio: string,
   avatar_url: string,
+  avatar_public_id?: string,
 ): Promise<ApiResult<void>> {
   try {
     await apiRequest("/admin/profile", {
       method: "PATCH",
-      body: JSON.stringify({ name, bio, avatar_url }),
+      body: JSON.stringify({ name, bio, avatar_url, avatar_public_id: avatar_public_id ?? null }),
     });
     return { ok: true, data: undefined };
   } catch (err: unknown) {

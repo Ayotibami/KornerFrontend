@@ -1,19 +1,18 @@
 "use client";
 
-// Avatar picker used on the signup page.
+// Avatar picker used on the signup page and profile edit modal.
 // Shows a circle with a + button in the bottom-right corner.
-// Clicking the + opens a file picker, then uploads to Cloudinary.
+// Clicking the + opens a file picker, then uploads to Cloudinary immediately
+// (avatar upload stays eager — it's a one-time action, not a draft loop).
 //
 // Upload flow:
-//   1. Set a local blob preview immediately so the user sees their image right away.
+//   1. Show a local blob preview immediately so the user sees their image right away.
 //   2. Upload to Cloudinary in the background.
-//   3. On success: call setAvatarUrl with the permanent Cloudinary URL.
-//   4. On failure: revert the preview to null and show a toast.
-//   5. `finally`: always reset the uploading state so the + button re-enables.
-//      The `finally` block runs even when an error is thrown — critical for cleanup.
+//   3. On success: call onUploadComplete with the permanent URL and public_id.
+//   4. On failure: revert the preview and show a toast.
+//   5. `finally`: always reset the uploading state.
 //
-// `onUploadingChange` notifies the parent (SignupPage) so it can disable the
-// submit button while the avatar is uploading.
+// `onUploadingChange` lets the parent disable its submit button while uploading.
 
 import { PRIMARY } from "@/constants/theme";
 import { uploadToCloudinary } from "@/lib/cloudinary";
@@ -22,27 +21,27 @@ import { useRef, useState } from "react";
 import { toast } from "sonner";
 
 export default function AvatarPicker({
-  setAvatarUrl,
+  onUploadComplete,
   onUploadingChange,
   initialUrl,
 }: {
-  setAvatarUrl: (url: string) => void;
+  onUploadComplete: (result: { url: string; publicId: string }) => void;
   onUploadingChange?: (uploading: boolean) => void;
-  initialUrl?: string;  // pre-populate with an existing avatar (e.g. profile modal edit mode)
+  initialUrl?: string;
 }) {
   const fileRef = useRef<HTMLInputElement>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(initialUrl ?? null);
   const [uploading, setUploading] = useState(false);
 
   const handleFile = async (file: File) => {
-    setPreviewUrl(URL.createObjectURL(file)); // immediate optimistic preview
+    setPreviewUrl(URL.createObjectURL(file));
     setUploading(true);
     onUploadingChange?.(true);
     try {
-      const url = await uploadToCloudinary(file);
-      setAvatarUrl(url);
+      const result = await uploadToCloudinary(file);
+      onUploadComplete({ url: result.url, publicId: result.publicId });
     } catch {
-      setPreviewUrl(initialUrl ?? null); // revert to original on failure
+      setPreviewUrl(initialUrl ?? null);
       toast.error("Image upload failed. Please try again.");
     } finally {
       setUploading(false);

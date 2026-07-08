@@ -15,8 +15,8 @@ function mapBlocks(blocks: EditorBlock[]) {
     block_type: b.block_type,
     content: b.content,
     image_url: b.image_url,
+    image_public_id: b.image_public_id ?? null,
     position: b.position,
-    // b.id is a client-side UUID used as React key — never sent to the API
   }));
 }
 
