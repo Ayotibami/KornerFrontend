@@ -122,47 +122,50 @@ export default function StoriCard({
             padding: "14px 16px 16px",
             display: "flex",
             flexDirection: "column",
-            gap: 8,
+            flex: 1,
             overflow: "hidden",
           }}
         >
-          {/* Title — 2-line clamp */}
-          <p
-            style={{
-              fontFamily: nunito.style.fontFamily,
-              fontWeight: 800,
-              fontSize: "clamp(0.9rem, 2.5vw, 1rem)",
-              color: "#0f1e3d",
-              margin: 0,
-              lineHeight: 1.35,
-              display: "-webkit-box",
-              WebkitLineClamp: 2,
-              WebkitBoxOrient: "vertical",
-              overflow: "hidden",
-            }}
-          >
-            {title}
-          </p>
+          {/* Title + excerpt cluster at top */}
+          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+            {/* Title — 2-line clamp */}
+            <p
+              style={{
+                fontFamily: nunito.style.fontFamily,
+                fontWeight: 800,
+                fontSize: "clamp(0.9rem, 2.5vw, 1rem)",
+                color: "#0f1e3d",
+                margin: 0,
+                lineHeight: 1.35,
+                display: "-webkit-box",
+                WebkitLineClamp: 2,
+                WebkitBoxOrient: "vertical",
+                overflow: "hidden",
+              }}
+            >
+              {title}
+            </p>
 
-          {/* Excerpt — 3-line clamp */}
-          <p
-            style={{
-              fontFamily: nunito.style.fontFamily,
-              color: "#6b7280",
-              fontSize: "clamp(0.75rem, 2vw, 0.82rem)",
-              fontWeight: 500,
-              margin: 0,
-              lineHeight: 1.55,
-              display: "-webkit-box",
-              WebkitLineClamp: 3,
-              WebkitBoxOrient: "vertical",
-              overflow: "hidden",
-            }}
-          >
-            {excerpt}
-          </p>
+            {/* Excerpt — 3-line clamp */}
+            <p
+              style={{
+                fontFamily: nunito.style.fontFamily,
+                color: "#6b7280",
+                fontSize: "clamp(0.75rem, 2vw, 0.82rem)",
+                fontWeight: 500,
+                margin: 0,
+                lineHeight: 1.55,
+                display: "-webkit-box",
+                WebkitLineClamp: 3,
+                WebkitBoxOrient: "vertical",
+                overflow: "hidden",
+              }}
+            >
+              {excerpt}
+            </p>
+          </div>
 
-          {/* Author row */}
+          {/* Author row — marginTop: auto pins it to the bottom of the content area */}
           <div
             style={{
               display: "flex",
@@ -171,6 +174,7 @@ export default function StoriCard({
               justifyContent: "space-between",
               gap: 8,
               paddingTop: 8,
+              marginTop: "auto",
               borderTop: "1px solid #f1f5f9",
               minWidth: 0,
             }}
