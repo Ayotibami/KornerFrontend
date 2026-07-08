@@ -79,7 +79,7 @@ export default function StoriCard({
         onMouseLeave={() => setHovered(false)}
         style={{
           width: "100%",
-          height: 440,
+          height: 500,
           borderTopLeftRadius: 24,
           borderTopRightRadius: 24,
           borderBottomLeftRadius: 0,
@@ -133,7 +133,7 @@ export default function StoriCard({
               style={{
                 fontFamily: nunito.style.fontFamily,
                 fontWeight: 800,
-                fontSize: "clamp(0.9rem, 2.5vw, 1rem)",
+                fontSize: "clamp(1rem, 2.5vw, 1.15rem)",
                 color: "#0f1e3d",
                 margin: 0,
                 lineHeight: 1.35,
@@ -151,7 +151,7 @@ export default function StoriCard({
               style={{
                 fontFamily: nunito.style.fontFamily,
                 color: "#6b7280",
-                fontSize: "clamp(0.75rem, 2vw, 0.82rem)",
+                fontSize: "clamp(0.82rem, 2vw, 0.9rem)",
                 fontWeight: 500,
                 margin: 0,
                 lineHeight: 1.55,
@@ -193,8 +193,8 @@ export default function StoriCard({
             >
               <div
                 style={{
-                  width: 26,
-                  height: 26,
+                  width: 34,
+                  height: 34,
                   borderRadius: "50%",
                   overflow: "hidden",
                   backgroundColor: "#e2e8f0",
@@ -208,14 +208,14 @@ export default function StoriCard({
                     alt={authorName}
                     fill
                     style={{ objectFit: "cover" }}
-                    sizes="26px"
+                    sizes="34px"
                   />
                 )}
               </div>
               <p
                 style={{
                   fontFamily: nunito.style.fontFamily,
-                  fontSize: "0.7rem",
+                  fontSize: "0.78rem",
                   color: "#6b7280",
                   fontWeight: 600,
                   fontStyle: "italic",
@@ -235,7 +235,7 @@ export default function StoriCard({
               style={{
                 fontFamily: nunito.style.fontFamily,
                 color: "#9ca3af",
-                fontSize: "0.68rem",
+                fontSize: "0.75rem",
                 fontWeight: 500,
                 margin: 0,
                 whiteSpace: "nowrap",
