@@ -62,7 +62,7 @@ export default function StoriCard({
             left: phase === "expanding" ? 0 : rect.left,
             width: phase === "expanding" ? "100vw" : rect.width,
             height: phase === "expanding" ? "100vh" : rect.height,
-            borderRadius: phase === "expanding" ? 0 : 24,
+            borderRadius: phase === "expanding" ? 0 : "24px 24px 0 0",
             transition:
               phase === "expanding"
                 ? "top 0.45s cubic-bezier(0.4,0,0.2,1), left 0.45s cubic-bezier(0.4,0,0.2,1), width 0.45s cubic-bezier(0.4,0,0.2,1), height 0.45s cubic-bezier(0.4,0,0.2,1), border-radius 0.45s cubic-bezier(0.4,0,0.2,1)"
@@ -79,7 +79,10 @@ export default function StoriCard({
         onMouseLeave={() => setHovered(false)}
         style={{
           width: "100%",
-          borderRadius: 24,
+          borderTopLeftRadius: 24,
+          borderTopRightRadius: 24,
+          borderBottomLeftRadius: 0,
+          borderBottomRightRadius: 0,
           overflow: "hidden",
           display: "flex",
           flexDirection: "column",
