@@ -52,6 +52,12 @@ function HeadingBlock({ content }: { content: string }) {
 const RICH_HTML_CSS = `
   .stori-rich-html p { margin: 0; }
   .stori-rich-html p + p { margin-top: 0.5em; }
+  .stori-rich-html ul,
+  .stori-rich-html ol  { padding-left: 1.5em; margin: 0.4em 0; }
+  .stori-rich-html ul  { list-style-type: disc; }
+  .stori-rich-html ol  { list-style-type: decimal; }
+  .stori-rich-html li  { margin: 0.2em 0; }
+  .stori-rich-html li p { margin: 0; }
 `;
 
 function ParagraphBlock({ content }: { content: string }) {

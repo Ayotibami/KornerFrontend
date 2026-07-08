@@ -18,7 +18,7 @@
 import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Underline from "@tiptap/extension-underline";
-import { Bold, Italic, Underline as UnderlineIcon, Strikethrough } from "lucide-react";
+import { Bold, Italic, Underline as UnderlineIcon, Strikethrough, List, ListOrdered } from "lucide-react";
 import { useReducer } from "react";
 
 // CSS scoped to .rte-box — covers both light and dark mode.
@@ -48,6 +48,12 @@ const EDITOR_CSS = `
     float: left;
     height: 0;
   }
+  .rte-box .ProseMirror ul,
+  .rte-box .ProseMirror ol  { padding-left: 1.5em; margin: 0.4em 0; }
+  .rte-box .ProseMirror ul  { list-style-type: disc; }
+  .rte-box .ProseMirror ol  { list-style-type: decimal; }
+  .rte-box .ProseMirror li  { margin: 0.15em 0; }
+  .rte-box .ProseMirror li p { margin: 0; }
 
   /* Dark mode overrides — .dark class on an ancestor activates these */
   .dark .rte-box .ProseMirror {
@@ -111,8 +117,6 @@ export default function RichTextEditor({
     extensions: [
       StarterKit.configure({
         heading: false,
-        bulletList: false,
-        orderedList: false,
         blockquote: false,
         code: false,
         codeBlock: false,
@@ -159,6 +163,13 @@ export default function RichTextEditor({
         </ToolbarBtn>
         <ToolbarBtn active={editor?.isActive("strike") ?? false} onClick={() => editor?.chain().focus().toggleStrike().run()}>
           <Strikethrough size={13} />
+        </ToolbarBtn>
+        <span className="w-px h-5 bg-secondary dark:bg-[#2a4a7a] self-center mx-0.5" />
+        <ToolbarBtn active={editor?.isActive("bulletList") ?? false} onClick={() => editor?.chain().focus().toggleBulletList().run()}>
+          <List size={13} />
+        </ToolbarBtn>
+        <ToolbarBtn active={editor?.isActive("orderedList") ?? false} onClick={() => editor?.chain().focus().toggleOrderedList().run()}>
+          <ListOrdered size={13} />
         </ToolbarBtn>
       </div>
 
