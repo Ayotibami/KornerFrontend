@@ -331,6 +331,7 @@ export default function EditStoryEditor({
             storiId={storiId}
             status={stori.status as "Draft" | "Pending" | "Published"}
             title={title}
+            mode={mode}
           />
         )}
 

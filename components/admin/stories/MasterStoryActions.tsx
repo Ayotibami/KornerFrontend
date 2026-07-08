@@ -50,10 +50,12 @@ export default function MasterStoryActions({
   storiId,
   status,
   title,
+  mode,
 }: {
   storiId: string;
   status: "Draft" | "Pending" | "Published";
   title: string;
+  mode: "write" | "read";
 }) {
   const router = useRouter();
 
@@ -175,7 +177,7 @@ export default function MasterStoryActions({
         onConfirm={handleReject}
       />
 
-      {status === "Draft" && (
+      {status === "Draft" && mode === "read" && (
         <button
           title="Publish"
           className={`${FAB_GREEN} cursor-pointer`}
