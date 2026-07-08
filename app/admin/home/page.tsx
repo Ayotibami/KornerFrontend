@@ -10,6 +10,7 @@ import PushStatCard from "@/components/admin/home/PushStatCard";
 import TopWritersCard from "@/components/admin/home/TopWritersCard";
 import AuditLogCard from "@/components/admin/home/AuditLogCard";
 import MetricsCard from "@/components/admin/home/MetricsCard";
+import AnalyticsCard from "@/components/admin/home/AnalyticsCard";
 import StatCardSkeleton from "@/components/admin/home/StatCardSkeleton";
 import FilterBar from "@/components/admin/stories/FilterBar";
 import SpeedDialFAB from "@/components/admin/SpeedDialFAB";
@@ -54,6 +55,11 @@ export default async function HomePage({
           <Suspense fallback={<StatCardSkeleton />}>
             <MetricsCard />
           </Suspense>
+          <div className="col-span-1 sm:col-span-2">
+            <Suspense fallback={<StatCardSkeleton />}>
+              <AnalyticsCard />
+            </Suspense>
+          </div>
         </div>
       ) : (
         <>

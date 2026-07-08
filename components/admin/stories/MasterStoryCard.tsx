@@ -3,7 +3,8 @@
 import { useState, useTransition } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Check, Clock, Eye, Loader2, Mail, Rocket, EyeOff, CheckCircle2, XCircle, Trash2 } from "lucide-react";
+import { Check, Clock, Eye, Loader2, Mail, Rocket, EyeOff, CheckCircle2, XCircle, Trash2, BarChart2 } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { capitalize, formatDate, formatLongDateTime } from "@/lib/utils";
 import {
@@ -22,6 +23,7 @@ import RejectReasonModal from "@/components/admin/stories/RejectReasonModal";
 const ACTION_BTN = "w-9 h-9 flex items-center justify-center rounded-xl transition-all hover:scale-105 active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed cursor-pointer";
 const GREEN_SOFT = "bg-[#D1FAE5] text-[#065F46] dark:bg-[#022C22] dark:text-[#6EE7B7]";
 const BLUE_SOFT = "bg-[#DBEAFE] text-[#1e40af] dark:bg-[#1e3a5f] dark:text-[#93c5fd]";
+const PURPLE_SOFT = "bg-[#EDE9FE] text-[#7C3AED] dark:bg-[#2E1065] dark:text-[#C4B5FD]";
 const RED_SOFT = "bg-[#FEE2E2] text-[#DC2626] dark:bg-[#450a0a] dark:text-[#FCA5A5]";
 const RED_SOLID = "bg-[#DC2626] text-white";
 
@@ -40,6 +42,7 @@ export default function MasterStoryCard({
   const isPending = story.status === "Pending";
   const isPublished = story.status === "Published";
 
+  const router = useRouter();
   const [isMailOpen, setIsMailOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [isRejectOpen, setIsRejectOpen] = useState(false);
@@ -235,9 +238,14 @@ export default function MasterStoryCard({
                   </button>
                 )}
                 {isPublished && (
-                  <button title="Unpublish" onClick={handleUnpublish} disabled={isUnpublishing} className={`${ACTION_BTN} ${BLUE_SOFT}`}>
-                    {isUnpublishing ? <Loader2 size={16} className="animate-spin" /> : <EyeOff size={16} />}
-                  </button>
+                  <>
+                    <button title="Analytics" onClick={stopAnd(() => router.push(`/admin/stories/${story.stori_id}/analytics`))} className={`${ACTION_BTN} ${PURPLE_SOFT}`}>
+                      <BarChart2 size={16} />
+                    </button>
+                    <button title="Unpublish" onClick={handleUnpublish} disabled={isUnpublishing} className={`${ACTION_BTN} ${BLUE_SOFT}`}>
+                      {isUnpublishing ? <Loader2 size={16} className="animate-spin" /> : <EyeOff size={16} />}
+                    </button>
+                  </>
                 )}
                 {isPending && (
                   <>
