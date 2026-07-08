@@ -207,7 +207,7 @@ export default function EditStoryEditor({
     [storiId, title, subTitle, excerpt, readTime, coverImage, blocks],
   );
   const { status: saveStatus, cancel: cancelAutosave } = useAutosave(autosaveCallback, [title, subTitle, excerpt, readTime, coverImage, blocks], {
-    enabled: isDirty && !hasPendingFiles, // don't autosave while there are pending files (those require manual Save)
+    enabled: isDirty,
   });
 
   const [isMailOpen, setIsMailOpen] = useState(false);

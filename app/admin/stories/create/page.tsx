@@ -86,7 +86,7 @@ export default function CreatePage() {
   const { status: saveStatus, cancel: cancelAutosave } = useAutosave(
     autosaveCallback,
     [title, subTitle, excerpt, readTime, coverImage, blocks],
-    { enabled: title.trim().length > 0 && !hasPendingFiles },
+    { enabled: title.trim().length > 0 },
   );
 
   // ── Upload pending files before save ──────────────────────────────────
