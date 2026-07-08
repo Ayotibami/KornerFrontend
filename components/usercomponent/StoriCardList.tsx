@@ -29,7 +29,7 @@ export default function StoriCardList({
         display: "grid",
         gridTemplateColumns:
           "repeat(auto-fill, minmax(clamp(250px, 30%, 400px), 1fr))",
-        gap: 30,
+        gap: "clamp(16px, 4vw, 28px)",
         width: "100%",
       }}
     >
