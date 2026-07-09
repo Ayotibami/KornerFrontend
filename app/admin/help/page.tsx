@@ -57,7 +57,7 @@ export default async function HelpPage() {
       <div className="flex gap-8 items-start">
 
         {/* ── Sticky sidebar (desktop only) ── */}
-        <aside className="hidden lg:block w-52 flex-shrink-0 sticky top-20">
+        <aside className="hidden lg:block w-52 flex-shrink-0 sticky top-20 max-h-[calc(100vh-6rem)] overflow-y-auto">
           <div className="bg-white dark:bg-[#1a1f2e] rounded-2xl border border-gray-100 dark:border-white/[0.06] p-3 flex flex-col gap-0.5">
             <p className="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider px-3 pt-1 pb-2">
               Sections
