@@ -444,7 +444,7 @@ export default function EditStoryEditor({
 
           <div className="flex items-center justify-between">
             <button
-              onClick={() => router.back()}
+              onClick={() => { window.location.href = "/admin/home"; }}
               className="flex items-center gap-1.5 text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors cursor-pointer"
             >
               <ArrowLeft size={16} />
