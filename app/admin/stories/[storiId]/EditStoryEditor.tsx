@@ -134,19 +134,25 @@ export default function EditStoryEditor({
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
-        const blocksDiffer =
-          JSON.stringify((parsed.blocks ?? []).map(blockWithoutId)) !==
-          JSON.stringify(transformedBlocks.map(blockWithoutId));
-        const fieldsDiffer =
-          parsed.title      !== (stori.title      ?? "") ||
-          parsed.subTitle   !== (stori.subtitle   ?? "") ||
-          parsed.excerpt    !== (stori.excerpt    ?? "") ||
-          parsed.readTime   !== (stori.readingTime ?? "") ||
-          parsed.coverImage !== (stori.coverImage ?? null);
-        if (blocksDiffer || fieldsDiffer) {
-          setRecoveryData(parsed);
-        } else {
+        // Discard snapshots with an empty title — these are stale writes from
+        // the first-render bug where the effect fired before context was seeded.
+        if (!parsed.title && !parsed.subTitle && !parsed.excerpt && !(parsed.blocks?.length)) {
           localStorage.removeItem(`korner-edit-draft-${storiId}`);
+        } else {
+          const blocksDiffer =
+            JSON.stringify((parsed.blocks ?? []).map(blockWithoutId)) !==
+            JSON.stringify(transformedBlocks.map(blockWithoutId));
+          const fieldsDiffer =
+            parsed.title      !== (stori.title      ?? "") ||
+            parsed.subTitle   !== (stori.subtitle   ?? "") ||
+            parsed.excerpt    !== (stori.excerpt    ?? "") ||
+            parsed.readTime   !== (stori.readingTime ?? "") ||
+            parsed.coverImage !== (stori.coverImage ?? null);
+          if (blocksDiffer || fieldsDiffer) {
+            setRecoveryData(parsed);
+          } else {
+            localStorage.removeItem(`korner-edit-draft-${storiId}`);
+          }
         }
       } catch {
         localStorage.removeItem(`korner-edit-draft-${storiId}`);
@@ -181,7 +187,18 @@ export default function EditStoryEditor({
 
   const isDirty = simpleFieldsChanged || blocksChanged || hasPendingFiles;
 
+  // Skip the very first invocation of the localStorage write effect.
+  // On the first render the context state is still empty (context defaults)
+  // while initialRefs already hold the real story data — this makes
+  // isCurrentlyDirty spuriously true, causing empty data to be written to
+  // localStorage and the recovery banner to appear on every page open.
+  const localStorageReadyRef = useRef(false);
+
   useEffect(() => {
+    if (!localStorageReadyRef.current) {
+      localStorageReadyRef.current = true;
+      return;
+    }
     const isCurrentlyDirty =
       title     !== initialTitleRef.current    ||
       subTitle  !== initialSubTitleRef.current ||
