@@ -24,8 +24,7 @@
 // before clicking Publish, in the same visit, must not show a stale warning.
 
 import { useState, useTransition } from "react";
-import { useRouter } from "next/navigation";
-import { Loader2, Rocket, EyeOff, CheckCircle2, XCircle, Trash2 } from "lucide-react";
+import { Loader2, Rocket, EyeOff, CheckCircle2, XCircle } from "lucide-react";
 import { toast } from "sonner";
 import {
   publishStoriMaster,
@@ -35,34 +34,25 @@ import {
 } from "@/app/admin/stories/[storiId]/action";
 import { getMail } from "@/app/admin/stories/[storiId]/mailAction";
 import ConfirmPublishModal from "@/components/admin/stories/ConfirmPublishModal";
-import DeleteStoriModal from "@/components/admin/stories/DeleteStoriModal";
 import RejectReasonModal from "@/components/admin/stories/RejectReasonModal";
 
-// w-10/h-10 (40px) on small screens to match EditStoryEditor's FAB_BASE —
-// these buttons render inline with that page's own FABs in the same row, so
-// they need to shrink at the same breakpoint to stay visually consistent.
 const FAB_BASE = "w-10 h-10 sm:w-[52px] sm:h-[52px] flex items-center justify-center rounded-2xl shadow-[0_2px_12px_rgba(0,0,0,0.12)] dark:shadow-[0_2px_12px_rgba(0,0,0,0.4)] transition-transform duration-300 hover:scale-95 active:scale-90 disabled:opacity-60 disabled:cursor-not-allowed flex-shrink-0";
-const FAB_GREEN = `${FAB_BASE} bg-[#D1FAE5] dark:bg-[#022C22] text-[#065F46] dark:text-[#6EE7B7]`; // publish / approve
-const FAB_BLUE = `${FAB_BASE} bg-secondary dark:bg-[#1e3a5f] text-primary dark:text-[#93b8f0]`; // unpublish / reject
-const FAB_RED_SOLID = `${FAB_BASE} bg-[#DC2626] text-white`; // delete
+const FAB_GREEN = `${FAB_BASE} bg-[#D1FAE5] dark:bg-[#022C22] text-[#065F46] dark:text-[#6EE7B7]`;
+const FAB_BLUE  = `${FAB_BASE} bg-secondary dark:bg-[#1e3a5f] text-primary dark:text-[#93b8f0]`;
 
 export default function MasterStoryActions({
   storiId,
   status,
   title,
-  mode,
+  isDirty,
 }: {
   storiId: string;
   status: "Draft" | "Pending" | "Published";
   title: string;
-  mode: "write" | "read";
+  isDirty: boolean;
 }) {
-  const router = useRouter();
-
   const [confirmAction, setConfirmAction] = useState<"publish" | "approve" | null>(null);
-  // Re-checked fresh every time Publish is clicked — see file header comment.
   const [mailCheck, setMailCheck] = useState<"checking" | "has-mail" | "no-mail">("checking");
-  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [isRejectOpen, setIsRejectOpen] = useState(false);
   const [isPublishing, startPublishing] = useTransition();
   const [isUnpublishing, startUnpublishing] = useTransition();
@@ -162,14 +152,6 @@ export default function MasterStoryActions({
         onConfirm={confirmAction === "approve" ? doApprove : doPublish}
       />
 
-      <DeleteStoriModal
-        storiId={storiId}
-        title={title}
-        isOpen={isDeleteOpen}
-        onClose={() => setIsDeleteOpen(false)}
-        onDeleted={() => router.push("/admin/home")}
-      />
-
       <RejectReasonModal
         isOpen={isRejectOpen}
         isProcessing={isRejecting}
@@ -177,7 +159,7 @@ export default function MasterStoryActions({
         onConfirm={handleReject}
       />
 
-      {status === "Draft" && mode === "read" && (
+      {!isDirty && status === "Draft" && (
         <button
           title="Publish"
           className={`${FAB_GREEN} cursor-pointer`}
@@ -187,7 +169,7 @@ export default function MasterStoryActions({
         </button>
       )}
 
-      {status === "Published" && (
+      {!isDirty && status === "Published" && (
         <button
           title="Unpublish"
           className={`${FAB_BLUE} ${isUnpublishing ? "" : "cursor-pointer"}`}
@@ -198,7 +180,7 @@ export default function MasterStoryActions({
         </button>
       )}
 
-      {status === "Pending" && (
+      {!isDirty && status === "Pending" && (
         <>
           <button
             title="Approve"
@@ -216,14 +198,6 @@ export default function MasterStoryActions({
           </button>
         </>
       )}
-
-      <button
-        title="Delete"
-        className={`${FAB_RED_SOLID} cursor-pointer`}
-        onClick={() => setIsDeleteOpen(true)}
-      >
-        <Trash2 size={20} />
-      </button>
     </>
   );
 }

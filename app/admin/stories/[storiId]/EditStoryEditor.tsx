@@ -14,7 +14,7 @@
 //   We also include pending files (picked but not yet uploaded) as a dirty signal.
 
 import { useCallback, useEffect, useRef, useState, useTransition } from "react";
-import { ArrowLeft, BookCheck, Eye, Loader2, Mail, Pencil, SendHorizonal } from "lucide-react";
+import { ArrowLeft, BookCheck, Eye, Loader2, Mail, Pencil, SendHorizonal, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
@@ -32,6 +32,7 @@ import { autosaveExistingStory } from "@/app/admin/stories/autosaveActions";
 import { useAutosave } from "@/hooks/useAutosave";
 import MailModal from "@/components/admin/stories/MailModal";
 import MasterStoryActions from "@/components/admin/stories/MasterStoryActions";
+import DeleteStoriModal from "@/components/admin/stories/DeleteStoriModal";
 import SaveIndicator from "@/components/admin/editor/SaveIndicator";
 import { uploadToCloudinary } from "@/lib/cloudinary";
 import type { EditorBlock } from "@/context/StoryEditorContext";
@@ -42,7 +43,8 @@ const FAB_AMBER  = `${FAB_BASE} bg-[#FEF3C7] dark:bg-[#422006]  text-[#92400E] d
 const FAB_TEAL   = `${FAB_BASE} bg-[#CCFBF1] dark:bg-[#022C22]  text-[#065F46] dark:text-[#6EE7B7]`;
 const FAB_VIOLET = `${FAB_BASE} bg-[#EDE9FE] dark:bg-[#2E1065]  text-[#5B21B6] dark:text-[#C4B5FD]`;
 const FAB_BLUE   = `${FAB_BASE} bg-secondary dark:bg-[#1e3a5f]  text-primary   dark:text-[#93b8f0]`;
-const FAB_RED    = `${FAB_BASE} bg-[#FEE2E2] dark:bg-[#450a0a]  text-[#DC2626] dark:text-[#FCA5A5]`;
+const FAB_RED      = `${FAB_BASE} bg-[#FEE2E2] dark:bg-[#450a0a]  text-[#DC2626] dark:text-[#FCA5A5]`;
+const FAB_RED_SOLID = `${FAB_BASE} bg-[#DC2626] text-white`;
 
 function blockWithoutId({ id: _id, ...rest }: EditorBlock) {
   return rest;
@@ -211,6 +213,7 @@ export default function EditStoryEditor({
   });
 
   const [isMailOpen, setIsMailOpen] = useState(false);
+  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [isUpdating, startUpdating] = useTransition();
   const [isSubmitting, startSubmitting] = useTransition();
 
@@ -253,6 +256,13 @@ export default function EditStoryEditor({
         );
 
         if (result.ok) {
+          // Reset initial refs so isDirty becomes false — action buttons reappear
+          initialTitleRef.current    = title;
+          initialSubTitleRef.current = subTitle;
+          initialExcerptRef.current  = excerpt;
+          initialReadTimeRef.current = readTime;
+          initialCoverRef.current    = finalCoverImage ?? coverImage;
+          initialBlocksRef.current   = updatedBlocks;
           // Commit the new URLs into context so subsequent saves/autosaves use them
           if (finalCoverImage !== coverImage) setCoverImage(finalCoverImage);
           setBlocks(updatedBlocks);
@@ -271,8 +281,19 @@ export default function EditStoryEditor({
   return (
     <div className="min-h-screen bg-[#f8f9fb] dark:bg-[#0f1117]">
       <MailModal storiId={storiId} isOpen={isMailOpen} onClose={() => setIsMailOpen(false)} />
+      {role === "master" && (
+        <DeleteStoriModal
+          storiId={storiId}
+          title={title}
+          isOpen={isDeleteOpen}
+          onClose={() => setIsDeleteOpen(false)}
+          onDeleted={() => router.push("/admin/home")}
+        />
+      )}
       <SaveIndicator status={saveStatus} />
       <div className="fixed z-[100] flex flex-row flex-nowrap items-center justify-center gap-2 overflow-x-auto px-1 bottom-4 left-1/2 -translate-x-1/2 max-w-[94vw] sm:flex-col sm:gap-2.5 sm:justify-start sm:overflow-visible sm:px-0 sm:bottom-auto sm:left-auto sm:translate-x-0 sm:max-w-none sm:top-20 sm:right-[clamp(12px,3vw,24px)]">
+
+        {/* 1. Mode toggle — always visible */}
         {mode === "read" ? (
           <button
             title="Edit story"
@@ -291,9 +312,22 @@ export default function EditStoryEditor({
           </button>
         )}
 
+        {/* 2–end: everything else only in preview/read mode */}
         {mode === "read" && (
           <>
-            {role === "writer" && stori.status === "Draft" && (
+            {/* Save — both roles, only when dirty */}
+            {isDirty && (
+              <button
+                title="Save as draft"
+                className={`${FAB_TEAL} ${busy ? "opacity-60 cursor-not-allowed" : "cursor-pointer"}`}
+                onClick={() => { if (!busy) handleUpdate(); }}
+              >
+                {busy ? <Loader2 size={20} className="animate-spin" /> : <BookCheck size={20} />}
+              </button>
+            )}
+
+            {/* Writer: submit for review — only when clean */}
+            {role === "writer" && !isDirty && stori.status === "Draft" && (
               <button
                 title="Submit for review"
                 className={`${FAB_AMBER} ${isSubmitting ? "opacity-60 cursor-not-allowed" : "cursor-pointer"}`}
@@ -305,41 +339,41 @@ export default function EditStoryEditor({
                   });
                 }}
               >
-                {isSubmitting
-                  ? <Loader2 size={20} className="animate-spin" />
-                  : <SendHorizonal size={20} />
-                }
+                {isSubmitting ? <Loader2 size={20} className="animate-spin" /> : <SendHorizonal size={20} />}
               </button>
             )}
 
-            {isDirty && (
+            {/* Master: publish / approve / reject / unpublish — dirty-gated inside */}
+            {role === "master" && (
+              <MasterStoryActions
+                storiId={storiId}
+                status={stori.status as "Draft" | "Pending" | "Published"}
+                title={title}
+                isDirty={isDirty}
+              />
+            )}
+
+            {/* Mail — both roles, always in preview mode */}
+            <button
+              title="Email"
+              className={`${FAB_RED} cursor-pointer`}
+              onClick={() => setIsMailOpen(true)}
+            >
+              <Mail size={20} />
+            </button>
+
+            {/* Delete — master only, always in preview mode */}
+            {role === "master" && (
               <button
-                title="Save as draft"
-                className={`${FAB_TEAL} ${busy ? "opacity-60 cursor-not-allowed" : "cursor-pointer"}`}
-                onClick={() => { if (!busy) handleUpdate(); }}
+                title="Delete story"
+                className={`${FAB_RED_SOLID} cursor-pointer`}
+                onClick={() => setIsDeleteOpen(true)}
               >
-                {busy ? (
-                  <Loader2 size={20} className="animate-spin" />
-                ) : (
-                  <BookCheck size={20} />
-                )}
+                <Trash2 size={20} />
               </button>
             )}
           </>
         )}
-
-        {role === "master" && (
-          <MasterStoryActions
-            storiId={storiId}
-            status={stori.status as "Draft" | "Pending" | "Published"}
-            title={title}
-            mode={mode}
-          />
-        )}
-
-        <button title="Email" className={`${FAB_RED} cursor-pointer`} onClick={() => setIsMailOpen(true)}>
-          <Mail size={20} />
-        </button>
       </div>
 
       <div
