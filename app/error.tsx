@@ -1,8 +1,11 @@
 "use client";
 
+import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { RefreshCw, ArrowLeft } from "lucide-react";
+
+const IMAGES = ["/images/confused.png", "/images/facepalm.png"];
 
 export default function GlobalError({
   reset,
@@ -10,57 +13,56 @@ export default function GlobalError({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
+  const [src] = useState(() => IMAGES[Math.floor(Math.random() * IMAGES.length)]);
+
   return (
-    <main className="min-h-screen bg-[#f8f9fb] flex flex-col items-center justify-center p-6 text-center">
+    <main className="h-screen bg-[#f8f9fb] flex flex-col overflow-hidden">
 
-      {/* Logo */}
-      <Link href="/" className="mb-10 flex items-center gap-2.5 group">
-        <div className="w-9 h-9 rounded-xl bg-[#0f1e3d] flex items-center justify-center group-hover:opacity-80 transition-opacity">
-          <Image src="/images/logo.png" alt="Korner" width={18} height={18} className="object-contain" />
-        </div>
-        <span className="text-sm font-bold text-[#0f1e3d]">Korner</span>
-      </Link>
-
-      {/* Big muted number */}
-      <p className="text-[7rem] sm:text-[10rem] font-black text-[#0f1e3d]/[0.06] leading-none select-none mb-2">
-        500
-      </p>
-
-      {/* Icon */}
-      <div className="w-16 h-16 rounded-2xl bg-red-500 flex items-center justify-center shadow-[0_8px_24px_rgba(239,68,68,0.3)] -mt-6 mb-6">
-        <RefreshCw size={28} className="text-white" />
-      </div>
-
-      {/* Copy */}
-      <div className="flex flex-col gap-2 mb-8 max-w-sm">
-        <h1 className="text-2xl font-bold text-[#0f1e3d]">
-          Something break for our end
-        </h1>
-        <p className="text-sm text-gray-500 leading-relaxed">
-          E no be your fault — something go wrong for our side. Try again, e go
-          work. If e persist, just come back later.
-        </p>
-      </div>
-
-      {/* Actions */}
-      <div className="flex flex-col sm:flex-row items-center gap-3">
-        <button
-          onClick={reset}
-          className="flex items-center gap-2 px-6 py-3 rounded-xl bg-[#0f1e3d] text-white text-sm font-semibold hover:opacity-80 transition-opacity cursor-pointer"
-        >
-          <RefreshCw size={15} />
-          Try again
-        </button>
-        <Link
-          href="/"
-          className="flex items-center gap-2 px-6 py-3 rounded-xl border-2 border-[#B4CFF6] text-primary text-sm font-semibold hover:bg-[#f0f5ff] transition-colors"
-        >
-          <ArrowLeft size={15} />
-          Go home
+      <div className="px-6 pt-5 shrink-0">
+        <Link href="/" className="text-sm font-bold text-[#0f1e3d] hover:opacity-70 transition-opacity">
+          Korner
         </Link>
       </div>
 
-      <p className="mt-12 text-xs text-gray-400">© Korner · by Kampos</p>
+      <div className="flex-1 flex flex-col items-center justify-center px-6 text-center">
+        <div className="flex flex-col items-center w-full max-w-xs sm:max-w-sm">
+
+          <div className="relative mb-5 flex items-center justify-center">
+            <div className="absolute w-[85%] h-[85%] rounded-full bg-[radial-gradient(ellipse_at_center,rgba(59,130,246,0.1)_0%,transparent_70%)] scale-150" />
+            <Image
+              src={src}
+              alt="Kappy confused"
+              width={600}
+              height={600}
+              className="relative z-10 w-60 sm:w-72 md:w-80 max-h-[45vh] h-auto object-contain"
+              priority
+            />
+          </div>
+
+          <p className="text-sm text-gray-500 leading-relaxed mb-8">
+            Omo small wahalla dey but no worri na my fault
+          </p>
+
+          <div className="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto">
+            <button
+              onClick={reset}
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-xl bg-[#0f1e3d] text-white text-sm font-bold hover:opacity-80 transition-opacity cursor-pointer"
+            >
+              <RefreshCw size={14} />
+              Try again
+            </button>
+            <Link
+              href="/"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-xl border border-gray-200 bg-white text-gray-500 text-sm font-semibold hover:bg-gray-50 transition-colors"
+            >
+              <ArrowLeft size={14} />
+              Go home
+            </Link>
+          </div>
+
+        </div>
+      </div>
+
     </main>
   );
 }

@@ -1,59 +1,62 @@
+"use client";
+
+import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowLeft, BookOpen } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
+
+const IMAGES = ["/images/magnifyingglass.png", "/images/notfound.png"];
 
 export default function NotFound() {
+  const [src] = useState(() => IMAGES[Math.floor(Math.random() * IMAGES.length)]);
+
   return (
-    <main className="min-h-screen bg-[#f8f9fb] flex flex-col items-center justify-center p-6 text-center">
+    <main className="h-screen bg-[#f8f9fb] flex flex-col overflow-hidden">
 
-      {/* Logo */}
-      <Link href="/" className="mb-10 flex items-center gap-2.5 group">
-        <div className="w-9 h-9 rounded-xl bg-[#0f1e3d] flex items-center justify-center group-hover:opacity-80 transition-opacity">
-          <Image src="/images/logo.png" alt="Korner" width={18} height={18} className="object-contain" />
+      <div className="px-6 pt-5 shrink-0">
+        <Link href="/" className="text-sm font-bold text-[#0f1e3d] hover:opacity-70 transition-opacity">
+          Korner
+        </Link>
+      </div>
+
+      <div className="flex-1 flex flex-col items-center justify-center px-6 text-center">
+        <div className="flex flex-col items-center w-full max-w-xs sm:max-w-sm">
+
+          <div className="relative mb-5 flex items-center justify-center">
+            <div className="absolute w-[85%] h-[85%] rounded-full bg-[radial-gradient(ellipse_at_center,rgba(59,130,246,0.1)_0%,transparent_70%)] scale-150" />
+            <Image
+              src={src}
+              alt="Kappy searching"
+              width={600}
+              height={600}
+              className="relative z-10 w-60 sm:w-72 md:w-80 max-h-[45vh] h-auto object-contain"
+              priority
+            />
+          </div>
+
+          <p className="text-sm text-gray-500 leading-relaxed mb-8">
+            I don check, I neva see wetin you dey find o
+          </p>
+
+          <div className="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto">
+            <Link
+              href="/"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-xl bg-[#0f1e3d] text-white text-sm font-bold hover:opacity-80 transition-opacity"
+            >
+              <ArrowLeft size={14} />
+              Go home
+            </Link>
+            <button
+              onClick={() => history.back()}
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-xl border border-gray-200 bg-white text-gray-500 text-sm font-semibold hover:bg-gray-50 transition-colors cursor-pointer"
+            >
+              Go back
+            </button>
+          </div>
+
         </div>
-        <span className="text-sm font-bold text-[#0f1e3d]">Korner</span>
-      </Link>
-
-      {/* 404 number */}
-      <p className="text-[7rem] sm:text-[10rem] font-black text-[#0f1e3d]/[0.06] leading-none select-none mb-2">
-        404
-      </p>
-
-      {/* Icon */}
-      <div className="w-16 h-16 rounded-2xl bg-[#0f1e3d] flex items-center justify-center shadow-[0_8px_24px_rgba(15,30,61,0.25)] -mt-6 mb-6">
-        <BookOpen size={28} className="text-white" />
       </div>
 
-      {/* Copy */}
-      <div className="flex flex-col gap-2 mb-8 max-w-sm">
-        <h1 className="text-2xl font-bold text-[#0f1e3d]">
-          This page no dey here
-        </h1>
-        <p className="text-sm text-gray-500 leading-relaxed">
-          E fit be say the link don spoil, the page don move, or e never exist
-          for the first place. No worry — plenty good stories still dey.
-        </p>
-      </div>
-
-      {/* Actions */}
-      <div className="flex flex-col sm:flex-row items-center gap-3">
-        <Link
-          href="/stories"
-          className="flex items-center gap-2 px-6 py-3 rounded-xl bg-[#0f1e3d] text-white text-sm font-semibold hover:opacity-80 transition-opacity"
-        >
-          <BookOpen size={15} />
-          Read stories
-        </Link>
-        <Link
-          href="/"
-          className="flex items-center gap-2 px-6 py-3 rounded-xl border-2 border-[#B4CFF6] text-primary text-sm font-semibold hover:bg-[#f0f5ff] transition-colors"
-        >
-          <ArrowLeft size={15} />
-          Go home
-        </Link>
-      </div>
-
-      <p className="mt-12 text-xs text-gray-400">© Korner · by Kampos</p>
     </main>
   );
 }
