@@ -15,7 +15,7 @@
 //   The URL stays at /create — no mid-write redirect.
 
 import { useCallback, useRef, useState, useTransition } from "react";
-import { ArrowLeft, BookCheck, Eye, FeatherIcon, Loader2, Pencil, SendHorizonal } from "lucide-react";
+import { ArrowLeft, BookCheck, Eye, FeatherIcon, Loader2, Pencil } from "lucide-react";
 import Link from "next/link";
 import { toast } from "sonner";
 import { useStoryEditor } from "@/context/StoryEditorContext";
@@ -27,23 +27,19 @@ import { autosaveExistingStory, autosaveNewStory } from "@/app/admin/stories/aut
 import { useAutosave } from "@/hooks/useAutosave";
 import SaveIndicator from "@/components/admin/editor/SaveIndicator";
 import createStory from "./action";
-import submitForReview from "./submitForReview";
-import { submitStoryForReview, updateStory } from "@/app/admin/stories/[storiId]/action";
+import { updateStory } from "@/app/admin/stories/[storiId]/action";
 import { uploadToCloudinary } from "@/lib/cloudinary";
 import type { EditorBlock } from "@/context/StoryEditorContext";
 
 const DRAFT_KEY = "korner-create-draft-id";
 
 const FAB_BASE   = "w-10 h-10 sm:w-[52px] sm:h-[52px] flex items-center justify-center rounded-2xl shadow-[0_2px_12px_rgba(0,0,0,0.12)] dark:shadow-[0_2px_12px_rgba(0,0,0,0.4)] transition-transform duration-300 hover:scale-95 active:scale-90 flex-shrink-0";
-const FAB_AMBER  = `${FAB_BASE} bg-[#FEF3C7] dark:bg-[#422006]  text-[#92400E] dark:text-[#FDE68A]`;
 const FAB_TEAL   = `${FAB_BASE} bg-[#CCFBF1] dark:bg-[#022C22]  text-[#065F46] dark:text-[#6EE7B7]`;
 const FAB_VIOLET = `${FAB_BASE} bg-[#EDE9FE] dark:bg-[#2E1065]  text-[#5B21B6] dark:text-[#C4B5FD]`;
 const FAB_BLUE   = `${FAB_BASE} bg-secondary dark:bg-[#1e3a5f]  text-primary   dark:text-[#93b8f0]`;
 
 export default function CreatePage() {
   const { profile } = useAdmin();
-  const isWriter = profile?.role === "writer";
-
   const {
     mode, setMode,
     title, setTitle,
@@ -118,7 +114,6 @@ export default function CreatePage() {
 
   // ── Manual save handlers ───────────────────────────────────────────────
   const [isDrafting, startDrafting] = useTransition();
-  const [isSubmitting, startSubmitting] = useTransition();
   const busy = isDrafting;
 
   const handleDraft = () => {
@@ -140,37 +135,6 @@ export default function CreatePage() {
           window.location.href = "/admin/home";
         } else {
           const result = await createStory(
-            title, subTitle, excerpt, readTime, finalCoverImage, coverPublicId, updatedBlocks,
-          );
-          if (!result.ok) { toast.error(result.message); return; }
-          clearPendingFiles();
-        }
-      } catch {
-        toast.error("Image upload failed. Please try again.");
-      }
-    });
-  };
-
-  const handleSubmit = () => {
-    if (isSubmitting) return;
-    cancelAutosave();
-    startSubmitting(async () => {
-      try {
-        const { finalCoverImage, coverPublicId, updatedBlocks } = await uploadPendingFiles(blocks);
-
-        if (storiIdRef.current) {
-          localStorage.removeItem(DRAFT_KEY);
-          // Use updateStory (not autosaveExistingStory) so cover_image_public_id is stored
-          const saveResult = await updateStory(
-            storiIdRef.current, title, subTitle, excerpt, readTime, finalCoverImage, coverPublicId, updatedBlocks,
-          );
-          if (!saveResult.ok) { toast.error("Failed to save before submitting"); return; }
-          if (finalCoverImage !== coverImage) setCoverImage(finalCoverImage);
-          setBlocks(updatedBlocks);
-          clearPendingFiles();
-          await submitStoryForReview(storiIdRef.current);
-        } else {
-          const result = await submitForReview(
             title, subTitle, excerpt, readTime, finalCoverImage, coverPublicId, updatedBlocks,
           );
           if (!result.ok) { toast.error(result.message); return; }
@@ -205,15 +169,6 @@ export default function CreatePage() {
               {busy ? <Loader2 size={20} className="animate-spin" /> : <BookCheck size={20} />}
             </button>
 
-            {isWriter && (
-              <button
-                title="Submit for review"
-                className={`${FAB_AMBER} ${isSubmitting ? "opacity-60 cursor-not-allowed" : "cursor-pointer"}`}
-                onClick={handleSubmit}
-              >
-                {isSubmitting ? <Loader2 size={20} className="animate-spin" /> : <SendHorizonal size={20} />}
-              </button>
-            )}
           </>
         )}
       </div>
