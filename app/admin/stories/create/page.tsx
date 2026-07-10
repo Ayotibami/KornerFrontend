@@ -196,6 +196,15 @@ export default function CreatePage() {
 
         {mode === "read" && (
           <>
+            <button
+              title="Save as draft"
+              disabled={busy}
+              className={`${FAB_TEAL} ${busy ? "opacity-60 cursor-not-allowed" : "cursor-pointer"}`}
+              onClick={() => { if (!busy) handleDraft(); }}
+            >
+              {busy ? <Loader2 size={20} className="animate-spin" /> : <BookCheck size={20} />}
+            </button>
+
             {isWriter && (
               <button
                 title="Submit for review"
@@ -205,15 +214,6 @@ export default function CreatePage() {
                 {isSubmitting ? <Loader2 size={20} className="animate-spin" /> : <SendHorizonal size={20} />}
               </button>
             )}
-
-            <button
-              title="Save as draft"
-              disabled={busy}
-              className={`${FAB_TEAL} ${busy ? "opacity-60 cursor-not-allowed" : "cursor-pointer"}`}
-              onClick={() => { if (!busy) handleDraft(); }}
-            >
-              {busy ? <Loader2 size={20} className="animate-spin" /> : <BookCheck size={20} />}
-            </button>
           </>
         )}
       </div>
