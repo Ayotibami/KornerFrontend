@@ -63,7 +63,9 @@ export default function CreatePage() {
   );
 
   // ── Autosave ───────────────────────────────────────────────────────────
-  const storiIdRef = useRef<string | null>(null);
+  const storiIdRef = useRef<string | null>(
+    typeof window !== "undefined" ? localStorage.getItem(DRAFT_KEY) : null,
+  );
 
   const autosaveCallback = useCallback(async () => {
     if (storiIdRef.current) {
