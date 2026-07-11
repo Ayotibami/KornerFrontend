@@ -8,12 +8,19 @@ const publicDir = join(__dirname, "../public/images");
 
 function isBackground(r, g, b) {
   const saturation = Math.max(r, g, b) - Math.min(r, g, b);
-  if (saturation > 35) return false; // clearly a real color, stop here
+  if (saturation > 35) return false;
   const brightness = (r + g + b) / 3;
-  return brightness > 160; // white or checkerboard gray (~#cccccc)
+  return brightness > 160; // white or checkerboard gray
 }
 
-async function removeCheckerboard(filename) {
+function isBlackBackground(r, g, b) {
+  const saturation = Math.max(r, g, b) - Math.min(r, g, b);
+  if (saturation > 25) return false; // has color — not background
+  const brightness = (r + g + b) / 3;
+  return brightness < 30; // near-black
+}
+
+async function removeBg(filename, detector = isBackground) {
   const inputPath = join(publicDir, filename);
   const { data, info } = await sharp(inputPath)
     .ensureAlpha()
@@ -31,7 +38,7 @@ async function removeCheckerboard(filename) {
     if (visited[idx]) return;
     visited[idx] = 1;
     const pi = idx * 4;
-    if (isBackground(pixels[pi], pixels[pi + 1], pixels[pi + 2])) {
+    if (detector(pixels[pi], pixels[pi + 1], pixels[pi + 2])) {
       queue.push(x, y);
     }
   };
@@ -43,7 +50,7 @@ async function removeCheckerboard(filename) {
     const y = queue.pop();
     const x = queue.pop();
     const idx = y * width + x;
-    pixels[idx * 4 + 3] = 0; // make transparent
+    pixels[idx * 4 + 3] = 0;
 
     const neighbors = [
       [x - 1, y], [x + 1, y], [x, y - 1], [x, y + 1],
@@ -54,7 +61,7 @@ async function removeCheckerboard(filename) {
       if (visited[nidx]) continue;
       visited[nidx] = 1;
       const pi = nidx * 4;
-      if (isBackground(pixels[pi], pixels[pi + 1], pixels[pi + 2])) {
+      if (detector(pixels[pi], pixels[pi + 1], pixels[pi + 2])) {
         queue.push(nx, ny);
       }
     }
@@ -69,5 +76,6 @@ async function removeCheckerboard(filename) {
   console.log(`✓ ${filename} — background removed`);
 }
 
-await removeCheckerboard("magnifyingglass.png");
-await removeCheckerboard("facepalm.png");
+await removeBg("magnifyingglass.png");
+await removeBg("facepalm.png");
+await removeBg("begging__1_.png", isBlackBackground);
