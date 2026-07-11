@@ -18,15 +18,47 @@ export async function getPublicStories(
   limit = 20,
   offset = 0,
 ): Promise<{ stories: PublicStorySummary[]; hasMore: boolean }> {
-  const res = await fetch(
-    `${BASE_URL}/user/stories?limit=${limit}&offset=${offset}`,
-    { next: { revalidate: 30 } },
-  );
+  try {
+    const res = await fetch(
+      `${BASE_URL}/user/stories?limit=${limit}&offset=${offset}`,
+      { next: { revalidate: 30 } },
+    );
 
-  if (!res.ok) return { stories: [], hasMore: false };
+    if (!res.ok) {
+      console.error(`[getPublicStories] HTTP ${res.status} ${res.statusText} — URL: ${BASE_URL}/user/stories`);
+      return { stories: [], hasMore: false };
+    }
 
-  const data = await res.json();
-  return { stories: data.stories ?? [], hasMore: data.hasMore ?? false };
+    const data = await res.json();
+    return { stories: data.stories ?? [], hasMore: data.hasMore ?? false };
+  } catch (err) {
+    console.error("[getPublicStories] fetch threw:", err);
+    throw err;
+  }
+}
+
+export interface PublicWriter {
+  id: string;
+  name: string;
+  avatar_url: string | null;
+  bio: string | null;
+}
+
+export async function getPublicWriters(): Promise<PublicWriter[]> {
+  try {
+    const res = await fetch(`${BASE_URL}/user/writers`, {
+      next: { revalidate: 60 },
+    });
+    if (!res.ok) {
+      console.error(`[getPublicWriters] HTTP ${res.status}`);
+      return [];
+    }
+    const data = await res.json();
+    return data.writers ?? [];
+  } catch (err) {
+    console.error("[getPublicWriters] fetch threw:", err);
+    return [];
+  }
 }
 
 // The single-story fetch increments the story's view count server-side as

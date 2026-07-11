@@ -13,9 +13,10 @@ import HeroSection from "@/components/usercomponent/HeroSection";
 import AboutSection from "@/components/usercomponent/AboutSection";
 import PeepSection from "@/components/usercomponent/PeepSection";
 import Testimony from "@/components/usercomponent/Testimony";
+import MeetUs from "@/components/usercomponent/MeetUs";
 import ActivationForm from "@/components/usercomponent/ActivationForm";
 import Footer from "@/components/usercomponent/Footer";
-import { getPublicStories } from "@/lib/publicApi";
+import { getPublicStories, getPublicWriters } from "@/lib/publicApi";
 
 export const metadata: Metadata = {
   title: "The Korner — Kampos talks you listen",
@@ -48,8 +49,23 @@ export const metadata: Metadata = {
   },
 };
 
+function pickRandom<T>(arr: T[], n: number): T[] {
+  const copy = [...arr];
+  for (let i = copy.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [copy[i], copy[j]] = [copy[j], copy[i]];
+  }
+  return copy.slice(0, n);
+}
+
 export default async function Home() {
-  const { stories } = await getPublicStories(3, 0);
+  const [{ stories }, allWriters] = await Promise.all([
+    getPublicStories(3, 0),
+    getPublicWriters(),
+  ]);
+  const kappy = allWriters.find((w) => w.name.toLowerCase() === "kappy") ?? null;
+  const rest = allWriters.filter((w) => w.name.toLowerCase() !== "kappy");
+  const writers = kappy ? [kappy, ...pickRandom(rest, 6)] : pickRandom(allWriters, 7);
   const base = process.env.NEXT_PUBLIC_BASE_URL!;
 
   const jsonLd = [
@@ -89,7 +105,7 @@ export default async function Home() {
       {/* Full-screen hero: background image, big title, floating cards at bottom */}
       <HeroSection />
 
-      {/* "Na your Korner" text blurb + the 2x2 animated icon grid */}
+      {/* "Na your Korner" — description + 6 topic category cards */}
       <AboutSection />
 
       {/* Spacer between About and the torn dark section */}
@@ -100,6 +116,10 @@ export default async function Home() {
 
       {/* Testimonials section — placeholder visuals for now */}
       <Testimony />
+
+
+      {/* Meet us — team intro section */}
+      <MeetUs writers={writers} />
 
       {/* Email subscription form — "Korner Effect" */}
       <ActivationForm />

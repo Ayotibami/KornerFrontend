@@ -1168,6 +1168,23 @@ The `components/admincomponent/` folder still exists but is **only used by publi
 
 These are not part of the admin panel. They are legacy components from before the admin rewrite that serve the public-facing site.
 
+### Landing page section order (`app/page.tsx`)
+
+| Order | Component | Description |
+|---|---|---|
+| 1 | `Navbar` | Top navigation |
+| 2 | `HeroSection` | Full-screen cover image, tagline, floating story cards |
+| 3 | `AboutSection` | "Na your Korner" blurb + animated 2x2 icon grid |
+| 4 | `TopicsSection` | "What we gist about" — 6-card topic category grid |
+| 5 | `PeepSection` | Dark torn-paper section with 3 live story previews |
+| 6 | `Testimony` | "You no go like Korner ke?" + animated word cloud blob |
+| 7 | `ActivationForm` | Email + push notification subscription |
+| 8 | `Footer` | Link columns + social icons |
+
+### TopicsSection (`components/usercomponent/TopicsSection.tsx`)
+
+Static server component. Renders a 6-card grid of content category tiles (Love Life, School Wahala, Money Matters, Campus Gist, The After Now, Mind & Vibes). Each card is a `Link` to `/stories`. Tinted background + matching border per category. No interactivity — pure display.
+
 ---
 
 ## 20. Key Patterns & Decisions

@@ -1,23 +1,9 @@
 "use client";
 
-// Avatar picker used on the signup page and profile edit modal.
-// Shows a circle with a + button in the bottom-right corner.
-// Clicking the + opens a file picker, then uploads to Cloudinary immediately
-// (avatar upload stays eager — it's a one-time action, not a draft loop).
-//
-// Upload flow:
-//   1. Show a local blob preview immediately so the user sees their image right away.
-//   2. Upload to Cloudinary in the background.
-//   3. On success: call onUploadComplete with the permanent URL and public_id.
-//   4. On failure: revert the preview and show a toast.
-//   5. `finally`: always reset the uploading state.
-//
-// `onUploadingChange` lets the parent disable its submit button while uploading.
-
 import { PRIMARY } from "@/constants/theme";
 import { uploadToCloudinary } from "@/lib/cloudinary";
 import { Loader2, Plus, User } from "lucide-react";
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { toast } from "sonner";
 
 export default function AvatarPicker({
@@ -29,7 +15,6 @@ export default function AvatarPicker({
   onUploadingChange?: (uploading: boolean) => void;
   initialUrl?: string;
 }) {
-  const fileRef = useRef<HTMLInputElement>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(initialUrl ?? null);
   const [uploading, setUploading] = useState(false);
 
@@ -50,8 +35,27 @@ export default function AvatarPicker({
   };
 
   return (
-    <div className="relative w-20 h-20">
-      {/* Avatar circle — shows preview image or a placeholder user icon */}
+    // The whole label is clickable — tapping anywhere on the circle opens the picker
+    <label
+      htmlFor="avatar-file-input"
+      aria-label="Upload profile picture"
+      onClick={(e) => { if (uploading) e.preventDefault(); }}
+      className="relative w-20 h-20 block"
+      style={{ cursor: uploading ? "not-allowed" : "pointer" }}
+    >
+      {/* Hidden file input — CSS hidden, NOT the `hidden` attribute (blocks on iOS) */}
+      <input
+        id="avatar-file-input"
+        type="file"
+        accept="image/*"
+        onChange={(e) => {
+          const file = e.target.files?.[0];
+          if (file) handleFile(file);
+        }}
+        style={{ position: "absolute", opacity: 0, width: 1, height: 1, overflow: "hidden" }}
+      />
+
+      {/* Avatar circle */}
       <div className="relative w-20 h-20 rounded-full overflow-hidden border-2 border-primary flex items-center justify-center bg-[#F0F5FF]">
         {previewUrl ? (
           <img src={previewUrl} alt="Avatar preview" className="w-full h-full object-cover" />
@@ -59,7 +63,7 @@ export default function AvatarPicker({
           <User size={32} color={PRIMARY} />
         )}
 
-        {/* Uploading overlay — semi-transparent white with a spinner */}
+        {/* Uploading overlay */}
         {uploading && (
           <div className="absolute inset-0 bg-white/75 flex items-center justify-center">
             <Loader2 size={22} color={PRIMARY} className="animate-spin" />
@@ -67,28 +71,13 @@ export default function AvatarPicker({
         )}
       </div>
 
-      <input
-        type="file"
-        hidden
-        ref={fileRef}
-        accept="image/*"
-        onChange={(e) => {
-          const file = e.target.files?.[0];
-          if (file) handleFile(file);
-        }}
-      />
-
-      {/* + button in the bottom-right corner of the circle */}
-      <button
-        type="button"
-        onClick={() => !uploading && fileRef.current?.click()}
-        disabled={uploading}
-        aria-label="Upload profile picture"
-        className="absolute bottom-0 -right-1 z-10 rounded-full p-1 transition-colors disabled:cursor-not-allowed"
+      {/* + badge — decorative div inside the label, not a separate button */}
+      <div
+        className="absolute bottom-0 -right-1 z-10 rounded-full p-1 pointer-events-none"
         style={{ backgroundColor: uploading ? "#9CA3AF" : PRIMARY }}
       >
         <Plus size={14} color="white" />
-      </button>
-    </div>
+      </div>
+    </label>
   );
 }

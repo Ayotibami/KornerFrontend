@@ -211,6 +211,7 @@ export default function Freeform() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
   const [scale, setScale] = useState(0);
+  const [popped, setPopped] = useState(false);
 
   useEffect(() => {
     const el = wrapperRef.current;
@@ -218,6 +219,20 @@ export default function Freeform() {
     const observer = new ResizeObserver(([entry]) => {
       setScale(Math.min(1, entry.contentRect.width / NATURAL_W));
     });
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    const el = wrapperRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) setPopped(true);
+        else setPopped(false);
+      },
+      { threshold: 0.25 },
+    );
     observer.observe(el);
     return () => observer.disconnect();
   }, []);
@@ -292,6 +307,11 @@ export default function Freeform() {
         width: "100%",
         position: "relative",
         paddingBottom: NATURAL_H * scale,
+        opacity: popped ? 1 : 0,
+        transform: popped ? "scale(1)" : "scale(0.82)",
+        transition: popped
+          ? "transform 0.65s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.45s ease"
+          : "transform 0.22s ease-in, opacity 0.18s ease-in",
       }}
     >
       <div

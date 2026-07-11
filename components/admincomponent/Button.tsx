@@ -25,10 +25,12 @@ function bottomClip() {
 export default function Button({
   children,
   inverted = false,
+  blue = false,
   onClick,
 }: {
   children: React.ReactNode;
   inverted?: boolean;
+  blue?: boolean;
   onClick?: () => void;
 }) {
   const [tearing, setTearing] = useState(false);
@@ -42,8 +44,8 @@ export default function Button({
     }, 950);
   };
 
-  const bg = inverted ? "#112C4A" : "white";
-  const fg = inverted ? "white" : "#112C4A";
+  const bg = blue ? "#0f1e3d" : inverted ? "#112C4A" : "white";
+  const fg = blue || inverted ? "white" : "#112C4A";
 
   return (
     <>

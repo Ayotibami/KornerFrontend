@@ -43,7 +43,12 @@ export default function SignupPage() {
     setError("");
 
     // Client-side validation before hitting the server
-    if (!name || !email || !password) {
+    const trimmedName = name.trim();
+    const trimmedEmail = email.trim();
+    formData.set("name", trimmedName);
+    formData.set("email", trimmedEmail);
+
+    if (!trimmedName || !trimmedEmail || !password) {
       setError("Name, email and password are required.");
       return;
     }
@@ -123,6 +128,7 @@ export default function SignupPage() {
           name="password"
           type="password"
           placeholder="••••••••"
+          autoComplete="new-password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           disabled={isPending}
@@ -132,6 +138,7 @@ export default function SignupPage() {
           name="confirmPassword"
           type="password"
           placeholder="••••••••"
+          autoComplete="new-password"
           value={confirmPassword}
           onChange={(e) => setConfirmPassword(e.target.value)}
           disabled={isPending}

@@ -79,7 +79,7 @@ export default function StoriCard({
         onMouseLeave={() => setHovered(false)}
         style={{
           width: "100%",
-          height: 500,
+          height: 450,
           borderTopLeftRadius: 24,
           borderTopRightRadius: 24,
           borderBottomLeftRadius: 0,
@@ -176,7 +176,7 @@ export default function StoriCard({
               justifyContent: "space-between",
               gap: 8,
               paddingTop: 8,
-              marginTop: "auto",
+              marginTop: 12,
               borderTop: "1px solid #f1f5f9",
               minWidth: 0,
             }}
