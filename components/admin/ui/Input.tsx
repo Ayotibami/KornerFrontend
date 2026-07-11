@@ -3,14 +3,9 @@
 import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
 
-type InputProps = {
+type InputProps = Omit<React.InputHTMLAttributes<HTMLInputElement>, "type"> & {
   label?: string;
   type?: string;
-  name?: string;
-  value?: string;
-  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  placeholder?: string;
-  disabled?: boolean;
 };
 
 export default function Input({
@@ -21,6 +16,7 @@ export default function Input({
   onChange,
   placeholder,
   disabled = false,
+  ...rest
 }: InputProps) {
   const [showPassword, setShowPassword] = useState(false);
   const isPassword = type === "password";
@@ -36,6 +32,7 @@ export default function Input({
 
       <div className="relative">
         <input
+          {...rest}
           type={resolvedType}
           name={name}
           value={value}
