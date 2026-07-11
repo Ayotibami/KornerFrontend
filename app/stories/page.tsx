@@ -91,7 +91,7 @@ export default async function Page() {
           id="stories-list" is the anchor target for both the button above
           and the "See all stories" link in OtherStories. Clicking either scrolls here. */}
       <div id="stories-list">
-        <TornSection>
+        <TornSection contentPadding="40px clamp(16px, 3vw, 40px)">
           <div
             style={{
               display: "flex",
