@@ -160,41 +160,63 @@ export default function MeetUs({ writers }: { writers: PublicWriter[] }) {
           animation: meet-counter 18s linear infinite;
         }
 
-        /* ── Stage layout ───────────────────────────────────── */
+        /* ── Stage layout — desktop: 3-column grid ─────────── */
         .meet-stage {
-          display: flex;
-          flex-direction: row;
+          display: grid;
+          grid-template-columns: 1fr auto 1fr;
           align-items: center;
-          justify-content: center;
-          gap: 56px;
+          gap: 40px;
           width: 100%;
         }
 
-        /* ── Spotlight ──────────────────────────────────────── */
+        /* ── Desktop side panels ────────────────────────────── */
+        .meet-left {
+          display: flex;
+          flex-direction: column;
+          align-items: flex-start;
+          justify-content: center;
+          gap: 10px;
+        }
+        .meet-right {
+          display: flex;
+          flex-direction: column;
+          align-items: flex-start;
+          justify-content: center;
+        }
+        .meet-spotlight-mobile { display: none; }
+
+        /* ── Spotlight animations ───────────────────────────── */
         .sp-avatar { animation: avatar-pop 0.55s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
         .sp-name   { animation: text-rise 0.45s ease 0.18s both; }
         .sp-bio    { animation: text-rise 0.45s ease 0.30s both; }
 
-        /* ── Tablet ─────────────────────────────────────────── */
+        /* ── Tablet: revert to 2-col row ────────────────────── */
         @media (max-width: 860px) {
           .meet-ring { --size: 300px; --radius: 106px; --av: 60px; }
-          .meet-stage { gap: 32px; }
+          .meet-stage {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: center;
+            gap: 32px;
+          }
+          .meet-left  { display: none; }
+          .meet-right { display: none; }
+          .meet-spotlight-mobile {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: clamp(10px, 2vw, 16px);
+            max-width: min(300px, 90vw);
+            text-align: center;
+          }
         }
 
         /* ── Mobile ─────────────────────────────────────────── */
         @media (max-width: 580px) {
           .meet-ring { --size: 200px; --radius: 70px; --av: 44px; }
-
-          .meet-stage {
-            flex-direction: column;
-            gap: 16px;
-          }
-
-          /* Hide the ring on mobile when a spotlight is active —
-             no room for both stacked, spotlight is the hero */
-          .meet-ring.ring-shrunk {
-            display: none;
-          }
+          .meet-stage { flex-direction: column; gap: 16px; }
+          .meet-ring.ring-shrunk { display: none; }
         }
       `}</style>
 
@@ -254,7 +276,47 @@ export default function MeetUs({ writers }: { writers: PublicWriter[] }) {
           }}
         >
           <div className="meet-stage">
-            {/* Orbit ring */}
+            {/* Desktop-only left panel: name + bio */}
+            <div className="meet-left">
+              {activeWriter ? (
+                <div key={activeIndex} style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                  <p
+                    className="sp-name"
+                    style={{
+                      ...TEXT,
+                      fontSize: "clamp(1.1rem, 2vw, 1.8rem)",
+                      fontWeight: 900,
+                      color: "#0f1e3d",
+                      margin: 0,
+                      lineHeight: 1.2,
+                    }}
+                  >
+                    {activeWriter.name}
+                  </p>
+                  {activeWriter.bio && (
+                    <p
+                      className="sp-bio"
+                      style={{
+                        ...TEXT,
+                        fontSize: "clamp(0.82rem, 1.5vw, 0.9375rem)",
+                        fontWeight: 500,
+                        color: "#767575",
+                        margin: 0,
+                        lineHeight: 1.7,
+                      }}
+                    >
+                      {activeWriter.bio}
+                    </p>
+                  )}
+                </div>
+              ) : (
+                <p style={{ ...TEXT, fontSize: "0.9rem", color: "#9ca3af", margin: 0, fontStyle: "italic" }}>
+                  Oya, meet our amazing team!
+                </p>
+              )}
+            </div>
+
+            {/* Center: orbit ring */}
             <div className={ringClass}>
               <div className="meet-center">
                 {writers[0]?.avatar_url && (
@@ -287,24 +349,15 @@ export default function MeetUs({ writers }: { writers: PublicWriter[] }) {
               })}
             </div>
 
-            {/* Spotlight */}
-            {activeWriter ? (
-              <div
-                key={activeIndex}
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                  gap: "clamp(10px, 2vw, 16px)",
-                  maxWidth: "min(300px, 90vw)",
-                  textAlign: "center",
-                }}
-              >
+            {/* Desktop-only right panel: avatar */}
+            <div className="meet-right">
+              {activeWriter && (
                 <div
+                  key={activeIndex}
                   className="sp-avatar"
                   style={{
-                    width: "clamp(120px, 25vw, 176px)",
-                    height: "clamp(120px, 25vw, 176px)",
+                    width: "clamp(120px, 12vw, 176px)",
+                    height: "clamp(120px, 12vw, 176px)",
                     borderRadius: "50%",
                     overflow: "hidden",
                     backgroundColor: "#d1d5db",
@@ -319,55 +372,94 @@ export default function MeetUs({ writers }: { writers: PublicWriter[] }) {
                       alt={activeWriter.name}
                       fill
                       style={{ objectFit: "cover" }}
-                      sizes="(max-width: 580px) 120px, 176px"
+                      sizes="176px"
                     />
                   )}
                 </div>
+              )}
+            </div>
 
-                <p
-                  className="sp-name"
+            {/* Tablet + mobile combined spotlight (existing behavior) */}
+            <div className="meet-spotlight-mobile">
+              {activeWriter ? (
+                <div
+                  key={activeIndex}
                   style={{
-                    ...TEXT,
-                    fontSize: "clamp(1.1rem, 3vw, 1.8rem)",
-                    fontWeight: 900,
-                    color: "#0f1e3d",
-                    margin: 0,
-                    lineHeight: 1.2,
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    gap: "clamp(10px, 2vw, 16px)",
+                    maxWidth: "min(300px, 90vw)",
+                    textAlign: "center",
                   }}
                 >
-                  {activeWriter.name}
-                </p>
-
-                {activeWriter.bio && (
-                  <p
-                    className="sp-bio"
+                  <div
+                    className="sp-avatar"
                     style={{
-                      ...TEXT,
-                      fontSize: "clamp(0.82rem, 2vw, 0.9375rem)",
-                      fontWeight: 500,
-                      color: "#767575",
-                      margin: 0,
-                      lineHeight: 1.7,
+                      width: "clamp(120px, 25vw, 176px)",
+                      height: "clamp(120px, 25vw, 176px)",
+                      borderRadius: "50%",
+                      overflow: "hidden",
+                      backgroundColor: "#d1d5db",
+                      position: "relative",
+                      flexShrink: 0,
+                      boxShadow: "0 16px 48px rgba(15,30,61,0.18)",
                     }}
                   >
-                    {activeWriter.bio}
+                    {activeWriter.avatar_url && (
+                      <Image
+                        src={activeWriter.avatar_url}
+                        alt={activeWriter.name}
+                        fill
+                        style={{ objectFit: "cover" }}
+                        sizes="(max-width: 580px) 120px, 176px"
+                      />
+                    )}
+                  </div>
+                  <p
+                    className="sp-name"
+                    style={{
+                      ...TEXT,
+                      fontSize: "clamp(1.1rem, 3vw, 1.8rem)",
+                      fontWeight: 900,
+                      color: "#0f1e3d",
+                      margin: 0,
+                      lineHeight: 1.2,
+                    }}
+                  >
+                    {activeWriter.name}
                   </p>
-                )}
-              </div>
-            ) : (
-              <p
-                style={{
-                  ...TEXT,
-                  fontSize: "clamp(0.8rem, 2vw, 0.9rem)",
-                  color: "#9ca3af",
-                  margin: 0,
-                  fontStyle: "italic",
-                  textAlign: "center",
-                }}
-              >
-                Oya, meet our amazing team!
-              </p>
-            )}
+                  {activeWriter.bio && (
+                    <p
+                      className="sp-bio"
+                      style={{
+                        ...TEXT,
+                        fontSize: "clamp(0.82rem, 2vw, 0.9375rem)",
+                        fontWeight: 500,
+                        color: "#767575",
+                        margin: 0,
+                        lineHeight: 1.7,
+                      }}
+                    >
+                      {activeWriter.bio}
+                    </p>
+                  )}
+                </div>
+              ) : (
+                <p
+                  style={{
+                    ...TEXT,
+                    fontSize: "clamp(0.8rem, 2vw, 0.9rem)",
+                    color: "#9ca3af",
+                    margin: 0,
+                    fontStyle: "italic",
+                    textAlign: "center",
+                  }}
+                >
+                  Oya, meet our amazing team!
+                </p>
+              )}
+            </div>
           </div>
         </div>
       </div>

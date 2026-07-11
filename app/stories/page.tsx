@@ -3,14 +3,13 @@
 // The hero's greeting rotation + scroll button need browser hooks, so that
 // piece alone lives in the client-only StoriesHero component.
 
-import Image from "next/image";
 import StoriesHero from "@/components/usercomponent/StoriesHero";
+import AuxillaryText from "@/components/usercomponent/AuxillaryText";
 import TornSection from "@/components/admincomponent/Tornsection";
 import LoadMoreStories from "@/components/usercomponent/LoadMoreStories";
 import { nunito } from "@/lib/font";
 import ActivationForm from "@/components/usercomponent/ActivationForm";
 import Footer from "@/components/usercomponent/Footer";
-import AuxillaryText from "@/components/usercomponent/AuxillaryText";
 import Navbar from "@/components/usercomponent/Navbar";
 import type { Metadata } from "next";
 import { getPublicStories } from "@/lib/publicApi";
@@ -66,26 +65,11 @@ export default async function Page() {
       {/* ── HERO SECTION ── full-screen cover image with animated greeting + CTA */}
       <StoriesHero />
 
-      {/* Kappy mascot image */}
-      <div
-        style={{
-          position: "relative",
-          width: "clamp(220px, 55vw, 520px)",
-          aspectRatio: "1 / 1",
-        }}
-      >
-        <Image
-          src="/images/kappyzobo.png"
-          alt="Kappyzobo"
-          fill
-          style={{ objectFit: "contain" }}
-        />
+      <div style={{ margin: "30px 0" }}>
+        <AuxillaryText>
+          Abeg it is spelt Korner o, na Kappy write the one wey dey for up
+        </AuxillaryText>
       </div>
-
-      {/* Cheeky note about the spelling of "Korner" */}
-      <AuxillaryText>
-        Abeg it is spelt Korner o , na Kappy write the one wey dey for up
-      </AuxillaryText>
 
       {/* ── STORY LIST SECTION ──
           id="stories-list" is the anchor target for both the button above

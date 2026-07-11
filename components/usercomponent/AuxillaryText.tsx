@@ -1,32 +1,28 @@
 import { nunito } from "@/lib/font";
 import React from "react";
 
-// Small pill-shaped text block used for cheeky side notes on the page.
-// Accepts any text as children — just wraps it in a styled rounded container.
-// Example usage: <AuxillaryText>Abeg it is spelt Korner o</AuxillaryText>
-export default function AuxillaryText({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function AuxillaryText({ children }: { children: React.ReactNode }) {
   return (
     <div
       style={{
-        backgroundColor: "#F9FAFB",
-        borderRadius: 36, // fully rounded pill shape
-        margin: "30px 0",
-        padding: "16px 32px",
+        backgroundColor: "#FEFB8A",
+        borderTop: "10px solid #F0E010",
+        borderRadius: 3,
+        padding: "18px 22px",
+        transform: "rotate(-2deg)",
+        boxShadow: "4px 5px 16px rgba(0,0,0,0.14)",
+        maxWidth: "min(260px, 90vw)",
       }}
     >
       <p
         style={{
           fontFamily: nunito.style.fontFamily,
-          fontSize: "clamp(0.9rem, 2vw, 1.1rem)",
-          fontWeight: 600,
+          fontSize: "clamp(0.875rem, 2vw, 1rem)",
+          fontWeight: 700,
           fontStyle: "italic",
-          color: "#0f1e3d",
-          textAlign: "center",
+          color: "#2a1f00",
           margin: 0,
+          lineHeight: 1.65,
         }}
       >
         {children}
