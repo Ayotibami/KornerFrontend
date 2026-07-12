@@ -25,7 +25,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "The Korner — Kampos talks you listen",
     description:
-      "Korner's is that chill corner on Kampos where we just get student life. From late-night gist about love and grades to real talks on career, money, and culture — it's Kampos talking your talk, straight from our hearts to yours.",
+      "Korner is that chill corner on Kampos where we just get student life. From late-night gist about love and grades to real talks on career, money, and culture — it's Kampos talking your talk, straight from our hearts to yours.",
     url: "/",
     type: "website",
     images: [
@@ -41,7 +41,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "The Korner — Kampos talks you listen",
     description:
-      "Korner's is that chill corner on Kampos where we just get student life. From late-night gist about love and grades to real talks on career, money, and culture.",
+      "Korner is that chill corner on Kampos where we just get student life. From late-night gist about love and grades to real talks on career, money, and culture.",
     images: ["/images/og-default.png"],
   },
   alternates: {

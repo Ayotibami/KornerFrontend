@@ -29,16 +29,6 @@ export default function Testimony() {
         >
           You no go like Korner ke?
         </p>
-        <p
-          style={{
-            fontFamily: nunito.style.fontFamily,
-            fontWeight: 500,
-            fontSize: "0.9375rem",
-            color: "#767575",
-            margin: 0,
-            lineHeight: 1.7,
-          }}
-        ></p>
       </div>
 
       {/* Word cloud + text beside it */}
