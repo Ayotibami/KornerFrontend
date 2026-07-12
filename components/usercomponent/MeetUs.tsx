@@ -179,7 +179,7 @@ export default function MeetUs({ writers }: { writers: PublicWriter[] }) {
           to   { opacity: 1; transform: translateY(0); }
         }
         @keyframes mob-in {
-          from { opacity: 0; transform: translateY(20px); }
+          from { opacity: 0; transform: translateY(24px); }
           to   { opacity: 1; transform: translateY(0); }
         }
 
@@ -267,11 +267,15 @@ export default function MeetUs({ writers }: { writers: PublicWriter[] }) {
           .meet-ring { --size: 200px; --radius: 70px; --av: 44px; }
         }
 
-        /* ── Mobile spotlight card ──── */
+        /* ── Mobile spotlight card — fixed to bottom of screen so it's always fully visible ──── */
         .mob-spotlight {
           animation: mob-in 0.45s ease both;
+          position: fixed; bottom: 24px; left: 0; right: 0; margin: 0 auto;
+          width: min(320px, 88vw); z-index: 50;
           display: flex; flex-direction: column; align-items: center;
-          gap: 14px; padding: 24px 20px; text-align: center; width: 100%; box-sizing: border-box;
+          gap: 10px; padding: 18px 16px; text-align: center; box-sizing: border-box;
+          background: white; border-radius: 18px;
+          box-shadow: 0 8px 32px rgba(15,30,61,0.14);
         }
       `}</style>
 
@@ -287,7 +291,7 @@ export default function MeetUs({ writers }: { writers: PublicWriter[] }) {
           {/* Spotlight — appears below ring when ring is in viewport center, cycles writers */}
           {mobileSpotlightVisible && mobileWriter && (
             <div key={mobileWriterIndex} className="mob-spotlight">
-              <div className="sp-avatar" style={{ width: 120, height: 120, borderRadius: "50%", overflow: "hidden", backgroundColor: "#d1d5db", position: "relative", flexShrink: 0, boxShadow: "0 16px 48px rgba(15,30,61,0.18)" }}>
+              <div className="sp-avatar" style={{ width: 84, height: 84, borderRadius: "50%", overflow: "hidden", backgroundColor: "#d1d5db", position: "relative", flexShrink: 0, boxShadow: "0 8px 24px rgba(15,30,61,0.16)" }}>
                 {mobileWriter.avatar_url && (
                   <Image src={mobileWriter.avatar_url} alt={mobileWriter.name} fill style={{ objectFit: "cover" }} sizes="120px" />
                 )}
