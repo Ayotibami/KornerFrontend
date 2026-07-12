@@ -13,14 +13,30 @@ const B = ({ children }: { children: React.ReactNode }) => (
 );
 
 export default function MeetUs({ writers }: { writers: PublicWriter[] }) {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const [activeIndex, setActiveIndex] = useState(-1);
+  const containerRef       = useRef<HTMLDivElement>(null);
+  const mobileContainerRef = useRef<HTMLDivElement>(null);
 
-  // writers[0] is always Kappy (guaranteed by page.tsx), writers[1..] fill the orbit arms
+  const [activeIndex,      setActiveIndex]      = useState(-1);
+  const [mobileWriterIdx,  setMobileWriterIdx]  = useState(0);
+  const [mobileActive,     setMobileActive]     = useState(false);
+  const [isMobile, setIsMobile] = useState(
+    () => typeof window !== "undefined" && window.matchMedia("(max-width: 580px)").matches
+  );
+
   const count = writers.length;
-  const activeWriter = activeIndex >= 0 ? writers[activeIndex] : null;
+  const activeWriter  = activeIndex >= 0 ? writers[activeIndex] : null;
   const armHighlightIndex = activeIndex >= 1 ? activeIndex - 1 : -1;
+  const mobileWriter  = writers[mobileWriterIdx];
 
+  // Detect mobile breakpoint
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 580px)");
+    const handler = (e: MediaQueryListEvent) => setIsMobile(e.matches);
+    mq.addEventListener("change", handler);
+    return () => mq.removeEventListener("change", handler);
+  }, []);
+
+  // Desktop: scroll-driven active writer
   useEffect(() => {
     const onScroll = () => {
       const el = containerRef.current;
@@ -47,6 +63,27 @@ export default function MeetUs({ writers }: { writers: PublicWriter[] }) {
     onScroll();
     return () => window.removeEventListener("scroll", onScroll);
   }, [count]);
+
+  // Mobile: scroll-driven writer index
+  useEffect(() => {
+    if (!isMobile) return;
+    const onScroll = () => {
+      const el = mobileContainerRef.current;
+      if (!el) return;
+      const scrolled  = -el.getBoundingClientRect().top;
+      const scrollable = el.offsetHeight - window.innerHeight;
+      if (scrolled < 0 || scrolled > scrollable) {
+        setMobileActive(false);
+        return;
+      }
+      setMobileActive(true);
+      const progress = scrollable > 0 ? scrolled / scrollable : 0;
+      setMobileWriterIdx(Math.min(Math.floor(progress * count), count - 1));
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    onScroll();
+    return () => window.removeEventListener("scroll", onScroll);
+  }, [isMobile, count]);
 
   const ringClass = [
     "meet-ring",
@@ -184,44 +221,29 @@ export default function MeetUs({ writers }: { writers: PublicWriter[] }) {
         /* ── Mobile ─────────────────────────────────────────── */
         @media (max-width: 580px) {
           .meet-ring { --size: 200px; --radius: 70px; --av: 44px; }
+          .meet-stage { flex-direction: column; gap: 16px; }
+          .meet-ring.ring-shrunk { display: none; }
+        }
 
-          .meet-stage {
-            flex-direction: column;
-            gap: 16px;
-          }
-
-          /* Hide the ring on mobile when a spotlight is active —
-             no room for both stacked, spotlight is the hero */
-          .meet-ring.ring-shrunk {
-            display: none;
-          }
+        /* ── Mobile scroll-driven spotlight ─────────────────── */
+        @keyframes mob-in {
+          from { opacity: 0; transform: translateY(14px); }
+          to   { opacity: 1; transform: translateY(0); }
+        }
+        .mob-spotlight {
+          animation: mob-in 0.4s ease both;
+          display: flex; flex-direction: column; align-items: center;
+          gap: 12px; padding: 0 20px 4px; text-align: center;
+          width: 100%; box-sizing: border-box;
         }
       `}</style>
 
       {/* ── "Who we be?" static section ─────────────────────── */}
       <div className="who-section">
-        <p
-          style={{
-            ...TEXT,
-            fontSize: "clamp(1.3rem, 4vw, 2.5rem)",
-            fontWeight: 900,
-            color: "#0f1e3d",
-            margin: "0 0 16px 0",
-          }}
-        >
+        <p style={{ ...TEXT, fontSize: "clamp(1.3rem, 4vw, 2.5rem)", fontWeight: 900, color: "#0f1e3d", margin: "0 0 16px 0" }}>
           Who we be?
         </p>
-        <p
-          style={{
-            ...TEXT,
-            fontSize: "clamp(0.875rem, 2vw, 1rem)",
-            fontWeight: 500,
-            color: "#767575",
-            margin: 0,
-            lineHeight: 1.8,
-            maxWidth: 680,
-          }}
-        >
+        <p style={{ ...TEXT, fontSize: "clamp(0.875rem, 2vw, 1rem)", fontWeight: 500, color: "#767575", margin: 0, lineHeight: 1.8, maxWidth: 680 }}>
           First, we built <B>Kampos</B> — the social ecosystem for students. Now
           we&apos;re back, this time bringing you <B>stories</B>. We didn&apos;t
           just wake up one day and start building. We&apos;re{" "}
@@ -235,142 +257,107 @@ export default function MeetUs({ writers }: { writers: PublicWriter[] }) {
         </p>
       </div>
 
-      {/* ── Scroll-driven orbit section ──────────────────────── */}
-      <div
-        ref={containerRef}
-        style={{ height: `calc(100vh + ${count * 45}vh)` }}
-      >
-        <div
-          style={{
-            position: "sticky",
-            top: 0,
-            height: "100vh",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            padding: "clamp(12px, 3vw, 24px) clamp(16px, 4vw, 24px)",
-            boxSizing: "border-box",
+      {isMobile ? (
+        /* ── Mobile: tall scroll container, ring + spotlight sticky at top ── */
+        <div ref={mobileContainerRef} style={{ height: `${count * 70}vh` }}>
+          <div style={{
+            position: "sticky", top: 0,
+            display: "flex", flexDirection: "column", alignItems: "center",
+            gap: 20, padding: "24px 0 28px",
             backgroundColor: "#f1f5f9",
-          }}
-        >
-          <div className="meet-stage">
-            {/* Orbit ring */}
-            <div className={ringClass}>
+          }}>
+            {/* Ring — always full size, no shrink on mobile */}
+            <div className="meet-ring">
               <div className="meet-center">
                 {writers[0]?.avatar_url && (
-                  <Image
-                    src={writers[0].avatar_url}
-                    alt={writers[0].name}
-                    fill
-                    style={{ objectFit: "cover" }}
-                    sizes="(max-width: 580px) 44px, (max-width: 860px) 60px, 78px"
-                  />
+                  <Image src={writers[0].avatar_url} alt={writers[0].name} fill style={{ objectFit: "cover" }} sizes="44px" />
                 )}
               </div>
               {ARM_ANGLES.slice(0, count - 1).map((_, i) => {
-                const writer = writers[i + 1];
+                const w = writers[i + 1];
                 return (
                   <div key={i} className={`meet-arm meet-arm-${i}`}>
                     <div className="meet-av">
-                      {writer?.avatar_url && (
-                        <Image
-                          src={writer.avatar_url}
-                          alt={writer.name}
-                          fill
-                          style={{ objectFit: "cover" }}
-                          sizes="(max-width: 580px) 44px, (max-width: 860px) 60px, 78px"
-                        />
-                      )}
+                      {w?.avatar_url && <Image src={w.avatar_url} alt={w.name} fill style={{ objectFit: "cover" }} sizes="44px" />}
                     </div>
                   </div>
                 );
               })}
             </div>
 
-            {/* Spotlight */}
-            {activeWriter ? (
-              <div
-                key={activeIndex}
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                  gap: "clamp(10px, 2vw, 16px)",
-                  maxWidth: "min(300px, 90vw)",
-                  textAlign: "center",
-                }}
-              >
-                <div
-                  className="sp-avatar"
-                  style={{
-                    width: "clamp(120px, 25vw, 176px)",
-                    height: "clamp(120px, 25vw, 176px)",
-                    borderRadius: "50%",
-                    overflow: "hidden",
-                    backgroundColor: "#d1d5db",
-                    position: "relative",
-                    flexShrink: 0,
-                    boxShadow: "0 16px 48px rgba(15,30,61,0.18)",
-                  }}
-                >
-                  {activeWriter.avatar_url && (
-                    <Image
-                      src={activeWriter.avatar_url}
-                      alt={activeWriter.name}
-                      fill
-                      style={{ objectFit: "cover" }}
-                      sizes="(max-width: 580px) 120px, 176px"
-                    />
-                  )}
+            {/* Spotlight — appears as user scrolls through container */}
+            {mobileActive && mobileWriter && (
+              <div key={mobileWriterIdx} className="mob-spotlight">
+                <div className="sp-avatar" style={{ width: 100, height: 100, borderRadius: "50%", overflow: "hidden", backgroundColor: "#d1d5db", position: "relative", flexShrink: 0, boxShadow: "0 12px 36px rgba(15,30,61,0.16)" }}>
+                  {mobileWriter.avatar_url && <Image src={mobileWriter.avatar_url} alt={mobileWriter.name} fill style={{ objectFit: "cover" }} sizes="100px" />}
                 </div>
-
-                <p
-                  className="sp-name"
-                  style={{
-                    ...TEXT,
-                    fontSize: "clamp(1.1rem, 3vw, 1.8rem)",
-                    fontWeight: 900,
-                    color: "#0f1e3d",
-                    margin: 0,
-                    lineHeight: 1.2,
-                  }}
-                >
-                  {activeWriter.name}
+                <p className="sp-name" style={{ ...TEXT, fontSize: "1.2rem", fontWeight: 900, color: "#0f1e3d", margin: 0, lineHeight: 1.2 }}>
+                  {mobileWriter.name}
                 </p>
-
-                {activeWriter.bio && (
-                  <p
-                    className="sp-bio"
-                    style={{
-                      ...TEXT,
-                      fontSize: "clamp(0.82rem, 2vw, 0.9375rem)",
-                      fontWeight: 500,
-                      color: "#767575",
-                      margin: 0,
-                      lineHeight: 1.7,
-                    }}
-                  >
-                    {activeWriter.bio}
+                {mobileWriter.bio && (
+                  <p className="sp-bio" style={{ ...TEXT, fontSize: "0.875rem", fontWeight: 500, color: "#767575", margin: 0, lineHeight: 1.7 }}>
+                    {mobileWriter.bio}
                   </p>
                 )}
               </div>
-            ) : (
-              <p
-                style={{
-                  ...TEXT,
-                  fontSize: "clamp(0.8rem, 2vw, 0.9rem)",
-                  color: "#9ca3af",
-                  margin: 0,
-                  fontStyle: "italic",
-                  textAlign: "center",
-                }}
-              >
-                Oya, meet our amazing team!
-              </p>
             )}
           </div>
         </div>
-      </div>
+      ) : (
+        /* ── Desktop/tablet: scroll-driven orbit section ──────── */
+        <div ref={containerRef} style={{ height: `calc(100vh + ${count * 45}vh)` }}>
+          <div style={{
+            position: "sticky", top: 0, height: "100vh",
+            display: "flex", alignItems: "center", justifyContent: "center",
+            padding: "clamp(12px, 3vw, 24px) clamp(16px, 4vw, 24px)",
+            boxSizing: "border-box", backgroundColor: "#f1f5f9",
+          }}>
+            <div className="meet-stage">
+              {/* Orbit ring */}
+              <div className={ringClass}>
+                <div className="meet-center">
+                  {writers[0]?.avatar_url && (
+                    <Image src={writers[0].avatar_url} alt={writers[0].name} fill style={{ objectFit: "cover" }} sizes="(max-width: 860px) 60px, 78px" />
+                  )}
+                </div>
+                {ARM_ANGLES.slice(0, count - 1).map((_, i) => {
+                  const writer = writers[i + 1];
+                  return (
+                    <div key={i} className={`meet-arm meet-arm-${i}`}>
+                      <div className="meet-av">
+                        {writer?.avatar_url && (
+                          <Image src={writer.avatar_url} alt={writer.name} fill style={{ objectFit: "cover" }} sizes="(max-width: 860px) 60px, 78px" />
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Spotlight */}
+              {activeWriter ? (
+                <div key={activeIndex} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "clamp(10px, 2vw, 16px)", maxWidth: "min(300px, 90vw)", textAlign: "center" }}>
+                  <div className="sp-avatar" style={{ width: "clamp(120px, 25vw, 176px)", height: "clamp(120px, 25vw, 176px)", borderRadius: "50%", overflow: "hidden", backgroundColor: "#d1d5db", position: "relative", flexShrink: 0, boxShadow: "0 16px 48px rgba(15,30,61,0.18)" }}>
+                    {activeWriter.avatar_url && <Image src={activeWriter.avatar_url} alt={activeWriter.name} fill style={{ objectFit: "cover" }} sizes="176px" />}
+                  </div>
+                  <p className="sp-name" style={{ ...TEXT, fontSize: "clamp(1.1rem, 3vw, 1.8rem)", fontWeight: 900, color: "#0f1e3d", margin: 0, lineHeight: 1.2 }}>
+                    {activeWriter.name}
+                  </p>
+                  {activeWriter.bio && (
+                    <p className="sp-bio" style={{ ...TEXT, fontSize: "clamp(0.82rem, 2vw, 0.9375rem)", fontWeight: 500, color: "#767575", margin: 0, lineHeight: 1.7 }}>
+                      {activeWriter.bio}
+                    </p>
+                  )}
+                </div>
+              ) : (
+                <p style={{ ...TEXT, fontSize: "clamp(0.8rem, 2vw, 0.9rem)", color: "#9ca3af", margin: 0, fontStyle: "italic", textAlign: "center" }}>
+                  Oya, meet our amazing team!
+                </p>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
