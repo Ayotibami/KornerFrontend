@@ -49,7 +49,7 @@ export default function ActivationForm() {
         setNotifStatus("enabled");
       }
     } catch (error) {
-      console.error("OneSignal init or permission request failed", error);
+      if (process.env.NODE_ENV === "development") console.error("OneSignal init or permission request failed", error);
     }
   };
 
