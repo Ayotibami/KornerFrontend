@@ -117,6 +117,21 @@ export async function submitStoryForReviewFromCard(storiId: string): Promise<Api
   }
 }
 
+// Reverts a Pending story back to Draft without touching its blocks.
+// Called from the story card — a dedicated endpoint on the backend does the status
+// flip so no block data needs to be passed.
+export async function revertStoryToDraft(storiId: string): Promise<ApiResult<void>> {
+  try {
+    await apiRequest(`/stories/revert/${storiId}`, { method: "PATCH" });
+    revalidatePath("/admin/home");
+    return { ok: true, data: undefined };
+  } catch (err: unknown) {
+    const status = (err as { status?: number }).status ?? 500;
+    const message = err instanceof Error ? err.message : "Failed to revert story.";
+    return { ok: false, status, message };
+  }
+}
+
 // Master-only actions, called from MasterStoryCard on the home page.
 // All revalidate /admin/home (instead of redirecting) since the card stays
 // on the same page and just needs the list to refresh with the new status.

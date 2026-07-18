@@ -6,7 +6,7 @@ import Link from "next/link";
 import { Clock, Eye, Loader2, Mail, RotateCcw, SendHorizonal } from "lucide-react";
 import { toast } from "sonner";
 import { capitalize, formatDate, formatFullDate } from "@/lib/utils";
-import { submitStoryForReviewFromCard, updateStory } from "@/app/admin/stories/[storiId]/action";
+import { submitStoryForReviewFromCard, revertStoryToDraft } from "@/app/admin/stories/[storiId]/action";
 import type { Story } from "@/types/story";
 import MailModal from "@/components/admin/stories/MailModal";
 
@@ -25,7 +25,7 @@ export default function StoryCard({ story }: { story: Story }) {
     e.stopPropagation();
     if (isReverting) return;
     startReverting(async () => {
-      const result = await updateStory(story.stori_id, story.title, story.subtitle, story.excerpt, story.reading_time, story.cover_image, undefined, []);
+      const result = await revertStoryToDraft(story.stori_id);
       if (result.ok) toast.success("Story reverted to draft.");
       else toast.error(result.message);
     });
