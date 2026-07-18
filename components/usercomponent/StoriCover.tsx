@@ -145,6 +145,19 @@ export default function StoriCover({
           vertical-align: text-bottom;
           animation: blink 0.7s step-end infinite;
         }
+        .cover-author-row {
+          display: flex;
+          flex-direction: column;
+          gap: 8px;
+        }
+        @media (min-width: 480px) {
+          .cover-author-row {
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+            gap: 0;
+          }
+        }
       `}</style>
 
       {/* ── COVER IMAGE DIV ────────────────────────────────────────────────────
@@ -244,14 +257,7 @@ export default function StoriCover({
             Contains: avatar circle + author name (typing) on the left,
             reading time + date (fade-in) on the right. */}
         {authorChars > 0 && (
-          <div
-            style={{
-              flexDirection: "row",
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-            }}
-          >
+          <div className="cover-author-row">
             <div
               style={{
                 display: "flex",
