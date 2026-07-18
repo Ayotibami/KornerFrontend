@@ -2,6 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { Trophy } from "lucide-react";
 import { apiRequest } from "@/lib/api";
+import { cloudinaryUrl } from "@/lib/utils";
 
 type TopWriter = {
   admin_id: string;
@@ -56,7 +57,7 @@ export default async function TopWritersCard() {
                 <div className="relative w-7 h-7 rounded-full overflow-hidden bg-slate-200 dark:bg-[#2d3748] flex-shrink-0 ring-1 ring-white dark:ring-[#1a1f2e]">
                   {avatar_url && (
                     <Image
-                      src={avatar_url}
+                      src={cloudinaryUrl(avatar_url, 56)}
                       alt={admin_name}
                       fill
                       className="object-cover"

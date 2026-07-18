@@ -3,6 +3,7 @@
 
 import { useEffect, useState } from "react";
 import { nunito } from "@/lib/font";
+import { cloudinaryUrl } from "@/lib/utils";
 import AnimatedClock from "./AnimatedClock";
 
 // Phase controls which piece of text is currently being typed.
@@ -163,7 +164,7 @@ export default function StoriCover({
           flexDirection: "column",
           borderRadius: "clamp(16px, 4vw, 36px)",
           backgroundColor: "black",
-          backgroundImage: coverImage ? `url("${coverImage}")` : "none",
+          backgroundImage: coverImage ? `url("${cloudinaryUrl(coverImage, 1400)}")` : "none",
           backgroundSize: "cover",
           backgroundPosition: "center",
           backgroundRepeat: "no-repeat",
@@ -258,7 +259,7 @@ export default function StoriCover({
                   height: "clamp(32px, 5vw, 44px)",
                   borderRadius: "50%",
                   backgroundColor: "#e2e8f0",
-                  backgroundImage: authorAvatar ? `url("${authorAvatar}")` : "none",
+                  backgroundImage: authorAvatar ? `url("${cloudinaryUrl(authorAvatar, 100)}")` : "none",
                   backgroundSize: "cover",
                   backgroundPosition: "center",
                   backgroundRepeat: "no-repeat",

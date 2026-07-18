@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { cloudinaryUrl } from "@/lib/utils";
 import Image from "next/image";
 import { nunito } from "@/lib/font";
 import type { PublicWriter } from "@/lib/publicApi";
@@ -284,7 +285,7 @@ export default function MeetUs({ writers }: { writers: PublicWriter[] }) {
             <div className="meet-ring">
               <div className="meet-center">
                 {writers[0]?.avatar_url && (
-                  <Image src={writers[0].avatar_url} alt={writers[0].name} fill style={{ objectFit: "cover" }} sizes="44px" />
+                  <Image src={cloudinaryUrl(writers[0].avatar_url, 100)} alt={writers[0].name} fill style={{ objectFit: "cover" }} sizes="44px" />
                 )}
               </div>
               {ARM_ANGLES.slice(0, count - 1).map((_, i) => {
@@ -292,7 +293,7 @@ export default function MeetUs({ writers }: { writers: PublicWriter[] }) {
                 return (
                   <div key={i} className={`meet-arm meet-arm-${i}`}>
                     <div className="meet-av">
-                      {w?.avatar_url && <Image src={w.avatar_url} alt={w.name} fill style={{ objectFit: "cover" }} sizes="44px" />}
+                      {w?.avatar_url && <Image src={cloudinaryUrl(w.avatar_url, 100)} alt={w.name} fill style={{ objectFit: "cover" }} sizes="44px" />}
                     </div>
                   </div>
                 );
@@ -303,7 +304,7 @@ export default function MeetUs({ writers }: { writers: PublicWriter[] }) {
             {mobileActive && mobileWriter && (
               <div key={mobileWriterIdx} className="mob-spotlight">
                 <div className="sp-avatar" style={{ width: 100, height: 100, borderRadius: "50%", overflow: "hidden", backgroundColor: "#d1d5db", position: "relative", flexShrink: 0, boxShadow: "0 12px 36px rgba(15,30,61,0.16)" }}>
-                  {mobileWriter.avatar_url && <Image src={mobileWriter.avatar_url} alt={mobileWriter.name} fill style={{ objectFit: "cover" }} sizes="100px" />}
+                  {mobileWriter.avatar_url && <Image src={cloudinaryUrl(mobileWriter.avatar_url, 200)} alt={mobileWriter.name} fill style={{ objectFit: "cover" }} sizes="100px" />}
                 </div>
                 <p className="sp-name" style={{ ...TEXT, fontSize: "1.2rem", fontWeight: 900, color: "#0f1e3d", margin: 0, lineHeight: 1.2 }}>
                   {mobileWriter.name}
@@ -352,7 +353,7 @@ export default function MeetUs({ writers }: { writers: PublicWriter[] }) {
               <div className={ringClass}>
                 <div className="meet-center">
                   {writers[0]?.avatar_url && (
-                    <Image src={writers[0].avatar_url} alt={writers[0].name} fill style={{ objectFit: "cover" }} sizes="(max-width: 860px) 60px, 78px" />
+                    <Image src={cloudinaryUrl(writers[0].avatar_url, 160)} alt={writers[0].name} fill style={{ objectFit: "cover" }} sizes="(max-width: 860px) 60px, 78px" />
                   )}
                 </div>
                 {ARM_ANGLES.slice(0, count - 1).map((_, i) => {
@@ -361,7 +362,7 @@ export default function MeetUs({ writers }: { writers: PublicWriter[] }) {
                     <div key={i} className={`meet-arm meet-arm-${i}`}>
                       <div className="meet-av">
                         {writer?.avatar_url && (
-                          <Image src={writer.avatar_url} alt={writer.name} fill style={{ objectFit: "cover" }} sizes="(max-width: 860px) 60px, 78px" />
+                          <Image src={cloudinaryUrl(writer.avatar_url, 160)} alt={writer.name} fill style={{ objectFit: "cover" }} sizes="(max-width: 860px) 60px, 78px" />
                         )}
                       </div>
                     </div>
@@ -373,7 +374,7 @@ export default function MeetUs({ writers }: { writers: PublicWriter[] }) {
               <div className="meet-right">
                 {activeWriter && (
                   <div key={activeIndex} className="sp-avatar" style={{ width: "clamp(120px, 12vw, 176px)", height: "clamp(120px, 12vw, 176px)", borderRadius: "50%", overflow: "hidden", backgroundColor: "#d1d5db", position: "relative", flexShrink: 0, boxShadow: "0 16px 48px rgba(15,30,61,0.18)" }}>
-                    {activeWriter.avatar_url && <Image src={activeWriter.avatar_url} alt={activeWriter.name} fill style={{ objectFit: "cover" }} sizes="176px" />}
+                    {activeWriter.avatar_url && <Image src={cloudinaryUrl(activeWriter.avatar_url, 350)} alt={activeWriter.name} fill style={{ objectFit: "cover" }} sizes="176px" />}
                   </div>
                 )}
               </div>

@@ -1,6 +1,7 @@
 "use client";
 
 import { nunito } from "@/lib/font";
+import { cloudinaryUrl } from "@/lib/utils";
 import Image from "next/image";
 import { FaQuoteLeft } from "react-icons/fa";
 import { useStoryTheme } from "@/context/StoryThemeContext";
@@ -138,7 +139,7 @@ function ImageBlock({
   storyTitle: string;
   dark: boolean;
 }) {
-  const src = image_url || content;
+  const src = cloudinaryUrl(image_url || content, 1200);
   return (
     <div
       style={{

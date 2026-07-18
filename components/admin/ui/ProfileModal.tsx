@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { cloudinaryUrl } from "@/lib/utils";
 import { Pencil, X, Crown, Feather } from "lucide-react";
 import { useState } from "react";
 import { useEscapeKey } from "@/hooks/useEscapeKey";
@@ -143,7 +144,7 @@ export default function ProfileModal({
                   {/* Avatar */}
                   <div className="relative w-20 h-20 rounded-2xl overflow-hidden bg-secondary dark:bg-[#1e3a5f] flex-shrink-0 ring-4 ring-white dark:ring-[#1a1f2e] shadow-md">
                     {localAvatarUrl ? (
-                      <Image src={localAvatarUrl} fill alt="Avatar" className="object-cover" unoptimized />
+                      <Image src={cloudinaryUrl(localAvatarUrl, 160)} fill alt="Avatar" className="object-cover" unoptimized />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center text-primary dark:text-[#93b8f0] text-2xl font-bold">
                         {(localName || "?")[0].toUpperCase()}

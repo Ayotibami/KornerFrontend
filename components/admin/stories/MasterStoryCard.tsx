@@ -6,7 +6,7 @@ import Link from "next/link";
 import { Check, Clock, Eye, Loader2, Mail, Rocket, EyeOff, CheckCircle2, XCircle, Trash2, BarChart2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { capitalize, formatDate, formatLongDateTime } from "@/lib/utils";
+import { capitalize, cloudinaryUrl, formatDate, formatLongDateTime } from "@/lib/utils";
 import {
   publishStoriMaster,
   unpublishStoriMaster,
@@ -164,7 +164,7 @@ export default function MasterStoryCard({
             <div className="flex items-center gap-2 px-4 pt-3.5 pb-0">
               <div className="relative w-6 h-6 rounded-full overflow-hidden bg-slate-200 dark:bg-[#2d3748] flex-shrink-0 ring-1 ring-gray-100 dark:ring-white/10">
                 {story.avatar_url && (
-                  <Image src={story.avatar_url} alt={story.admin_name} fill className="object-cover" sizes="24px" />
+                  <Image src={cloudinaryUrl(story.avatar_url, 50)} alt={story.admin_name} fill className="object-cover" sizes="24px" />
                 )}
               </div>
               <span className="text-xs font-medium text-gray-500 dark:text-gray-400 truncate">
@@ -176,7 +176,7 @@ export default function MasterStoryCard({
           {/* Cover image with status badge overlay */}
           <div className={`relative h-[185px] bg-slate-200 dark:bg-[#2d3748] flex items-center justify-center flex-shrink-0 ${story.admin_name ? "mt-3 mx-4 rounded-xl overflow-hidden" : ""}`}>
             {story.cover_image ? (
-              <Image src={story.cover_image} alt="Cover" fill className="object-cover" sizes="(max-width: 640px) 100vw, (max-width: 1280px) 50vw, 33vw" />
+              <Image src={cloudinaryUrl(story.cover_image, 800)} alt="Cover" fill className="object-cover" sizes="(max-width: 640px) 100vw, (max-width: 1280px) 50vw, 33vw" />
             ) : (
               <p className="text-gray-400 dark:text-gray-500 text-xs">No cover image</p>
             )}

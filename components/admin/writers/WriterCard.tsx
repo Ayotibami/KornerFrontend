@@ -15,6 +15,7 @@
 
 import { useState, useTransition } from "react";
 import Image from "next/image";
+import { cloudinaryUrl } from "@/lib/utils";
 import Link from "next/link";
 import { ShieldCheck, ShieldAlert, Loader2, BookOpen } from "lucide-react";
 import { toast } from "sonner";
@@ -97,7 +98,7 @@ export default function WriterCard({
         >
           {admin.avatar_url && (
             <Image
-              src={admin.avatar_url}
+              src={cloudinaryUrl(admin.avatar_url, 96)}
               alt={admin.admin_name}
               fill
               className="object-cover"

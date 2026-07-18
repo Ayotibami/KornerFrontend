@@ -2,6 +2,7 @@
 import Link from "next/link";
 import { Users } from "lucide-react";
 import { apiRequest } from "@/lib/api";
+import { cloudinaryUrl } from "@/lib/utils";
 
 type AdminListItem = {
   admin_id: string;
@@ -93,7 +94,7 @@ export default async function AdminsStatCard() {
             >
               {admin.avatar_url && (
                 <Image
-                  src={admin.avatar_url}
+                  src={cloudinaryUrl(admin.avatar_url, 80)}
                   alt={admin.admin_name}
                   fill
                   className="object-cover"

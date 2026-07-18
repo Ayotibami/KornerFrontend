@@ -1,6 +1,7 @@
 "use client";
 
 import { nunito } from "@/lib/font";
+import { cloudinaryUrl } from "@/lib/utils";
 import Image from "next/image";
 import Link from "next/link";
 import { useRef, useState } from "react";
@@ -107,7 +108,7 @@ export default function StoriCard({
         >
           {image && (
             <Image
-              src={image}
+              src={cloudinaryUrl(image, 800)}
               alt={title}
               fill
               style={{ objectFit: "cover" }}
@@ -206,7 +207,7 @@ export default function StoriCard({
               >
                 {authorAvatar && (
                   <Image
-                    src={authorAvatar}
+                    src={cloudinaryUrl(authorAvatar, 100)}
                     alt={authorName}
                     fill
                     style={{ objectFit: "cover" }}
