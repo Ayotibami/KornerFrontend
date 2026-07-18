@@ -18,7 +18,7 @@ export type StoriBlock = {
   blockId: string;
   blockType: string;
   content: string;
-  image_url: string;
+  imageUrl: string;
   imagePublicId?: string;
   position: number;
 };

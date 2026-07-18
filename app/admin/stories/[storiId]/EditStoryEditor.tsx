@@ -116,7 +116,7 @@ export default function EditStoryEditor({
         id: b.blockId,
         block_type: b.blockType as BlockType,
         content: b.content ?? "",
-        image_url: b.image_url ?? "",
+        image_url: b.imageUrl ?? "",
         image_public_id: b.imagePublicId,
         position: b.position,
       }));
