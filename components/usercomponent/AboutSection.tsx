@@ -353,7 +353,7 @@ export default function AboutSection() {
         }}
       >
         {[LEFT_TOPICS, RIGHT_TOPICS].map((col, ci) => (
-          <div key={ci} style={{ display: "flex", flexDirection: "column" }}>
+          <div key={ci} style={{ display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
             {col.map((topic, i) => (
               <TopicRow
                 key={topic.label}
