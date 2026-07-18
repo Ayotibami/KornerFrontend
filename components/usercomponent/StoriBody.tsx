@@ -152,8 +152,8 @@ function ImageBlock({
         minHeight: loaded ? 0 : 200,
         borderRadius: "clamp(8px, 2vw, 16px)",
         overflow: "hidden",
-        backgroundColor: dark ? "#0f1e35" : "#e2e8f0",
-        boxShadow: dark ? "0 4px 24px rgba(0,0,0,0.4)" : "none",
+        backgroundColor: loaded ? "transparent" : (dark ? "#0f1e35" : "#e2e8f0"),
+        boxShadow: loaded ? "none" : (dark ? "0 4px 24px rgba(0,0,0,0.4)" : "none"),
         transition: "background-color 0.45s ease",
       }}
     >

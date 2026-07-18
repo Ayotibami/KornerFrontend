@@ -31,7 +31,11 @@ export default function ImageUploader({ mode, url, onFilePicked }: {
     return (
       <div
         className="w-full overflow-hidden bg-slate-200 dark:bg-[#2d3748]"
-        style={{ borderRadius: "clamp(8px, 2vw, 16px)", minHeight: loaded ? 0 : (previewUrl ? 200 : 0) }}
+        style={{
+          borderRadius: "clamp(8px, 2vw, 16px)",
+          minHeight: loaded ? 0 : (previewUrl ? 200 : 0),
+          backgroundColor: loaded ? "transparent" : undefined,
+        }}
       >
         {previewUrl && (
           <Image
