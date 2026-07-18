@@ -9,7 +9,7 @@
 // variant="icon"    — renders the User icon button (replaces the dead User icon)
 
 import Image from "next/image";
-import { cloudinaryUrl } from "@/lib/utils";
+
 import { useState } from "react";
 import { User } from "lucide-react";
 import { PRIMARY } from "@/constants/theme";
@@ -36,7 +36,7 @@ export default function ProfileTrigger({
           >
             {profile?.avatar_url && (
               <Image
-                src={cloudinaryUrl(profile.avatar_url, 80)}
+                src={profile.avatar_url}
                 fill
                 alt="Admin avatar"
                 className="object-cover"

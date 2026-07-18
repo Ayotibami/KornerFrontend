@@ -20,14 +20,6 @@ export function formatLongDateTime(date: string | Date): string {
   return format(new Date(date), "MMMM d, yyyy, h:mm a");
 }
 
-// Injects Cloudinary transformation params into a Cloudinary URL so the CDN
-// serves a resized, compressed, format-optimised version instead of the raw upload.
-// Safe to call on any string — passes non-Cloudinary URLs through unchanged.
-export function cloudinaryUrl(url: string | null | undefined, width: number): string {
-  if (!url || !url.includes("res.cloudinary.com")) return url ?? "";
-  return url.replace("/upload/", `/upload/w_${width},q_auto,f_auto/`);
-}
-
 // Capitalizes just the first character of a string.
 // Used to normalize story status values from the API
 // (e.g. "draft" → "Draft", "published" → "Published").

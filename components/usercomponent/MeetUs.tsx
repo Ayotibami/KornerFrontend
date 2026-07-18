@@ -1,7 +1,7 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useRef, useState } from "react";
-import { cloudinaryUrl } from "@/lib/utils";
+
 import Image from "next/image";
 import { nunito } from "@/lib/font";
 import type { PublicWriter } from "@/lib/publicApi";
@@ -97,7 +97,7 @@ export default function MeetUs({ writers }: { writers: PublicWriter[] }) {
   return (
     <div style={{ width: "95%", marginTop: "clamp(24px, 4vw, 50px)" }}>
       <style>{`
-        /* ── Keyframes ──────────────────────────────────────── */
+        /* â”€â”€ Keyframes â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
         @keyframes meet-orbit {
           from { transform: rotate(0deg); }
           to   { transform: rotate(360deg); }
@@ -123,12 +123,12 @@ export default function MeetUs({ writers }: { writers: PublicWriter[] }) {
           to   { opacity: 1; transform: translateY(0); }
         }
 
-        /* ── Who we be section ──────────────────────────────── */
+        /* â”€â”€ Who we be section â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
         .who-section {
           padding: clamp(24px, 5vw, 50px) clamp(16px, 4vw, 30px) clamp(10px, 2vw, 20px);
         }
 
-        /* ── Orbit ring ─────────────────────────────────────── */
+        /* â”€â”€ Orbit ring â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
         .meet-ring {
           --size:   400px;
           --radius: 145px;
@@ -147,7 +147,7 @@ export default function MeetUs({ writers }: { writers: PublicWriter[] }) {
           opacity: 0.45;
         }
 
-        /* ── Arms ───────────────────────────────────────────── */
+        /* â”€â”€ Arms â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
         .meet-arm { position: absolute; top: 50%; left: 50%; width: 0; height: 0; }
         .meet-arm-0 { transform: rotate(0deg);   }
         .meet-arm-1 { transform: rotate(60deg);  }
@@ -156,7 +156,7 @@ export default function MeetUs({ writers }: { writers: PublicWriter[] }) {
         .meet-arm-4 { transform: rotate(240deg); }
         .meet-arm-5 { transform: rotate(300deg); }
 
-        /* ── Orbit avatars ──────────────────────────────────── */
+        /* â”€â”€ Orbit avatars â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
         .meet-av {
           position: absolute;
           width:  var(--av);
@@ -184,7 +184,7 @@ export default function MeetUs({ writers }: { writers: PublicWriter[] }) {
           box-shadow: 0 0 0 3px #0f1e3d, 0 0 20px rgba(15,30,61,0.22);
         }
 
-        /* ── Center (Kappy) ─────────────────────────────────── */
+        /* â”€â”€ Center (Kappy) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
         .meet-center {
           position: absolute;
           top: 50%; left: 50%;
@@ -198,7 +198,7 @@ export default function MeetUs({ writers }: { writers: PublicWriter[] }) {
           animation: meet-counter 18s linear infinite;
         }
 
-        /* ── Stage layout — desktop 3-col ──────────────────── */
+        /* â”€â”€ Stage layout â€” desktop 3-col â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
         .meet-stage {
           display: grid;
           grid-template-columns: 1fr auto 1fr;
@@ -216,12 +216,12 @@ export default function MeetUs({ writers }: { writers: PublicWriter[] }) {
         }
         .meet-spotlight-tablet { display: none; }
 
-        /* ── Spotlight animations ────────────────────────────── */
+        /* â”€â”€ Spotlight animations â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
         .sp-avatar { animation: avatar-pop 0.55s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
         .sp-name   { animation: text-rise 0.45s ease 0.18s both; }
         .sp-bio    { animation: text-rise 0.45s ease 0.30s both; }
 
-        /* ── Tablet: 2-col (ring + combined panel) ───────────── */
+        /* â”€â”€ Tablet: 2-col (ring + combined panel) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
         @media (max-width: 860px) {
           .meet-ring { --size: 300px; --radius: 106px; --av: 60px; }
           .meet-stage { display: flex; flex-direction: row; align-items: center; justify-content: center; gap: 32px; }
@@ -233,14 +233,14 @@ export default function MeetUs({ writers }: { writers: PublicWriter[] }) {
           }
         }
 
-        /* ── Mobile ─────────────────────────────────────────── */
+        /* â”€â”€ Mobile â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
         @media (max-width: 580px) {
           .meet-ring { --size: 200px; --radius: 70px; --av: 44px; }
           .meet-stage { flex-direction: column; gap: 16px; }
           .meet-ring.ring-shrunk { display: none; }
         }
 
-        /* ── Mobile scroll-driven spotlight ─────────────────── */
+        /* â”€â”€ Mobile scroll-driven spotlight â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
         @keyframes mob-in {
           from { opacity: 0; transform: translateY(14px); }
           to   { opacity: 1; transform: translateY(0); }
@@ -253,16 +253,16 @@ export default function MeetUs({ writers }: { writers: PublicWriter[] }) {
         }
       `}</style>
 
-      {/* ── "Who we be?" static section ─────────────────────── */}
+      {/* â”€â”€ "Who we be?" static section â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <div className="who-section">
         <p style={{ ...TEXT, fontSize: "clamp(1.3rem, 4vw, 2.5rem)", fontWeight: 900, color: "#0f1e3d", margin: "0 0 16px 0" }}>
           Who we be?
         </p>
         <p style={{ ...TEXT, fontSize: "clamp(0.875rem, 2vw, 1rem)", fontWeight: 500, color: "#767575", margin: 0, lineHeight: 1.8, maxWidth: 680 }}>
-          First, we built <B>Kampos</B> — the social ecosystem for students. Now
+          First, we built <B>Kampos</B> â€” the social ecosystem for students. Now
           we&apos;re back, this time bringing you <B>stories</B>. We didn&apos;t
           just wake up one day and start building. We&apos;re{" "}
-          <B>students, graduates, alumni</B> — people who love making things
+          <B>students, graduates, alumni</B> â€” people who love making things
           better. We saw the gap and felt it firsthand: <B>Naija students</B>{" "}
           needed their own space. Somewhere to filter out the noise, be
           ourselves, speak our language, pass the vibe check, and find
@@ -273,7 +273,7 @@ export default function MeetUs({ writers }: { writers: PublicWriter[] }) {
       </div>
 
       {isMobile ? (
-        /* ── Mobile: tall scroll container, ring + spotlight sticky at top ── */
+        /* â”€â”€ Mobile: tall scroll container, ring + spotlight sticky at top â”€â”€ */
         <div ref={mobileContainerRef} style={{ height: `${count * 70}vh` }}>
           <div style={{
             position: "sticky", top: 0,
@@ -281,11 +281,11 @@ export default function MeetUs({ writers }: { writers: PublicWriter[] }) {
             gap: 20, padding: "24px 0 28px",
             backgroundColor: "#f1f5f9",
           }}>
-            {/* Ring — always full size, no shrink on mobile */}
+            {/* Ring â€” always full size, no shrink on mobile */}
             <div className="meet-ring">
               <div className="meet-center">
                 {writers[0]?.avatar_url && (
-                  <Image src={cloudinaryUrl(writers[0].avatar_url, 100)} alt={writers[0].name} fill style={{ objectFit: "cover" }} sizes="44px" />
+                  <Image src={writers[0].avatar_url} alt={writers[0].name} fill style={{ objectFit: "cover" }} sizes="44px" />
                 )}
               </div>
               {ARM_ANGLES.slice(0, count - 1).map((_, i) => {
@@ -293,18 +293,18 @@ export default function MeetUs({ writers }: { writers: PublicWriter[] }) {
                 return (
                   <div key={i} className={`meet-arm meet-arm-${i}`}>
                     <div className="meet-av">
-                      {w?.avatar_url && <Image src={cloudinaryUrl(w.avatar_url, 100)} alt={w.name} fill style={{ objectFit: "cover" }} sizes="44px" />}
+                      {w?.avatar_url && <Image src={w.avatar_url} alt={w.name} fill style={{ objectFit: "cover" }} sizes="44px" />}
                     </div>
                   </div>
                 );
               })}
             </div>
 
-            {/* Spotlight — appears as user scrolls through container */}
+            {/* Spotlight â€” appears as user scrolls through container */}
             {mobileActive && mobileWriter && (
               <div key={mobileWriterIdx} className="mob-spotlight">
                 <div className="sp-avatar" style={{ width: 100, height: 100, borderRadius: "50%", overflow: "hidden", backgroundColor: "#d1d5db", position: "relative", flexShrink: 0, boxShadow: "0 12px 36px rgba(15,30,61,0.16)" }}>
-                  {mobileWriter.avatar_url && <Image src={cloudinaryUrl(mobileWriter.avatar_url, 200)} alt={mobileWriter.name} fill style={{ objectFit: "cover" }} sizes="100px" />}
+                  {mobileWriter.avatar_url && <Image src={mobileWriter.avatar_url} alt={mobileWriter.name} fill style={{ objectFit: "cover" }} sizes="100px" />}
                 </div>
                 <p className="sp-name" style={{ ...TEXT, fontSize: "1.2rem", fontWeight: 900, color: "#0f1e3d", margin: 0, lineHeight: 1.2 }}>
                   {mobileWriter.name}
@@ -319,7 +319,7 @@ export default function MeetUs({ writers }: { writers: PublicWriter[] }) {
           </div>
         </div>
       ) : (
-        /* ── Desktop/tablet: scroll-driven orbit section ──────── */
+        /* â”€â”€ Desktop/tablet: scroll-driven orbit section â”€â”€â”€â”€â”€â”€â”€â”€ */
         <div ref={containerRef} style={{ height: `calc(100vh + ${count * 45}vh)` }}>
           <div style={{
             position: "sticky", top: 0, height: "100vh",
@@ -353,7 +353,7 @@ export default function MeetUs({ writers }: { writers: PublicWriter[] }) {
               <div className={ringClass}>
                 <div className="meet-center">
                   {writers[0]?.avatar_url && (
-                    <Image src={cloudinaryUrl(writers[0].avatar_url, 160)} alt={writers[0].name} fill style={{ objectFit: "cover" }} sizes="(max-width: 860px) 60px, 78px" />
+                    <Image src={writers[0].avatar_url} alt={writers[0].name} fill style={{ objectFit: "cover" }} sizes="(max-width: 860px) 60px, 78px" />
                   )}
                 </div>
                 {ARM_ANGLES.slice(0, count - 1).map((_, i) => {
@@ -362,7 +362,7 @@ export default function MeetUs({ writers }: { writers: PublicWriter[] }) {
                     <div key={i} className={`meet-arm meet-arm-${i}`}>
                       <div className="meet-av">
                         {writer?.avatar_url && (
-                          <Image src={cloudinaryUrl(writer.avatar_url, 160)} alt={writer.name} fill style={{ objectFit: "cover" }} sizes="(max-width: 860px) 60px, 78px" />
+                          <Image src={writer.avatar_url} alt={writer.name} fill style={{ objectFit: "cover" }} sizes="(max-width: 860px) 60px, 78px" />
                         )}
                       </div>
                     </div>
@@ -374,12 +374,12 @@ export default function MeetUs({ writers }: { writers: PublicWriter[] }) {
               <div className="meet-right">
                 {activeWriter && (
                   <div key={activeIndex} className="sp-avatar" style={{ width: "clamp(120px, 12vw, 176px)", height: "clamp(120px, 12vw, 176px)", borderRadius: "50%", overflow: "hidden", backgroundColor: "#d1d5db", position: "relative", flexShrink: 0, boxShadow: "0 16px 48px rgba(15,30,61,0.18)" }}>
-                    {activeWriter.avatar_url && <Image src={cloudinaryUrl(activeWriter.avatar_url, 350)} alt={activeWriter.name} fill style={{ objectFit: "cover" }} sizes="176px" />}
+                    {activeWriter.avatar_url && <Image src={activeWriter.avatar_url} alt={activeWriter.name} fill style={{ objectFit: "cover" }} sizes="176px" />}
                   </div>
                 )}
               </div>
 
-              {/* Tablet combined panel (hidden on desktop, visible 580–860px) */}
+              {/* Tablet combined panel (hidden on desktop, visible 580â€“860px) */}
               <div className="meet-spotlight-tablet">
                 {activeWriter ? (
                   <div key={activeIndex} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "clamp(10px, 2vw, 14px)" }}>
@@ -409,3 +409,4 @@ export default function MeetUs({ writers }: { writers: PublicWriter[] }) {
     </div>
   );
 }
+

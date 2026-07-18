@@ -21,7 +21,7 @@
 import { useEffect, useState } from "react";
 import { useEscapeKey } from "@/hooks/useEscapeKey";
 import Image from "next/image";
-import { cloudinaryUrl } from "@/lib/utils";
+
 import { createPortal } from "react-dom";
 import { X, Loader2, ShieldCheck, ShieldAlert, Crown, Users, Trash2, Lock } from "lucide-react";
 import { toast } from "sonner";
@@ -138,7 +138,7 @@ export default function AdminDetailModal({
               >
                 {admin.avatar_url && (
                   <Image
-                    src={cloudinaryUrl(admin.avatar_url, 200)}
+                    src={admin.avatar_url}
                     fill
                     alt={admin.admin_name}
                     className="object-cover"

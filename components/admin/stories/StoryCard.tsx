@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Clock, Eye, Loader2, Mail, RotateCcw, SendHorizonal } from "lucide-react";
 import { toast } from "sonner";
-import { capitalize, cloudinaryUrl, formatDate, formatFullDate } from "@/lib/utils";
+import { capitalize, formatDate, formatFullDate } from "@/lib/utils";
 import { submitStoryForReviewFromCard, updateStory } from "@/app/admin/stories/[storiId]/action";
 import type { Story } from "@/types/story";
 import MailModal from "@/components/admin/stories/MailModal";
@@ -58,7 +58,7 @@ export default function StoryCard({ story }: { story: Story }) {
           {/* Cover image with status badge overlay */}
           <div className="relative h-[200px] bg-slate-200 dark:bg-[#2d3748] flex items-center justify-center flex-shrink-0">
             {story.cover_image ? (
-              <Image src={cloudinaryUrl(story.cover_image, 800)} alt="Cover" fill className="object-cover" sizes="(max-width: 640px) 100vw, (max-width: 1280px) 50vw, 33vw" />
+              <Image src={story.cover_image} alt="Cover" fill className="object-cover" sizes="(max-width: 640px) 100vw, (max-width: 1280px) 50vw, 33vw" />
             ) : (
               <p className="text-gray-400 dark:text-gray-500 text-xs">No cover image</p>
             )}

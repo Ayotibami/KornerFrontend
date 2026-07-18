@@ -1,7 +1,7 @@
 "use client";
 
 import { nunito } from "@/lib/font";
-import { cloudinaryUrl } from "@/lib/utils";
+
 import { FaWhatsapp, FaFacebook } from "react-icons/fa";
 import { FaXTwitter } from "react-icons/fa6";
 import { LuLink } from "react-icons/lu";
@@ -94,7 +94,7 @@ export default function StoriBottom({
               height: "clamp(44px, 8vw, 56px)",
               borderRadius: "50%",
               backgroundColor: dark ? "#1a2f50" : "#e2e8f0",
-              backgroundImage: authorAvatar ? `url("${cloudinaryUrl(authorAvatar, 120)}")` : "none",
+              backgroundImage: authorAvatar ? `url("${authorAvatar}")` : "none",
               backgroundSize: "cover",
               backgroundPosition: "center",
               flexShrink: 0,
