@@ -3,6 +3,7 @@
 
 import { useEffect, useState } from "react";
 import { nunito } from "@/lib/font";
+import Image from "next/image";
 
 import AnimatedClock from "./AnimatedClock";
 
@@ -164,10 +165,6 @@ export default function StoriCover({
           flexDirection: "column",
           borderRadius: "clamp(16px, 4vw, 36px)",
           backgroundColor: "black",
-          backgroundImage: coverImage ? `url("${coverImage}")` : "none",
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-          backgroundRepeat: "no-repeat",
           position: "relative",
           overflow: "hidden",
           animation: isDancing
@@ -175,6 +172,18 @@ export default function StoriCover({
             : "none",
         }}
       >
+        {/* Cover image — Next.js optimizes, resizes, and caches this on Vercel's CDN */}
+        {coverImage && (
+          <Image
+            src={coverImage}
+            alt={title}
+            fill
+            priority
+            style={{ objectFit: "cover", objectPosition: "center" }}
+            sizes="(max-width: 640px) 100vw, 800px"
+          />
+        )}
+
         {/* Gradient scrim — sits below the text via zIndex: 0.
             Transparent at top, dark at bottom where the text lives. */}
         {coverImage && (
