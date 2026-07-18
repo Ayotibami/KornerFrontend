@@ -1,6 +1,7 @@
 "use client";
 
 import { nunito } from "@/lib/font";
+import { cloudinaryUrl } from "@/lib/utils";
 import { FaWhatsapp, FaFacebook } from "react-icons/fa";
 import { FaXTwitter } from "react-icons/fa6";
 import { LuLink } from "react-icons/lu";
@@ -72,7 +73,7 @@ export default function StoriBottom({
       }}
     >
       {/* ── LEFT: About the author ── */}
-      <div style={{ display: "flex", flexDirection: "column", gap: 16, flex: "0 0 auto" }}>
+      <div style={{ display: "flex", flexDirection: "column", gap: 16, flex: "1 1 260px", minWidth: 0 }}>
         <p
           style={{
             fontFamily: nunito.style.fontFamily,
@@ -93,7 +94,7 @@ export default function StoriBottom({
               height: "clamp(44px, 8vw, 56px)",
               borderRadius: "50%",
               backgroundColor: dark ? "#1a2f50" : "#e2e8f0",
-              backgroundImage: authorAvatar ? `url("${authorAvatar}")` : "none",
+              backgroundImage: authorAvatar ? `url("${cloudinaryUrl(authorAvatar, 120)}")` : "none",
               backgroundSize: "cover",
               backgroundPosition: "center",
               flexShrink: 0,
@@ -102,7 +103,7 @@ export default function StoriBottom({
             }}
           />
 
-          <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: 4, minWidth: 0 }}>
             <p
               style={{
                 fontFamily: nunito.style.fontFamily,
@@ -123,6 +124,8 @@ export default function StoriBottom({
                 color: bioColor,
                 margin: 0,
                 transition: "color 0.45s ease",
+                wordBreak: "break-word",
+                overflowWrap: "break-word",
               }}
             >
               {authorBio}
