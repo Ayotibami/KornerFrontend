@@ -195,6 +195,7 @@ export default function StoriBody({ blocks, title }: { blocks: Block[]; title: s
         backgroundColor: dark ? "#0a1628" : "white",
         borderRadius: "clamp(16px, 4vw, 24px)",
         width: "100%",
+        maxWidth: "720px",
         border: dark ? "1px solid rgba(59, 130, 246, 0.08)" : "none",
         boxShadow: dark
           ? "0 8px 40px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.03)"
