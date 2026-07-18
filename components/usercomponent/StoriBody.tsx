@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { nunito } from "@/lib/font";
 
 import Image from "next/image";
@@ -140,11 +141,15 @@ function ImageBlock({
   dark: boolean;
 }) {
   const src = image_url || content;
+  const [loaded, setLoaded] = useState(false);
+
   return (
     <div
       style={{
         width: "100%",
-        minHeight: src ? 200 : 0,
+        // minHeight holds a skeleton open while the image loads, then collapses
+        // to zero once onLoad fires so no grey gap appears below small images.
+        minHeight: loaded ? 0 : 200,
         borderRadius: "clamp(8px, 2vw, 16px)",
         overflow: "hidden",
         backgroundColor: dark ? "#0f1e35" : "#e2e8f0",
@@ -159,7 +164,14 @@ function ImageBlock({
           width={0}
           height={0}
           sizes="(max-width: 768px) 100vw, 800px"
-          style={{ width: "100%", height: "auto", display: "block" }}
+          style={{
+            width: "auto",
+            height: "auto",
+            maxWidth: "100%",
+            display: "block",
+            margin: "0 auto",
+          }}
+          onLoad={() => setLoaded(true)}
         />
       ) : null}
     </div>
