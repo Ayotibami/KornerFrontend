@@ -33,7 +33,7 @@ export async function getPublicStories(
     return { stories: data.stories ?? [], hasMore: data.hasMore ?? false };
   } catch (err) {
     console.error("[getPublicStories] fetch threw:", err);
-    throw err;
+    return { stories: [], hasMore: false };
   }
 }
 
@@ -65,13 +65,18 @@ export async function getPublicWriters(): Promise<PublicWriter[]> {
 // a side effect of this exact request — caching it would silently suppress
 // real views, so this one is always fetched fresh.
 export async function getPublicStory(storiId: string): Promise<PublicStoryDetail | null> {
-  const res = await fetch(`${BASE_URL}/user/stories/${storiId}`, {
-    cache: "no-store",
-  });
+  try {
+    const res = await fetch(`${BASE_URL}/user/stories/${storiId}`, {
+      cache: "no-store",
+    });
 
-  if (res.status === 404) return null;
-  if (!res.ok) throw new Error(`Failed to load story (${res.status})`);
+    if (res.status === 404) return null;
+    if (!res.ok) throw new Error(`Failed to load story (${res.status})`);
 
-  const data = await res.json();
-  return data.story;
+    const data = await res.json();
+    return data.story;
+  } catch (err) {
+    console.error("[getPublicStory] fetch threw:", err);
+    return null;
+  }
 }
