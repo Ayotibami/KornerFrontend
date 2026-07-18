@@ -144,8 +144,7 @@ function ImageBlock({
     <div
       style={{
         width: "100%",
-        aspectRatio: "16/9",
-        position: "relative",
+        minHeight: src ? 200 : 0,
         borderRadius: "clamp(8px, 2vw, 16px)",
         overflow: "hidden",
         backgroundColor: dark ? "#0f1e35" : "#e2e8f0",
@@ -157,9 +156,10 @@ function ImageBlock({
         <Image
           src={src}
           alt={storyTitle}
-          fill
-          style={{ objectFit: "cover" }}
-          sizes="(max-width: 768px) 100vw, 768px"
+          width={0}
+          height={0}
+          sizes="(max-width: 768px) 100vw, 800px"
+          style={{ width: "100%", height: "auto", display: "block" }}
         />
       ) : null}
     </div>
