@@ -32,7 +32,14 @@ export default function ImageUploader({ mode, url, onFilePicked }: {
         style={{ borderRadius: "clamp(8px, 2vw, 16px)" }}
       >
         {previewUrl && (
-          <Image src={previewUrl} alt="Story image" fill className="object-cover" unoptimized />
+          <Image
+            src={previewUrl}
+            alt="Story image"
+            fill
+            className="object-cover"
+            sizes="(max-width: 768px) 100vw, 768px"
+            unoptimized={previewUrl.startsWith("blob:")}
+          />
         )}
         {mode === "write" && (
           <button

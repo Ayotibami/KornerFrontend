@@ -127,6 +127,6 @@ export default function EditorBlock({
     case "quote":
       return <QuoteBlock block={block} mode={mode} onChange={onChange} />;
     case "image":
-      return <ImageUploader mode={mode} url={block.image_url} onFilePicked={onImageFilePicked} />;
+      return <ImageUploader mode={mode} url={block.image_url || block.content} onFilePicked={onImageFilePicked} />;
   }
 }
