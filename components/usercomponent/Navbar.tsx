@@ -51,45 +51,41 @@ export default function Navbar() {
           .nav-socials { display: flex; }
           @media (max-width: 768px) { .nav-socials { display: none; } }
           @keyframes k-wave {
-            0%,100% { transform: rotate(0deg); }
-            20%      { transform: rotate(-22deg); }
-            40%      { transform: rotate(12deg); }
-            60%      { transform: rotate(-18deg); }
-            80%      { transform: rotate(8deg); }
+            0%          { transform: rotate(0deg); }
+            8%          { transform: rotate(-20deg); }
+            17%         { transform: rotate(11deg); }
+            25%         { transform: rotate(-16deg); }
+            33%         { transform: rotate(7deg); }
+            40%, 100%   { transform: rotate(0deg); }
           }
           .k-wave {
-            animation: k-wave 1.8s ease-in-out 0.6s 2;
-            transform-origin: 38% 58%;
-          }
-          .k-wave:hover {
-            animation: k-wave 1.8s ease-in-out infinite;
+            animation: k-wave 5s linear infinite;
+            transform-origin: 17% 51%;
           }
         `}</style>
 
-        <Link href="/" style={{ textDecoration: "none", display: "flex", alignItems: "center" }}>
+        <Link href="/" style={{ textDecoration: "none", display: "flex", alignItems: "flex-start" }}>
           <Image
-            src="/images/korner-k.png"
+            src="/images/korner-k-logo.png"
             alt="K"
-            width={50}
-            height={50}
+            width={230}
+            height={178}
             className="k-wave"
             style={{
-              height: "clamp(1.5rem, 3.5vw, 1.9rem)",
+              height: "clamp(1.4rem, 3.2vw, 1.8rem)",
               width: "auto",
             }}
           />
-          <span
+          <Image
+            src="/images/korner-orner.png"
+            alt="orner"
+            width={290}
+            height={178}
             style={{
-              fontFamily: nunito.style.fontFamily,
-              fontSize: "clamp(1.1rem, 3vw, 1.4rem)",
-              fontWeight: 800,
-              color: "#fff",
-              lineHeight: 1,
-              marginLeft: "-0.45rem",
+              height: "clamp(1.4rem, 3.2vw, 1.8rem)",
+              width: "auto",
             }}
-          >
-            orner
-          </span>
+          />
         </Link>
 
         <div className="nav-socials" style={{ gap: 28, alignItems: "center" }}>
