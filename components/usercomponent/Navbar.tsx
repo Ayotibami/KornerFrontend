@@ -8,6 +8,11 @@ import {
   FaEnvelope,
 } from "react-icons/fa6";
 
+/* Same source as the footer — NEXT_PUBLIC_ so it also resolves client-side.
+   The fallback keeps the logo link working if the env var is ever missing. */
+const KAMPOS_URL =
+  process.env.NEXT_PUBLIC_KAMPOS_URL || "https://kampos-website.vercel.app";
+
 const socials = [
   { icon: FaXTwitter,   label: "X",         href: "https://x.com/Kamposapp" },
   { icon: FaInstagram,  label: "Instagram",  href: "https://instagram.com/Kamposapp" },
@@ -104,7 +109,7 @@ export default function Navbar() {
         </div>
 
         <a
-          href={process.env.KAMPOS_URL}
+          href={KAMPOS_URL}
           target="_blank"
           rel="noopener noreferrer"
           style={{ textDecoration: "none", display: "flex", alignItems: "center", gap: 8 }}
