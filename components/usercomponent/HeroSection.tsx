@@ -10,6 +10,7 @@ export default function HeroSection() {
   return (
     <div
       style={{
+        position: "relative",
         width: "95%",
         minHeight: "100vh",
         marginBottom: 20,
@@ -19,14 +20,29 @@ export default function HeroSection() {
         justifyContent: "space-evenly",
         alignItems: "center",
         borderRadius: 36,
-        backgroundImage: "url('/images/landingcover1.png')",
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-        backgroundRepeat: "no-repeat",
+        backgroundColor: "#0f1e3d",
       }}
     >
+      {/* Faint doodle layer — image at 10% so it reads as texture, not foreground */}
       <div
         style={{
+          position: "absolute",
+          inset: 0,
+          backgroundImage: "url('/images/landingcover1.png')",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundRepeat: "no-repeat",
+          opacity: 0.25,
+          borderRadius: 36,
+          pointerEvents: "none",
+          zIndex: 0,
+        }}
+      />
+
+      <div
+        style={{
+          position: "relative",
+          zIndex: 1,
           flexDirection: "column",
           width: "70%",
           gap: 20,
