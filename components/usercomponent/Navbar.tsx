@@ -83,7 +83,7 @@ export default function Navbar() {
             style={{
               height: "clamp(1.2rem, 2.8vw, 1.6rem)",
               width: "auto",
-              marginLeft: "-13px",
+              marginLeft: "-10px",
             }}
           />
         </Link>
