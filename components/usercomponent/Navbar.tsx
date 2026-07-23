@@ -52,17 +52,18 @@ export default function Navbar() {
           @media (max-width: 768px) { .nav-socials { display: none; } }
         `}</style>
 
-        <Link
-          href="/"
-          style={{
-            fontFamily: nunito.style.fontFamily,
-            fontSize: "clamp(1.1rem, 3vw, 1.4rem)",
-            fontWeight: 800,
-            color: "#fff",
-            textDecoration: "none",
-          }}
-        >
-          Korner
+        <Link href="/" style={{ textDecoration: "none", display: "flex", alignItems: "center" }}>
+          <Image
+            src="/images/korner-logo-white.webp"
+            alt="Korner"
+            width={120}
+            height={40}
+            style={{
+              width: "clamp(80px, 14vw, 120px)",
+              height: "auto",
+              objectFit: "contain",
+            }}
+          />
         </Link>
 
         <div className="nav-socials" style={{ gap: 28, alignItems: "center" }}>
