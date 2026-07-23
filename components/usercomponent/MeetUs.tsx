@@ -259,15 +259,15 @@ export default function MeetUs({ writers }: { writers: PublicWriter[] }) {
           Who we be?
         </p>
         <p style={{ ...TEXT, fontSize: "clamp(0.875rem, 2vw, 1rem)", fontWeight: 500, color: "#767575", margin: 0, lineHeight: 1.8, maxWidth: 680 }}>
-          First, we built <B>Kampos</B> — the social ecosystem for students. Now
+          First, we built <B>Kampos</B> &mdash; the social ecosystem for students. Now
           we&apos;re back, this time bringing you <B>stories</B>. We didn&apos;t
-          just wake up one day and start building. We&apos;re{“ “}
-          <B>students, graduates, alumni</B> — people who love making things
-          better. We saw the gap and felt it firsthand: <B>Naija students</B>{“ “}
+          just wake up one day and start building. We&apos;re{' '}
+          <B>students, graduates, alumni</B> &mdash; people who love making things
+          better. We saw the gap and felt it firsthand: <B>Naija students</B>{' '}
           needed their own space. Somewhere to filter out the noise, be
           ourselves, speak our language, pass the vibe check, and find
           everything at our fingertips. A real <B>community</B>, not a borrowed
-          one. That&apos;s what this is about. We&apos;re building this{“ “}
+          one. That&apos;s what this is about. We&apos;re building this{' '}
           <B>for you, and with you</B>.
         </p>
       </div>
