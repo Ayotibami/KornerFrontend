@@ -66,7 +66,7 @@ export default function Navbar() {
           }
         `}</style>
 
-        <Link href="/" style={{ textDecoration: "none", display: "flex", alignItems: "center", gap: 1 }}>
+        <Link href="/" style={{ textDecoration: "none", display: "flex", alignItems: "center" }}>
           <Image
             src="/images/korner-k.png"
             alt="K"
@@ -74,9 +74,10 @@ export default function Navbar() {
             height={50}
             className="k-wave"
             style={{
-              width: "clamp(28px, 5vw, 42px)",
-              height: "auto",
+              height: "clamp(1.9rem, 4.5vw, 2.4rem)",
+              width: "auto",
               objectFit: "contain",
+              marginBottom: "-0.2rem",
             }}
           />
           <span
@@ -86,6 +87,7 @@ export default function Navbar() {
               fontWeight: 800,
               color: "#fff",
               letterSpacing: "-0.5px",
+              marginLeft: "-0.05rem",
             }}
           >
             orner
