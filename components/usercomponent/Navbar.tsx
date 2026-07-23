@@ -74,18 +74,20 @@ export default function Navbar() {
             height={50}
             className="k-wave"
             style={{
-              height: "clamp(1.7rem, 4vw, 2.1rem)",
+              height: "clamp(2rem, 4.5vw, 2.6rem)",
               width: "auto",
               objectFit: "contain",
-              marginBottom: "-0.05rem",
             }}
           />
           <span
             style={{
               fontFamily: nunito.style.fontFamily,
-              fontSize: "clamp(1.1rem, 3vw, 1.4rem)",
+              fontSize: "clamp(1.2rem, 3.2vw, 1.6rem)",
               fontWeight: 800,
               color: "#fff",
+              marginLeft: "-0.8rem",
+              lineHeight: 1,
+              paddingBottom: "0.1rem",
             }}
           >
             orner
