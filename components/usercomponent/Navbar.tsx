@@ -36,7 +36,7 @@ export default function Navbar() {
           width: "95%",
           pointerEvents: "auto",
           display: "flex",
-          alignItems: "center",
+          alignItems: "flex-end",
           justifyContent: "space-between",
           padding: "clamp(8px, 1.5vw, 12px) clamp(14px, 3vw, 24px)",
           borderRadius: 20,
