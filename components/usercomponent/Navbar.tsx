@@ -63,7 +63,7 @@ export default function Navbar() {
           }
         `}</style>
 
-        <Link href="/" style={{ textDecoration: "none", display: "flex", alignItems: "flex-end", gap: 4 }}>
+        <Link href="/" style={{ textDecoration: "none", display: "flex", alignItems: "flex-end", gap: 0 }}>
           <Image
             src="/images/nav-k.png"
             alt="K"
