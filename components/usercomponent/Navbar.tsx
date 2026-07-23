@@ -50,20 +50,46 @@ export default function Navbar() {
         <style>{`
           .nav-socials { display: flex; }
           @media (max-width: 768px) { .nav-socials { display: none; } }
+          @keyframes k-wave {
+            0%,100% { transform: rotate(0deg); }
+            20%      { transform: rotate(-22deg); }
+            40%      { transform: rotate(12deg); }
+            60%      { transform: rotate(-18deg); }
+            80%      { transform: rotate(8deg); }
+          }
+          .k-wave {
+            animation: k-wave 1.8s ease-in-out 0.6s 2;
+            transform-origin: 38% 58%;
+          }
+          .k-wave:hover {
+            animation: k-wave 1.8s ease-in-out infinite;
+          }
         `}</style>
 
-        <Link href="/" style={{ textDecoration: "none", display: "flex", alignItems: "center" }}>
+        <Link href="/" style={{ textDecoration: "none", display: "flex", alignItems: "center", gap: 1 }}>
           <Image
-            src="/images/korner-logo-white.webp"
-            alt="Korner"
-            width={120}
-            height={40}
+            src="/images/korner-k.png"
+            alt="K"
+            width={50}
+            height={50}
+            className="k-wave"
             style={{
-              width: "clamp(80px, 14vw, 120px)",
+              width: "clamp(28px, 5vw, 42px)",
               height: "auto",
               objectFit: "contain",
             }}
           />
+          <span
+            style={{
+              fontFamily: nunito.style.fontFamily,
+              fontSize: "clamp(1.1rem, 3vw, 1.4rem)",
+              fontWeight: 800,
+              color: "#fff",
+              letterSpacing: "-0.5px",
+            }}
+          >
+            orner
+          </span>
         </Link>
 
         <div className="nav-socials" style={{ gap: 28, alignItems: "center" }}>
