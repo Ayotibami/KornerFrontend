@@ -1177,9 +1177,25 @@ These are not part of the admin panel. They are legacy components from before th
 | 3 | `AboutSection` | "Na your Korner" blurb + animated 2x2 icon grid |
 | 4 | `TopicsSection` | "What we gist about" — 6-card topic category grid |
 | 5 | `PeepSection` | Dark torn-paper section with 3 live story previews |
-| 6 | `Testimony` | "You no go like Korner ke?" + animated word cloud blob |
+| 6 | `Testimony` | "You no go like Korner ke?" + `Freeform` animated pill-tag cloud |
 | 7 | `ActivationForm` | Email + push notification subscription |
 | 8 | `Footer` | Link columns + social icons |
+
+### Navbar (`components/usercomponent/Navbar.tsx`)
+
+Fixed glassmorphic pill navbar at the top of all public pages. Server component.
+
+**Logo:** Two separate images placed side-by-side inside a `<Link href="/">`:
+- `public/images/nav-k.png` (565×715px) — K letter with waving hand, white on transparent. Animated with CSS `k-wave` keyframes every 5s (wave for first 2s, 3s pause). `transform-origin: 15% 90%` rotates around the foot of the K so the hand swings at the top.
+- `public/images/nav-orner.png` (1533×598px) — "orner" text, white on transparent. Completely static. Sized smaller and nudged up slightly to visually align with the K body.
+
+`alignItems: flex-end` aligns the bottom of both images so the K body baseline matches the orner text baseline. The K image is given a larger CSS height to account for the hand extending above the letter body.
+
+**Right side:** Social icon links (X, Instagram, WhatsApp, Email). Hidden on mobile (`@media max-width: 768px`).
+
+**Far right:** Kampos logo + "by Kampos" tagline.
+
+**Pill styling:** `position: fixed`, `width: 95%`, centered via flexbox shelf, `borderRadius: 20`, `background: rgba(22, 90, 191, 0.09)`, `backdropFilter: blur(14px)`, blue-tinted border.
 
 ### TopicsSection (`components/usercomponent/TopicsSection.tsx`)
 

@@ -51,42 +51,39 @@ export default function Navbar() {
           .nav-socials { display: flex; }
           @media (max-width: 768px) { .nav-socials { display: none; } }
           @keyframes k-wave {
-            0%          { transform: rotate(0deg); }
-            8%          { transform: rotate(-20deg); }
-            17%         { transform: rotate(11deg); }
-            25%         { transform: rotate(-16deg); }
-            33%         { transform: rotate(7deg); }
-            40%, 100%   { transform: rotate(0deg); }
+            0%, 40%, 100% { transform: rotate(0deg); }
+            8%            { transform: rotate(-14deg); }
+            18%           { transform: rotate(9deg); }
+            28%           { transform: rotate(-11deg); }
+            38%           { transform: rotate(6deg); }
           }
           .k-wave {
-            animation: k-wave 5s linear infinite;
-            transform-origin: 17% 51%;
+            animation: k-wave 5s ease-in-out infinite;
+            transform-origin: 15% 90%;
           }
         `}</style>
 
-        <Link href="/" style={{ textDecoration: "none", display: "flex", alignItems: "flex-start" }}>
-          <div style={{ overflow: "hidden", height: "clamp(1.4rem, 3.2vw, 1.8rem)", flexShrink: 0 }}>
-            <Image
-              src="/images/korner-k-logo.png"
-              alt="K"
-              width={230}
-              height={178}
-              className="k-wave"
-              style={{
-                height: "clamp(1.4rem, 3.2vw, 1.8rem)",
-                width: "auto",
-                display: "block",
-              }}
-            />
-          </div>
+        <Link href="/" style={{ textDecoration: "none", display: "flex", alignItems: "flex-end", gap: 4 }}>
           <Image
-            src="/images/korner-orner.png"
-            alt="orner"
-            width={290}
-            height={178}
+            src="/images/nav-k.png"
+            alt="K"
+            width={565}
+            height={715}
+            className="k-wave"
             style={{
-              height: "clamp(1.4rem, 3.2vw, 1.8rem)",
+              height: "clamp(2rem, 4.5vw, 2.6rem)",
               width: "auto",
+            }}
+          />
+          <Image
+            src="/images/nav-orner.png"
+            alt="orner"
+            width={1533}
+            height={598}
+            style={{
+              height: "clamp(1.2rem, 2.8vw, 1.6rem)",
+              width: "auto",
+              marginBottom: "0.12rem",
             }}
           />
         </Link>
