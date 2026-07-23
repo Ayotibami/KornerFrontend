@@ -101,7 +101,12 @@ export default function Navbar() {
           ))}
         </div>
 
-        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+        <a
+          href={process.env.KAMPOS_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{ textDecoration: "none", display: "flex", alignItems: "center", gap: 8 }}
+        >
           <Image
             src="/images/logo.png"
             alt="Kampos logo"
@@ -124,7 +129,7 @@ export default function Navbar() {
           >
             by Kampos
           </p>
-        </div>
+        </a>
       </div>
     </div>
   );
