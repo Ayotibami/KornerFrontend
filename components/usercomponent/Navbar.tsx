@@ -9,10 +9,10 @@ import {
 } from "react-icons/fa6";
 
 const socials = [
-  { icon: FaXTwitter, label: "X" },
-  { icon: FaInstagram, label: "Instagram" },
-  { icon: FaWhatsapp, label: "WhatsApp" },
-  { icon: FaEnvelope, label: "Email" },
+  { icon: FaXTwitter,   label: "X",         href: "https://x.com/Kamposapp" },
+  { icon: FaInstagram,  label: "Instagram",  href: "https://instagram.com/Kamposapp" },
+  { icon: FaWhatsapp,   label: "WhatsApp",   href: "https://wa.me/2349110210657?text=Hey%20Kappy%2C%20my%20name%20is%20" },
+  { icon: FaEnvelope,   label: "Email",      href: "mailto:kamposkonnect@gmail.com" },
 ];
 
 export default function Navbar() {
@@ -89,11 +89,13 @@ export default function Navbar() {
         </Link>
 
         <div className="nav-socials" style={{ gap: 28, alignItems: "center" }}>
-          {socials.map(({ icon: Icon, label }) => (
+          {socials.map(({ icon: Icon, label, href }) => (
             <a
               key={label}
-              href="#"
+              href={href}
               aria-label={label}
+              target="_blank"
+              rel="noopener noreferrer"
               style={{ color: "white", display: "flex", alignItems: "center" }}
             >
               <Icon size={20} />
