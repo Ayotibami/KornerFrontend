@@ -71,7 +71,7 @@ export default function Navbar() {
             height={715}
             className="k-wave"
             style={{
-              height: "clamp(2rem, 4.5vw, 2.6rem)",
+              height: "clamp(2.8rem, 5.5vw, 3.5rem)",
               width: "auto",
             }}
           />
@@ -81,9 +81,9 @@ export default function Navbar() {
             width={1533}
             height={598}
             style={{
-              height: "clamp(1.2rem, 2.8vw, 1.6rem)",
+              height: "clamp(1.5rem, 3.2vw, 2rem)",
               width: "auto",
-              marginLeft: "-10px",
+              marginLeft: "-8px",
             }}
           />
         </Link>
