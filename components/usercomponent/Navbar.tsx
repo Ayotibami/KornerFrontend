@@ -65,17 +65,20 @@ export default function Navbar() {
         `}</style>
 
         <Link href="/" style={{ textDecoration: "none", display: "flex", alignItems: "flex-start" }}>
-          <Image
-            src="/images/korner-k-logo.png"
-            alt="K"
-            width={230}
-            height={178}
-            className="k-wave"
-            style={{
-              height: "clamp(1.4rem, 3.2vw, 1.8rem)",
-              width: "auto",
-            }}
-          />
+          <div style={{ overflow: "hidden", height: "clamp(1.4rem, 3.2vw, 1.8rem)", flexShrink: 0 }}>
+            <Image
+              src="/images/korner-k-logo.png"
+              alt="K"
+              width={230}
+              height={178}
+              className="k-wave"
+              style={{
+                height: "clamp(1.4rem, 3.2vw, 1.8rem)",
+                width: "auto",
+                display: "block",
+              }}
+            />
+          </div>
           <Image
             src="/images/korner-orner.png"
             alt="orner"
