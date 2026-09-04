@@ -17,6 +17,7 @@
 
 import { Fragment } from "react";
 import { GripVertical, Trash } from "lucide-react";
+import HoverLabel from "@/components/admin/ui/HoverLabel";
 import {
   DndContext,
   closestCenter,
@@ -79,16 +80,20 @@ function SortableBlock({
           Only this element carries the dnd-kit listeners so the rest of the
           block row scrolls and interacts normally on touch screens.
           touch-none stops the browser from intercepting touch events here so
-          dnd-kit receives them directly for smooth mobile dragging. */}
-      <button
-        type="button"
-        {...attributes}
-        {...listeners}
-        aria-label="Drag to reorder"
-        className="flex-shrink-0 mt-3.5 text-gray-300 dark:text-gray-600 hover:text-gray-500 dark:hover:text-gray-400 cursor-grab active:cursor-grabbing transition-colors touch-none"
-      >
-        <GripVertical size={18} />
-      </button>
+          dnd-kit receives them directly for smooth mobile dragging.
+          p-1 -m-1 grows the tap target without shifting the icon's visual
+          position — the negative margin cancels the padding's outward push. */}
+      <HoverLabel label="Drag to reorder" className="flex-shrink-0 mt-3.5">
+        <button
+          type="button"
+          {...attributes}
+          {...listeners}
+          aria-label="Drag to reorder"
+          className="-m-1 p-1 text-gray-300 dark:text-gray-600 hover:text-gray-500 dark:hover:text-gray-400 cursor-grab active:cursor-grabbing transition-colors touch-none"
+        >
+          <GripVertical size={18} />
+        </button>
+      </HoverLabel>
 
       <div className="flex-1">
         <EditorBlock
@@ -100,11 +105,16 @@ function SortableBlock({
         />
       </div>
 
-      <Trash
-        onClick={() => onDelete(block.position)}
-        size={18}
-        className="text-[#E5533D] cursor-pointer flex-shrink-0 mt-3.5 transition-transform duration-300 hover:scale-95 active:scale-90"
-      />
+      <HoverLabel label="Delete block" className="flex-shrink-0 mt-3.5">
+        <button
+          type="button"
+          onClick={() => onDelete(block.position)}
+          aria-label="Delete block"
+          className="-m-1 p-1 text-[#E5533D] cursor-pointer transition-transform duration-300 hover:scale-95 active:scale-90"
+        >
+          <Trash size={18} />
+        </button>
+      </HoverLabel>
     </div>
   );
 }

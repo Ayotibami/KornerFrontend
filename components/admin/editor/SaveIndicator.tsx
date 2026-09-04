@@ -7,7 +7,10 @@ export default function SaveIndicator({ status }: { status: SaveStatus }) {
   if (status === "idle") return null;
 
   return (
-    <div className="fixed bottom-5 right-4 sm:right-6 z-[90] flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-full bg-white dark:bg-[#1a1f2e] shadow-[0_2px_12px_rgba(0,0,0,0.12)] dark:shadow-[0_2px_12px_rgba(0,0,0,0.4)] border border-gray-100 dark:border-gray-700 select-none">
+    // bottom-[88px] on mobile clears the FAB row (bottom-4, 64px-tall
+    // buttons, top edge ~80px up) — see CharacterCount.tsx for the full
+    // reasoning, same collision risk applies here on the opposite corner.
+    <div className="fixed bottom-[88px] sm:bottom-5 right-4 sm:right-6 z-[90] flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-full bg-white dark:bg-[#1a1f2e] shadow-[0_2px_12px_rgba(0,0,0,0.12)] dark:shadow-[0_2px_12px_rgba(0,0,0,0.4)] border border-gray-100 dark:border-gray-700 select-none">
       {status === "saving" && (
         <>
           <Loader2 size={11} className="animate-spin text-gray-400 dark:text-gray-500 flex-shrink-0" />

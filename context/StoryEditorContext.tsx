@@ -11,6 +11,7 @@
 // and /admin/stories/[storiId], so both pages share the same state shape.
 
 import React, { useState, useContext } from "react";
+import { toast } from "sonner";
 import type { BlockType } from "@/types/story";
 
 // EditorBlock extends the API's Block type with client-side fields.
@@ -51,6 +52,8 @@ type StoryEditorContextType = {
   insertBlock: (type: BlockType, atPosition: number) => void;
   updateBlock: (pos: number, value: string) => void;
   updateImageBlock: (pos: number, url: string) => void;
+  // Deletes the block at `pos` and offers a brief "Undo" toast — a misclick
+  // on the (small, easy-to-misread) delete icon shouldn't cost real writing.
   deleteBlock: (pos: number) => void;
   // Reorders blocks after a drag-and-drop. activeId/overId are the client-
   // side UUIDs (block.id) that dnd-kit uses to identify which block moved
@@ -133,17 +136,37 @@ export default function StoryEditorProvider({
     );
   };
 
-  const deleteBlock = (pos: number) => {
+  // Re-inserts a previously-deleted block at its original position (shifting
+  // everything at/after that position back up), and restores its pending
+  // upload file if it had one — the counterpart to deleteBlock below.
+  const restoreBlock = (block: EditorBlock, file?: File) => {
     setBlocks((prev) => {
-      const blockToDelete = prev.find((b) => b.position === pos);
-      if (blockToDelete) {
-        setPendingBlockFilesState((files) => {
-          const { [blockToDelete.id]: _, ...rest } = files;
-          return rest;
-        });
-      }
+      const shifted = prev.map((b) =>
+        b.position >= block.position ? { ...b, position: b.position + 1 } : b,
+      );
+      return [...shifted, block].sort((a, b) => a.position - b.position);
+    });
+    if (file) setPendingBlockFile(block.id, file);
+  };
+
+  const deleteBlock = (pos: number) => {
+    const blockToDelete = blocks.find((b) => b.position === pos);
+    if (!blockToDelete) return;
+
+    // Snapshot before it's gone — this is what Undo hands back to restoreBlock.
+    const pendingFile = pendingBlockFiles[blockToDelete.id];
+
+    setBlocks((prev) => {
       const filtered = prev.filter((block) => block.position !== pos);
       return filtered.map((block, index) => ({ ...block, position: index + 1 }));
+    });
+    if (pendingFile) setPendingBlockFile(blockToDelete.id, null);
+
+    toast("Block deleted", {
+      action: {
+        label: "Undo",
+        onClick: () => restoreBlock(blockToDelete, pendingFile),
+      },
     });
   };
 

@@ -178,7 +178,7 @@ export default function MasterHelp() {
           {[
             {
               label: "Cover Image",
-              desc: "Click to upload. The main image shown at the top of the story page and on story cards across the site. Not required but strongly recommended.",
+              desc: "Click Image to upload from your device, or GIF/Stickers to pick an animated one from GIPHY. The main image shown at the top of the story page and on story cards across the site. Not required but strongly recommended.",
             },
             {
               label: "Title",
@@ -215,11 +215,12 @@ export default function MasterHelp() {
           paragraph, heading, quote, or image. Stack them together to build the full story.
         </P>
 
-        <Sub>Adding & deleting blocks</Sub>
+        <Sub>Adding, reordering & deleting blocks</Sub>
         <Bullets
           items={[
             <>Click the <strong>+</strong> button between blocks (or below the last block) to add a new one. Choose a type from the menu.</>,
-            <>Click the <strong>delete icon</strong> on the right side of any block to remove it.</>,
+            <>Drag the <strong>grip icon</strong> on the left of any block to reorder it.</>,
+            <>Click the <strong>delete icon</strong> on the right side of any block to remove it — an <strong>Undo</strong> toast appears briefly if you need it back.</>,
           ]}
         />
 
@@ -252,7 +253,7 @@ export default function MasterHelp() {
           <BlockCard
             icon={<ImageIcon size={16} />}
             name="Image"
-            description="Upload a photo into the story body. Shows a local preview immediately — the actual upload to the server happens when you save or publish."
+            description="Click Image to upload a photo, or GIF/Stickers to search GIPHY instead. Shows a local preview immediately — the actual upload to the server happens when you save or publish."
             usage="Inline photos, illustrations, screenshots"
           />
         </div>
@@ -636,7 +637,7 @@ export default function MasterHelp() {
         <Sub>Compose tab</Sub>
         <Bullets
           items={[
-            <><strong>Header Image</strong> — optional image at the top of the email.</>,
+            <><strong>Header Image</strong> — optional image or GIF/sticker at the top of the email.</>,
             <><strong>Subject</strong> — email subject line. Supports {`{{name}}`} personalisation.</>,
             <><strong>Body</strong> — email content. Supports {`{{name}}`} personalisation and basic formatting.</>,
             <>

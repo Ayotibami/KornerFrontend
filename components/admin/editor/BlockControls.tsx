@@ -1,18 +1,20 @@
-﻿"use client";
+"use client";
 
 // Insert row between content blocks in write mode.
-// Collapsed: subtle divider line with + icon — opacity 35% at rest, 100% on hover.
-// Expanded: pill buttons for each block type + Cancel.
+// Collapsed: a labeled "+ Add block" pill on a divider line — always visible
+// (not hover-only, which touch devices can't discover), sized for a comfortable
+// tap target.
+// Expanded: one icon+label pill per block type, plus Cancel.
 
 import { useState } from "react";
-import { Plus } from "lucide-react";
+import { Plus, Heading as HeadingIcon, AlignLeft, Quote, Image as ImageIcon } from "lucide-react";
 import type { BlockType } from "@/types/story";
 
-const BLOCK_TYPES: { type: BlockType; label: string }[] = [
-  { type: "heading", label: "Heading" },
-  { type: "paragraph", label: "Paragraph" },
-  { type: "quote", label: "Quote" },
-  { type: "image", label: "Image" },
+const BLOCK_TYPES: { type: BlockType; label: string; icon: typeof Plus }[] = [
+  { type: "heading", label: "Heading", icon: HeadingIcon },
+  { type: "paragraph", label: "Paragraph", icon: AlignLeft },
+  { type: "quote", label: "Quote", icon: Quote },
+  { type: "image", label: "Image", icon: ImageIcon },
 ];
 
 export default function BlockControls({ onInsert }: { onInsert: (type: BlockType) => void }) {
@@ -20,19 +22,20 @@ export default function BlockControls({ onInsert }: { onInsert: (type: BlockType
 
   if (open) {
     return (
-      <div className="flex flex-wrap items-center gap-2 py-2.5">
-        {BLOCK_TYPES.map(({ type, label }) => (
+      <div className="flex flex-wrap items-center gap-2 py-3">
+        {BLOCK_TYPES.map(({ type, label, icon: Icon }) => (
           <button
             key={type}
             onClick={() => { onInsert(type); setOpen(false); }}
-            className="bg-secondary dark:bg-[#1e3a5f] text-primary dark:text-[#93b8f0] border-none rounded-xl px-[18px] py-2 text-[13px] font-bold cursor-pointer"
+            className="flex items-center gap-1.5 bg-secondary dark:bg-[#1e3a5f] text-primary dark:text-[#93b8f0] border-none rounded-xl px-4 py-2.5 text-sm font-bold cursor-pointer hover:opacity-80 transition-opacity"
           >
-            + {label}
+            <Icon size={15} />
+            {label}
           </button>
         ))}
         <button
           onClick={() => setOpen(false)}
-          className="bg-transparent border-none cursor-pointer text-gray-400 dark:text-gray-500 text-[13px] font-semibold px-2"
+          className="bg-transparent border-none cursor-pointer text-gray-400 dark:text-gray-500 text-sm font-semibold px-2 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
         >
           Cancel
         </button>
@@ -41,13 +44,17 @@ export default function BlockControls({ onInsert }: { onInsert: (type: BlockType
   }
 
   return (
-    <div
+    <button
+      type="button"
       onClick={() => setOpen(true)}
-      className="flex items-center gap-2 py-1.5 cursor-pointer opacity-[0.35] hover:opacity-100 transition-opacity duration-200"
+      className="group flex w-full items-center gap-3 py-2.5 cursor-pointer"
     >
-      <div className="flex-1 h-px bg-primary dark:bg-[#2a4a7a]" />
-      <Plus size={16} className="text-primary dark:text-[#93b8f0]" />
-      <div className="flex-1 h-px bg-primary dark:bg-[#2a4a7a]" />
-    </div>
+      <div className="h-px flex-1 bg-secondary dark:bg-[#2a4a7a] transition-colors group-hover:bg-primary dark:group-hover:bg-[#93b8f0]" />
+      <span className="flex shrink-0 items-center gap-1.5 rounded-full border border-secondary dark:border-[#2a4a7a] bg-white dark:bg-[#1a1f2e] px-4 py-2 text-xs font-bold text-primary dark:text-[#93b8f0] shadow-sm transition-colors group-hover:border-primary group-hover:bg-secondary/20 dark:group-hover:border-[#93b8f0] dark:group-hover:bg-[#1e3a5f]/50">
+        <Plus size={14} />
+        Add block
+      </span>
+      <div className="h-px flex-1 bg-secondary dark:bg-[#2a4a7a] transition-colors group-hover:bg-primary dark:group-hover:bg-[#93b8f0]" />
+    </button>
   );
 }

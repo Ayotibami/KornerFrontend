@@ -35,10 +35,7 @@ import {
 import { getMail } from "@/app/admin/stories/[storiId]/mailAction";
 import ConfirmPublishModal from "@/components/admin/stories/ConfirmPublishModal";
 import RejectReasonModal from "@/components/admin/stories/RejectReasonModal";
-
-const FAB_BASE = "w-10 h-10 sm:w-[52px] sm:h-[52px] flex items-center justify-center rounded-2xl shadow-[0_2px_12px_rgba(0,0,0,0.12)] dark:shadow-[0_2px_12px_rgba(0,0,0,0.4)] transition-transform duration-300 hover:scale-95 active:scale-90 disabled:opacity-60 disabled:cursor-not-allowed flex-shrink-0";
-const FAB_GREEN = `${FAB_BASE} bg-[#D1FAE5] dark:bg-[#022C22] text-[#065F46] dark:text-[#6EE7B7]`;
-const FAB_BLUE  = `${FAB_BASE} bg-secondary dark:bg-[#1e3a5f] text-primary dark:text-[#93b8f0]`;
+import FabButton from "@/components/admin/ui/FabButton";
 
 export default function MasterStoryActions({
   storiId,
@@ -160,42 +157,23 @@ export default function MasterStoryActions({
       />
 
       {!isDirty && status === "Draft" && (
-        <button
-          title="Publish"
-          className={`${FAB_GREEN} cursor-pointer`}
-          onClick={handlePublishClick}
-        >
-          <Rocket size={20} />
-        </button>
+        <FabButton label="Publish" icon={<Rocket size={20} />} tone="green" onClick={handlePublishClick} />
       )}
 
       {!isDirty && status === "Published" && (
-        <button
-          title="Unpublish"
-          className={`${FAB_BLUE} ${isUnpublishing ? "" : "cursor-pointer"}`}
+        <FabButton
+          label="Unpublish"
+          icon={isUnpublishing ? <Loader2 size={20} className="animate-spin" /> : <EyeOff size={20} />}
+          tone="blue"
           disabled={isUnpublishing}
           onClick={handleUnpublish}
-        >
-          {isUnpublishing ? <Loader2 size={20} className="animate-spin" /> : <EyeOff size={20} />}
-        </button>
+        />
       )}
 
       {!isDirty && status === "Pending" && (
         <>
-          <button
-            title="Approve"
-            className={`${FAB_GREEN} cursor-pointer`}
-            onClick={() => setConfirmAction("approve")}
-          >
-            <CheckCircle2 size={20} />
-          </button>
-          <button
-            title="Reject"
-            className={`${FAB_BLUE} cursor-pointer`}
-            onClick={() => setIsRejectOpen(true)}
-          >
-            <XCircle size={20} />
-          </button>
+          <FabButton label="Approve" icon={<CheckCircle2 size={20} />} tone="green" onClick={() => setConfirmAction("approve")} />
+          <FabButton label="Reject" icon={<XCircle size={20} />} tone="blue" onClick={() => setIsRejectOpen(true)} />
         </>
       )}
     </>

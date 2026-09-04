@@ -2,26 +2,39 @@
 
 // Server utility for the Navbar — fetches the logged-in admin's profile.
 // Kept in home/action.tsx because the Navbar is rendered inside the home layout,
-// and this is the only place the profile is needed.
+// and this is the only place the profile is needed. Called on every admin
+// page (11+ routes), so it's the single biggest lever on admin navigation
+// speed — two layers of caching:
+//   - React's cache() dedupes calls within one request. Several routes
+//     (e.g. /admin/home) call getProfile() from both their layout and their
+//     page — without this, that's two live network round trips for the
+//     exact same data on one navigation.
+//   - next.revalidate lets Next's Data Cache serve repeat calls *across*
+//     navigations within the window without hitting the backend at all.
+//     30s: short enough that a profile edit (name/avatar) shows up
+//     elsewhere in the admin almost immediately, long enough to skip the
+//     network round trip on the normal back-and-forth clicking around the
+//     dashboard.
 //
 // Returns null on failure instead of throwing, so a broken /admin/profile endpoint
 // won't crash the entire Navbar. The Navbar and AdminGreeting both handle null
 // with graceful fallbacks (empty avatar circle, "Admin" name).
 
+import { cache } from "react";
 import { apiRequest } from "@/lib/api";
 import type { AdminProfile } from "@/types/admin";
 import type { ApiResult } from "@/types/api";
 
-const getProfile = async (): Promise<AdminProfile | null> => {
+const getProfile = cache(async (): Promise<AdminProfile | null> => {
   try {
-    const res = await apiRequest("/admin/profile");
+    const res = await apiRequest("/admin/profile", { next: { revalidate: 30 } });
     const { profile } = await res.json();
 
     return profile ?? null;
   } catch {
     return null;
   }
-};
+});
 
 export default getProfile;
 

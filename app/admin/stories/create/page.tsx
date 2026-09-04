@@ -17,15 +17,20 @@
 import { useCallback, useRef, useState, useTransition } from "react";
 import { ArrowLeft, BookCheck, Eye, FeatherIcon, Loader2, Pencil } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { useStoryEditor } from "@/context/StoryEditorContext";
 import { useAdmin } from "@/context/AdminContext";
 import CoverImage from "@/components/admin/editor/CoverImage";
 import StoryEditor from "@/components/admin/editor/StoryEditor";
+import FabButton from "@/components/admin/ui/FabButton";
+import HelpTrigger from "@/components/admin/ui/HelpTrigger";
 import { TitleField, SubTitleField, ExcerptField, ReadTimeField } from "@/components/admin/editor/MetaFields";
 import { autosaveExistingStory, autosaveNewStory } from "@/app/admin/stories/autosaveActions";
 import { useAutosave } from "@/hooks/useAutosave";
+import { useHideOnScroll } from "@/hooks/useHideOnScroll";
 import SaveIndicator from "@/components/admin/editor/SaveIndicator";
+import CharacterCount from "@/components/admin/editor/CharacterCount";
 import createStory from "./action";
 import { updateStory } from "@/app/admin/stories/[storiId]/action";
 import { uploadToCloudinary } from "@/lib/cloudinary";
@@ -33,12 +38,8 @@ import type { EditorBlock } from "@/context/StoryEditorContext";
 
 const DRAFT_KEY = "korner-create-draft-id";
 
-const FAB_BASE   = "w-10 h-10 sm:w-[52px] sm:h-[52px] flex items-center justify-center rounded-2xl shadow-[0_2px_12px_rgba(0,0,0,0.12)] dark:shadow-[0_2px_12px_rgba(0,0,0,0.4)] transition-transform duration-300 hover:scale-95 active:scale-90 flex-shrink-0";
-const FAB_TEAL   = `${FAB_BASE} bg-[#CCFBF1] dark:bg-[#022C22]  text-[#065F46] dark:text-[#6EE7B7]`;
-const FAB_VIOLET = `${FAB_BASE} bg-[#EDE9FE] dark:bg-[#2E1065]  text-[#5B21B6] dark:text-[#C4B5FD]`;
-const FAB_BLUE   = `${FAB_BASE} bg-secondary dark:bg-[#1e3a5f]  text-primary   dark:text-[#93b8f0]`;
-
 export default function CreatePage() {
+  const router = useRouter();
   const { profile } = useAdmin();
   const {
     mode, setMode,
@@ -87,6 +88,11 @@ export default function CreatePage() {
     { enabled: title.trim().length > 0 },
   );
 
+  // Mobile only — hide the fixed FAB row while scrolling down through a long
+  // draft so it doesn't sit over the content being read/written; desktop's
+  // side column is unaffected (see the sm: overrides on the container below).
+  const fabVisible = useHideOnScroll();
+
   // ── Upload pending files before save ──────────────────────────────────
   // Uploads any pending image files (deferred from when user picked them),
   // returns an updated blocks array and cover image URL + publicId.
@@ -134,7 +140,7 @@ export default function CreatePage() {
           if (finalCoverImage !== coverImage) setCoverImage(finalCoverImage);
           setBlocks(updatedBlocks);
           clearPendingFiles();
-          window.location.href = "/admin/home";
+          router.push("/admin/home");
         } else {
           const result = await createStory(
             title, subTitle, excerpt, readTime, finalCoverImage, coverPublicId, updatedBlocks,
@@ -151,27 +157,27 @@ export default function CreatePage() {
   return (
     <div className="min-h-screen bg-[#f8f9fb] dark:bg-[#0f1117]">
       <SaveIndicator status={saveStatus} />
-      <div className="fixed z-[100] flex flex-row flex-nowrap items-center justify-center gap-2 overflow-x-auto px-1 bottom-4 left-1/2 -translate-x-1/2 max-w-[94vw] sm:flex-col sm:gap-2.5 sm:justify-start sm:overflow-visible sm:px-0 sm:bottom-auto sm:left-auto sm:translate-x-0 sm:max-w-none sm:top-20 sm:right-[clamp(12px,3vw,24px)]">
-        <button
-          title={mode === "write" ? "Preview story" : "Edit story"}
-          className={`${mode === "write" ? FAB_VIOLET : FAB_BLUE} cursor-pointer`}
+      <CharacterCount blocks={blocks} />
+      <div
+        className={`fixed z-[100] flex flex-row flex-nowrap items-center justify-center gap-2 overflow-x-auto px-1 bottom-4 left-1/2 -translate-x-1/2 max-w-[94vw] transition duration-300 ease-out ${
+          fabVisible ? "translate-y-0 opacity-100" : "translate-y-24 opacity-0 pointer-events-none"
+        } sm:flex-col sm:gap-2.5 sm:justify-start sm:overflow-visible sm:px-0 sm:bottom-auto sm:left-auto sm:translate-x-0 sm:translate-y-0 sm:opacity-100 sm:pointer-events-auto sm:max-w-none sm:top-20 sm:right-[clamp(12px,3vw,24px)]`}
+      >
+        <FabButton
+          label={mode === "write" ? "Preview" : "Edit"}
+          icon={mode === "write" ? <Eye size={20} /> : <Pencil size={20} />}
+          tone={mode === "write" ? "violet" : "blue"}
           onClick={() => setMode(mode === "write" ? "read" : "write")}
-        >
-          {mode === "write" ? <Eye size={20} /> : <Pencil size={20} />}
-        </button>
+        />
 
         {mode === "read" && (
-          <>
-            <button
-              title="Save as draft"
-              disabled={busy}
-              className={`${FAB_TEAL} ${busy ? "opacity-60 cursor-not-allowed" : "cursor-pointer"}`}
-              onClick={() => { if (!busy) handleDraft(); }}
-            >
-              {busy ? <Loader2 size={20} className="animate-spin" /> : <BookCheck size={20} />}
-            </button>
-
-          </>
+          <FabButton
+            label="Save Draft"
+            icon={busy ? <Loader2 size={20} className="animate-spin" /> : <BookCheck size={20} />}
+            tone="teal"
+            disabled={busy}
+            onClick={handleDraft}
+          />
         )}
       </div>
 
@@ -211,12 +217,13 @@ export default function CreatePage() {
           {/* Header row */}
           <div className="flex items-center justify-between">
             <button
-              onClick={() => { window.location.href = "/admin/home"; }}
+              onClick={() => router.push("/admin/home")}
               className="flex items-center gap-1.5 text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors cursor-pointer"
             >
               <ArrowLeft size={16} />
               Go back
             </button>
+            <HelpTrigger href="/admin/help#creating-story" />
           </div>
 
           {/* Page heading */}

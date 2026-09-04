@@ -134,9 +134,10 @@ export default function WriterHelp() {
           <div className="p-4 bg-gray-50 dark:bg-[#1e2130] rounded-xl border border-gray-100 dark:border-white/[0.04]">
             <p className="text-sm font-bold text-[#0f1e3d] dark:text-gray-50 mb-1">Cover Image</p>
             <P>
-              Click to upload the main image. This is the first thing readers see — it appears at
-              the top of the story page and on story cards across the website. Not required, but
-              strongly recommended.
+              Click <strong>Image</strong> to upload from your device, or{" "}
+              <strong>GIF/Stickers</strong> to pick an animated one from GIPHY instead. This is the
+              first thing readers see — it appears at the top of the story page and on story cards
+              across the website. Not required, but strongly recommended.
             </P>
           </div>
           <div className="p-4 bg-gray-50 dark:bg-[#1e2130] rounded-xl border border-gray-100 dark:border-white/[0.04]">
@@ -176,11 +177,18 @@ export default function WriterHelp() {
           the menu that appears.
         </P>
 
-        <Sub>Deleting blocks</Sub>
+        <Sub>Reordering & deleting blocks</Sub>
         <P>
-          Each block has a <strong>delete icon</strong> on its right side. Click it to remove that
-          block. The remaining blocks automatically shift up to fill the gap.
+          Each block has a <strong>grip icon</strong> on its left — press and drag it to reorder
+          blocks. On the right, the <strong>delete icon</strong> removes that block; the remaining
+          blocks shift up automatically. Hover either icon (or tap and hold on mobile) to see a
+          label confirming what it does.
         </P>
+        <Tip>
+          Deleted a block by mistake? A <strong>&ldquo;Block deleted&rdquo;</strong> toast appears with an{" "}
+          <strong>Undo</strong> button — click it before the toast fades to bring the block right
+          back.
+        </Tip>
 
         <Sub>The four block types</Sub>
         <div className="flex flex-col gap-3">
@@ -226,9 +234,11 @@ export default function WriterHelp() {
             name="Image"
             description={
               <>
-                Upload a photo directly into your story body. Click the block to open your file
-                picker and choose an image from your device. The image shows a local preview
-                immediately — the actual upload to the server happens when you save or submit.
+                Drop a photo or a GIF/sticker into your story body. Click{" "}
+                <strong>Image</strong> to choose a file from your device, or{" "}
+                <strong>GIF/Stickers</strong> to search GIPHY instead. Either way you get a local
+                preview immediately — the actual upload to the server happens when you save or
+                submit.
               </>
             }
             usage="Inline photos, illustrations, screenshots within the story body"
@@ -523,7 +533,7 @@ export default function WriterHelp() {
         <Sub>Compose tab</Sub>
         <Bullets
           items={[
-            <><strong>Header Image</strong> — an optional image displayed at the very top of the email. Upload from your device.</>,
+            <><strong>Header Image</strong> — an optional image (or GIF/sticker) displayed at the very top of the email. Click <strong>Image</strong> to upload from your device, or <strong>GIF/Stickers</strong> to search GIPHY.</>,
             <><strong>Subject</strong> — the email subject line (supports {`{{name}}`} personalisation).</>,
             <><strong>Body</strong> — the full email content (supports {`{{name}}`} personalisation and basic formatting).</>,
             <>

@@ -21,6 +21,8 @@ import { toast } from "sonner";
 import { useStoryEditor } from "@/context/StoryEditorContext";
 import CoverImage from "@/components/admin/editor/CoverImage";
 import StoryEditor from "@/components/admin/editor/StoryEditor";
+import FabButton from "@/components/admin/ui/FabButton";
+import HelpTrigger from "@/components/admin/ui/HelpTrigger";
 import {
   TitleField,
   SubTitleField,
@@ -30,21 +32,15 @@ import {
 import { updateStory, submitStoryForReview, type StoriDetail } from "./action";
 import { autosaveExistingStory } from "@/app/admin/stories/autosaveActions";
 import { useAutosave } from "@/hooks/useAutosave";
+import { useHideOnScroll } from "@/hooks/useHideOnScroll";
 import MailModal from "@/components/admin/stories/MailModal";
 import MasterStoryActions from "@/components/admin/stories/MasterStoryActions";
 import DeleteStoriModal from "@/components/admin/stories/DeleteStoriModal";
 import SaveIndicator from "@/components/admin/editor/SaveIndicator";
+import CharacterCount from "@/components/admin/editor/CharacterCount";
 import { uploadToCloudinary } from "@/lib/cloudinary";
 import type { EditorBlock } from "@/context/StoryEditorContext";
 import type { BlockType } from "@/types/story";
-
-const FAB_BASE   = "w-10 h-10 sm:w-[52px] sm:h-[52px] flex items-center justify-center rounded-2xl shadow-[0_2px_12px_rgba(0,0,0,0.12)] dark:shadow-[0_2px_12px_rgba(0,0,0,0.4)] transition-transform duration-300 hover:scale-95 active:scale-90 flex-shrink-0";
-const FAB_AMBER  = `${FAB_BASE} bg-[#FEF3C7] dark:bg-[#422006]  text-[#92400E] dark:text-[#FDE68A]`;
-const FAB_TEAL   = `${FAB_BASE} bg-[#CCFBF1] dark:bg-[#022C22]  text-[#065F46] dark:text-[#6EE7B7]`;
-const FAB_VIOLET = `${FAB_BASE} bg-[#EDE9FE] dark:bg-[#2E1065]  text-[#5B21B6] dark:text-[#C4B5FD]`;
-const FAB_BLUE   = `${FAB_BASE} bg-secondary dark:bg-[#1e3a5f]  text-primary   dark:text-[#93b8f0]`;
-const FAB_RED      = `${FAB_BASE} bg-[#FEE2E2] dark:bg-[#450a0a]  text-[#DC2626] dark:text-[#FCA5A5]`;
-const FAB_RED_SOLID = `${FAB_BASE} bg-[#DC2626] text-white`;
 
 function blockWithoutId({ id: _id, ...rest }: EditorBlock) {
   return rest;
@@ -229,6 +225,11 @@ export default function EditStoryEditor({
     enabled: isDirty,
   });
 
+  // Mobile only — hide the fixed FAB row while scrolling down through a long
+  // story so it doesn't sit over the content being read/written; desktop's
+  // side column is unaffected (see the sm: overrides on the container below).
+  const fabVisible = useHideOnScroll();
+
   const [isMailOpen, setIsMailOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [isUpdating, startUpdating] = useTransition();
@@ -304,29 +305,22 @@ export default function EditStoryEditor({
           title={title}
           isOpen={isDeleteOpen}
           onClose={() => setIsDeleteOpen(false)}
-          onDeleted={() => router.push("/admin/home")}
+          onDeleted={() => router.push("/admin/stories")}
         />
       )}
       <SaveIndicator status={saveStatus} />
-      <div className="fixed z-[100] flex flex-row flex-nowrap items-center justify-center gap-2 overflow-x-auto px-1 bottom-4 left-1/2 -translate-x-1/2 max-w-[94vw] sm:flex-col sm:gap-2.5 sm:justify-start sm:overflow-visible sm:px-0 sm:bottom-auto sm:left-auto sm:translate-x-0 sm:max-w-none sm:top-20 sm:right-[clamp(12px,3vw,24px)]">
+      <CharacterCount blocks={blocks} />
+      <div
+        className={`fixed z-[100] flex flex-row flex-nowrap items-center justify-center gap-2 overflow-x-auto px-1 bottom-4 left-1/2 -translate-x-1/2 max-w-[94vw] transition duration-300 ease-out ${
+          fabVisible ? "translate-y-0 opacity-100" : "translate-y-24 opacity-0 pointer-events-none"
+        } sm:flex-col sm:gap-2.5 sm:justify-start sm:overflow-visible sm:px-0 sm:bottom-auto sm:left-auto sm:translate-x-0 sm:translate-y-0 sm:opacity-100 sm:pointer-events-auto sm:max-w-none sm:top-20 sm:right-[clamp(12px,3vw,24px)]`}
+      >
 
         {/* 1. Mode toggle — always visible */}
         {mode === "read" ? (
-          <button
-            title="Edit story"
-            className={`${FAB_BLUE} cursor-pointer`}
-            onClick={() => setMode("write")}
-          >
-            <Pencil size={20} />
-          </button>
+          <FabButton label="Edit" icon={<Pencil size={20} />} tone="blue" onClick={() => setMode("write")} />
         ) : (
-          <button
-            title="Preview story"
-            className={`${FAB_VIOLET} cursor-pointer`}
-            onClick={() => setMode("read")}
-          >
-            <Eye size={20} />
-          </button>
+          <FabButton label="Preview" icon={<Eye size={20} />} tone="violet" onClick={() => setMode("read")} />
         )}
 
         {/* 2–end: everything else only in preview/read mode */}
@@ -334,30 +328,29 @@ export default function EditStoryEditor({
           <>
             {/* Save — both roles, only when dirty */}
             {isDirty && (
-              <button
-                title="Save as draft"
-                className={`${FAB_TEAL} ${busy ? "opacity-60 cursor-not-allowed" : "cursor-pointer"}`}
-                onClick={() => { if (!busy) handleUpdate(); }}
-              >
-                {busy ? <Loader2 size={20} className="animate-spin" /> : <BookCheck size={20} />}
-              </button>
+              <FabButton
+                label="Save Draft"
+                icon={busy ? <Loader2 size={20} className="animate-spin" /> : <BookCheck size={20} />}
+                tone="teal"
+                disabled={busy}
+                onClick={handleUpdate}
+              />
             )}
 
             {/* Writer: submit for review — only when clean */}
             {role === "writer" && !isDirty && stori.status === "Draft" && (
-              <button
-                title="Submit for review"
-                className={`${FAB_AMBER} ${isSubmitting ? "opacity-60 cursor-not-allowed" : "cursor-pointer"}`}
+              <FabButton
+                label="Submit"
+                icon={isSubmitting ? <Loader2 size={20} className="animate-spin" /> : <SendHorizonal size={20} />}
+                tone="amber"
+                disabled={isSubmitting}
                 onClick={() => {
-                  if (isSubmitting) return;
                   startSubmitting(async () => {
                     const result = await submitStoryForReview(storiId);
                     if (!result.ok) toast.error(result.message);
                   });
                 }}
-              >
-                {isSubmitting ? <Loader2 size={20} className="animate-spin" /> : <SendHorizonal size={20} />}
-              </button>
+              />
             )}
 
             {/* Master: publish / approve / reject / unpublish — dirty-gated inside */}
@@ -371,23 +364,11 @@ export default function EditStoryEditor({
             )}
 
             {/* Mail — both roles, always in preview mode */}
-            <button
-              title="Email"
-              className={`${FAB_RED} cursor-pointer`}
-              onClick={() => setIsMailOpen(true)}
-            >
-              <Mail size={20} />
-            </button>
+            <FabButton label="Mail" icon={<Mail size={20} />} tone="red" onClick={() => setIsMailOpen(true)} />
 
             {/* Delete — master only, always in preview mode */}
             {role === "master" && (
-              <button
-                title="Delete story"
-                className={`${FAB_RED_SOLID} cursor-pointer`}
-                onClick={() => setIsDeleteOpen(true)}
-              >
-                <Trash2 size={20} />
-              </button>
+              <FabButton label="Delete" icon={<Trash2 size={20} />} tone="redSolid" onClick={() => setIsDeleteOpen(true)} />
             )}
           </>
         )}
@@ -444,23 +425,26 @@ export default function EditStoryEditor({
 
           <div className="flex items-center justify-between">
             <button
-              onClick={() => { window.location.href = "/admin/home"; }}
+              onClick={() => router.push(role === "master" ? "/admin/stories" : "/admin/home")}
               className="flex items-center gap-1.5 text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors cursor-pointer"
             >
               <ArrowLeft size={16} />
               Go back
             </button>
-            <span
-              className={`text-xs font-semibold px-3 py-1 rounded-full flex-shrink-0 ${
-                stori.status === "Draft"
-                  ? "bg-[#DBEAFE] text-[#1e40af] dark:bg-[#1e3a5f] dark:text-[#93c5fd]"
-                  : stori.status === "Pending"
-                    ? "bg-[#FEF3C7] text-[#92400E] dark:bg-[#422006] dark:text-[#FDE68A]"
-                    : "bg-[#D1FAE5] text-[#065F46] dark:bg-[#022C22] dark:text-[#6EE7B7]"
-              }`}
-            >
-              {stori.status}
-            </span>
+            <div className="flex items-center gap-2">
+              <span
+                className={`text-xs font-semibold px-3 py-1 rounded-full flex-shrink-0 ${
+                  stori.status === "Draft"
+                    ? "bg-[#DBEAFE] text-[#1e40af] dark:bg-[#1e3a5f] dark:text-[#93c5fd]"
+                    : stori.status === "Pending"
+                      ? "bg-[#FEF3C7] text-[#92400E] dark:bg-[#422006] dark:text-[#FDE68A]"
+                      : "bg-[#D1FAE5] text-[#065F46] dark:bg-[#022C22] dark:text-[#6EE7B7]"
+                }`}
+              >
+                {stori.status}
+              </span>
+              <HelpTrigger href="/admin/help#block-editor" />
+            </div>
           </div>
 
         <CoverImage
