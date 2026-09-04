@@ -6,7 +6,8 @@ import Link from "next/link";
 import { Check, Clock, Eye, Loader2, Mail, Rocket, EyeOff, CheckCircle2, XCircle, Trash2, BarChart2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { capitalize, formatDate, formatLongDateTime } from "@/lib/utils";
+import { capitalize, formatLongDateTime } from "@/lib/utils";
+import RelativeTime from "@/components/admin/ui/RelativeTime";
 import {
   publishStoriMaster,
   unpublishStoriMaster,
@@ -214,7 +215,7 @@ export default function MasterStoryCard({
             <div className="flex flex-col gap-2 pt-3 mt-auto border-t border-gray-100 dark:border-white/[0.06] sm:flex-row sm:items-center sm:justify-between">
               <div className="flex flex-col gap-1 min-w-0">
                 <p className="text-[12.5px] font-medium text-gray-500 dark:text-gray-400">
-                  Updated {formatDate(story.updated_at)}
+                  Updated <RelativeTime date={story.updated_at} />
                 </p>
                 <p className="text-[11px] text-gray-400 dark:text-gray-500">
                   Created {formatLongDateTime(story.created_at)}

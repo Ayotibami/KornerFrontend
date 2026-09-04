@@ -5,7 +5,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { Clock, Eye, Loader2, Mail, RotateCcw, SendHorizonal } from "lucide-react";
 import { toast } from "sonner";
-import { capitalize, formatDate, formatFullDate } from "@/lib/utils";
+import { capitalize, formatFullDate } from "@/lib/utils";
+import RelativeTime from "@/components/admin/ui/RelativeTime";
 import { submitStoryForReviewFromCard, revertStoryToDraft } from "@/app/admin/stories/[storiId]/action";
 import type { Story } from "@/types/story";
 import MailModal from "@/components/admin/stories/MailModal";
@@ -83,7 +84,7 @@ export default function StoryCard({ story }: { story: Story }) {
             <div className="flex flex-col gap-2 pt-3 mt-auto border-t border-gray-100 dark:border-white/[0.06] sm:flex-row sm:items-center sm:justify-between">
               <div className="flex flex-col gap-1 min-w-0">
                 <p className="text-[11px] font-medium text-gray-400 dark:text-gray-500">
-                  Updated {formatDate(story.updated_at)}
+                  Updated <RelativeTime date={story.updated_at} />
                 </p>
                 <div className="flex items-center gap-3 text-[11px] text-gray-400 dark:text-gray-500">
                   <span className="flex items-center gap-1">
