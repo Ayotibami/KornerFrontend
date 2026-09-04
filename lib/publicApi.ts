@@ -42,6 +42,7 @@ export interface PublicWriter {
   name: string;
   avatar_url: string | null;
   bio: string | null;
+  is_ceo: boolean;
 }
 
 export async function getPublicWriters(): Promise<PublicWriter[]> {

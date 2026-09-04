@@ -16,7 +16,7 @@ import Testimony from "@/components/usercomponent/Testimony";
 import MeetUs from "@/components/usercomponent/MeetUs";
 import ActivationForm from "@/components/usercomponent/ActivationForm";
 import Footer from "@/components/usercomponent/Footer";
-import { getPublicStories, getPublicWriters } from "@/lib/publicApi";
+import { getPublicStories, getPublicWriters, type PublicWriter } from "@/lib/publicApi";
 
 export const metadata: Metadata = {
   title: "The Korner — Kampos talks you listen",
@@ -64,8 +64,14 @@ export default async function Home() {
     getPublicWriters(),
   ]);
   const kappy = allWriters.find((w) => w.name.toLowerCase() === "kappy") ?? null;
-  const rest = allWriters.filter((w) => w.name.toLowerCase() !== "kappy");
-  const writers = kappy ? [kappy, ...pickRandom(rest, 6)] : pickRandom(allWriters, 7);
+  const ceo = allWriters.find((w) => w.is_ceo) ?? null;
+  const victor = allWriters.find((w) => w.name.trim().toLowerCase() === "oluwa_techie") ?? null;
+  const fixedArms = [ceo, victor].filter((w): w is PublicWriter => w !== null);
+  const rest = allWriters.filter(
+    (w) => w.name.toLowerCase() !== "kappy" && !fixedArms.includes(w),
+  );
+  const arms = [...fixedArms, ...pickRandom(rest, 6 - fixedArms.length)];
+  const writers = kappy ? [kappy, ...arms] : pickRandom(allWriters, 7);
   const base = process.env.NEXT_PUBLIC_BASE_URL!;
 
   const jsonLd = [
