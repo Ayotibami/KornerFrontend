@@ -6,7 +6,8 @@
 // The parent tracks `pendingImageFile` state; this component just signals picks/removes.
 
 import { useEffect, useRef, useState } from "react";
-import { ImagePlus, X } from "lucide-react";
+import { ImagePlus, Sticker, X } from "lucide-react";
+import GifStickerPicker from "@/components/admin/media/GifStickerPicker";
 
 export default function HeaderImagePicker({
   url,
@@ -20,6 +21,7 @@ export default function HeaderImagePicker({
   disabled?: boolean;
 }) {
   const [previewUrl, setPreviewUrl] = useState<string | null>(url);
+  const [pickerOpen, setPickerOpen] = useState(false);
   const ref = useRef<HTMLInputElement>(null);
 
   // Sync when the parent resets/prefills externally (form reset after send,
@@ -58,7 +60,16 @@ export default function HeaderImagePicker({
               className="flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-full bg-secondary dark:bg-[#1e3a5f] text-primary dark:text-[#93b8f0] hover:opacity-80 transition-opacity disabled:opacity-50 cursor-pointer"
             >
               <ImagePlus size={12} />
-              Change
+              Image
+            </button>
+            <button
+              type="button"
+              onClick={() => setPickerOpen(true)}
+              disabled={disabled}
+              className="flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-full bg-secondary dark:bg-[#1e3a5f] text-primary dark:text-[#93b8f0] hover:opacity-80 transition-opacity disabled:opacity-50 cursor-pointer"
+            >
+              <Sticker size={12} />
+              GIF/Stickers
             </button>
             <button
               type="button"
@@ -72,15 +83,26 @@ export default function HeaderImagePicker({
           </div>
         </div>
       ) : (
-        <button
-          type="button"
-          onClick={() => ref.current?.click()}
-          disabled={disabled}
-          className="w-full h-44 rounded-2xl border-2 border-dashed border-secondary dark:border-[#2a4a7a] bg-[#F0F5FF] dark:bg-[#1e2a3a] flex flex-col items-center justify-center gap-1.5 text-primary dark:text-[#93b8f0] hover:opacity-80 transition-opacity cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          <ImagePlus size={18} />
-          <span className="text-xs font-bold">Upload cover image</span>
-        </button>
+        <div className="flex gap-2">
+          <button
+            type="button"
+            onClick={() => ref.current?.click()}
+            disabled={disabled}
+            className="flex h-44 flex-1 flex-col items-center justify-center gap-1.5 rounded-2xl border-2 border-dashed border-secondary bg-[#F0F5FF] text-primary transition-opacity hover:opacity-80 disabled:cursor-not-allowed disabled:opacity-50 dark:border-[#2a4a7a] dark:bg-[#1e2a3a] dark:text-[#93b8f0] cursor-pointer"
+          >
+            <ImagePlus size={18} />
+            <span className="text-xs font-bold">Image</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => setPickerOpen(true)}
+            disabled={disabled}
+            className="flex h-44 flex-1 flex-col items-center justify-center gap-1.5 rounded-2xl border-2 border-dashed border-secondary bg-[#F0F5FF] text-primary transition-opacity hover:opacity-80 disabled:cursor-not-allowed disabled:opacity-50 dark:border-[#2a4a7a] dark:bg-[#1e2a3a] dark:text-[#93b8f0] cursor-pointer"
+          >
+            <Sticker size={18} />
+            <span className="text-xs font-bold">GIF/Stickers</span>
+          </button>
+        </div>
       )}
 
       <input
@@ -96,6 +118,8 @@ export default function HeaderImagePicker({
           }
         }}
       />
+
+      <GifStickerPicker open={pickerOpen} onClose={() => setPickerOpen(false)} onPick={handleFile} />
     </div>
   );
 }

@@ -135,6 +135,7 @@ export default function PushComposer({
           mode="write"
           url={displayImageUrl}
           onFilePicked={handleImageFilePicked}
+          enableGifPicker={false}
         />
       </div>
 

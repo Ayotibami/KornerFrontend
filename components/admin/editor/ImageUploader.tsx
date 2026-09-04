@@ -2,14 +2,20 @@
 
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
+import { ImagePlus, Sticker } from "lucide-react";
+import GifStickerPicker from "@/components/admin/media/GifStickerPicker";
 
-export default function ImageUploader({ mode, url, onFilePicked }: {
+export default function ImageUploader({ mode, url, onFilePicked, enableGifPicker = true }: {
   mode: "write" | "read";
   url: string;
   onFilePicked: (file: File) => void;
+  /** Story body blocks want the GIF/sticker option; the push composer's
+   * reuse of this same component doesn't. */
+  enableGifPicker?: boolean;
 }) {
   const [previewUrl, setPreviewUrl] = useState<string>(url);
   const [loaded, setLoaded] = useState(false);
+  const [pickerOpen, setPickerOpen] = useState(false);
   const ref = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -77,12 +83,22 @@ export default function ImageUploader({ mode, url, onFilePicked }: {
             unoptimized={previewUrl.startsWith("blob:")}
           />
         )}
-        <button
-          onClick={() => ref.current?.click()}
-          className="absolute bottom-3 left-1/2 -translate-x-1/2 bg-white/90 dark:bg-[#1a1f2e]/90 text-[#0f1e3d] dark:text-gray-100 rounded-xl px-6 py-2.5 font-bold text-sm shadow-md whitespace-nowrap z-10 cursor-pointer"
-        >
-          {previewUrl ? "Change Image" : "Upload Image"}
-        </button>
+        <div className="absolute bottom-3 left-1/2 z-10 flex -translate-x-1/2 items-center gap-2">
+          <button
+            onClick={() => ref.current?.click()}
+            className="flex cursor-pointer items-center gap-1.5 whitespace-nowrap rounded-xl bg-white/90 px-5 py-2.5 text-sm font-bold text-[#0f1e3d] shadow-md dark:bg-[#1a1f2e]/90 dark:text-gray-100"
+          >
+            <ImagePlus size={16} /> Image
+          </button>
+          {enableGifPicker && (
+            <button
+              onClick={() => setPickerOpen(true)}
+              className="flex cursor-pointer items-center gap-1.5 whitespace-nowrap rounded-xl bg-white/90 px-5 py-2.5 text-sm font-bold text-[#0f1e3d] shadow-md dark:bg-[#1a1f2e]/90 dark:text-gray-100"
+            >
+              <Sticker size={16} /> GIF/Stickers
+            </button>
+          )}
+        </div>
       </div>
       <input
         type="file"
@@ -95,6 +111,9 @@ export default function ImageUploader({ mode, url, onFilePicked }: {
           e.target.value = "";
         }}
       />
+      {enableGifPicker && (
+        <GifStickerPicker open={pickerOpen} onClose={() => setPickerOpen(false)} onPick={handleFile} />
+      )}
     </>
   );
 }

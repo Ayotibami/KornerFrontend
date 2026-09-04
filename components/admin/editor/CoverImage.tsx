@@ -1,7 +1,9 @@
 "use client";
 
 // Cover image component shown at the top of the story editor.
-// In write mode: shows an "Upload Image" / "Change Image" button overlaid on the image.
+// In write mode: shows "Image" / "GIF/Stickers" buttons overlaid on the image —
+// same labels whether one's already attached or not, since there's no way to
+// tell from the stored URL alone whether it came from an upload or a pick.
 // In read mode: shows the image only (no upload button).
 //
 // Deferred-upload design: no Cloudinary call happens here. The component shows
@@ -10,6 +12,8 @@
 // Cloudinary images are created during drafting.
 
 import { useEffect, useRef, useState } from "react";
+import { ImagePlus, Sticker } from "lucide-react";
+import GifStickerPicker from "@/components/admin/media/GifStickerPicker";
 
 export default function CoverImage({
   mode,
@@ -21,6 +25,7 @@ export default function CoverImage({
   onFilePicked: (file: File) => void;
 }) {
   const [previewUrl, setPreviewUrl] = useState<string | null>(url);
+  const [pickerOpen, setPickerOpen] = useState(false);
   const ref = useRef<HTMLInputElement>(null);
 
   // Sync previewUrl when the url prop changes.
@@ -54,12 +59,20 @@ export default function CoverImage({
         )}
 
         {mode === "write" && (
-          <button
-            onClick={() => ref.current?.click()}
-            className="absolute bottom-6 left-1/2 -translate-x-1/2 bg-white/90 dark:bg-[#1a1f2e]/90 text-[#0f1e3d] dark:text-gray-100 rounded-xl px-6 py-2.5 font-bold text-sm shadow-md whitespace-nowrap z-10 cursor-pointer"
-          >
-            {previewUrl ? "Change Image" : "Upload Image"}
-          </button>
+          <div className="absolute bottom-6 left-1/2 z-10 flex -translate-x-1/2 items-center gap-2">
+            <button
+              onClick={() => ref.current?.click()}
+              className="flex cursor-pointer items-center gap-1.5 whitespace-nowrap rounded-xl bg-white/90 px-5 py-2.5 text-sm font-bold text-[#0f1e3d] shadow-md dark:bg-[#1a1f2e]/90 dark:text-gray-100"
+            >
+              <ImagePlus size={16} /> Image
+            </button>
+            <button
+              onClick={() => setPickerOpen(true)}
+              className="flex cursor-pointer items-center gap-1.5 whitespace-nowrap rounded-xl bg-white/90 px-5 py-2.5 text-sm font-bold text-[#0f1e3d] shadow-md dark:bg-[#1a1f2e]/90 dark:text-gray-100"
+            >
+              <Sticker size={16} /> GIF/Stickers
+            </button>
+          </div>
         )}
       </div>
 
@@ -75,6 +88,10 @@ export default function CoverImage({
           e.target.value = "";
         }}
       />
+
+      {mode === "write" && (
+        <GifStickerPicker open={pickerOpen} onClose={() => setPickerOpen(false)} onPick={handleFile} />
+      )}
     </>
   );
 }
