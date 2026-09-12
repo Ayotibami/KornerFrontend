@@ -19,15 +19,8 @@ export default function StoriCardList({
   const visible = limit ? stories.slice(0, limit) : stories;
 
   return (
-    // Responsive grid: repeat(auto-fit, minmax(clamp(250px, 30%, 400px), 1fr))
-    // - auto-fit: creates as many columns as fit, but COLLAPSES any that end up
-    //   empty and hands their share of space back to the real items — unlike
-    //   auto-fill, which reserves those columns anyway and splits the leftover
-    //   space across them too (invisibly starving the real cards). Matters here
-    //   because this list sometimes renders far fewer items than could fit a
-    //   row (e.g. the landing page's 3-card teaser) — auto-fill was quietly
-    //   giving those cards less width than the same grid renders on /stories,
-    //   which almost always has enough stories to fill every row anyway.
+    // Responsive grid: repeat(auto-fill, minmax(clamp(250px, 30%, 400px), 1fr))
+    // - auto-fill: always creates as many columns as fit, even if some are empty
     // - clamp(250px, 30%, 400px): each column is at least 250px, max 400px, ideally 30% of container
     // - 30% as the preferred width caps columns at 3 (4 × 30% = 120% > 100%, impossible)
     // - 1fr: columns share leftover space equally after the minimum is met
@@ -35,7 +28,7 @@ export default function StoriCardList({
       style={{
         display: "grid",
         gridTemplateColumns:
-          "repeat(auto-fit, minmax(clamp(250px, 30%, 400px), 1fr))",
+          "repeat(auto-fill, minmax(clamp(250px, 30%, 400px), 1fr))",
         gap: "clamp(16px, 4vw, 28px)",
         width: "100%",
       }}
