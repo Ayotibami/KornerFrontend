@@ -110,7 +110,9 @@ interface TornSectionProps {
   tearStripHeight?: number;
   /** Max tear depth in px. Default: 50 */
   maxTear?: number;
-  /** Extra padding inside the content area */
+  /** Extra padding inside the content area. Default is responsive
+   * horizontally (shrinks on narrow screens) — pass a fixed value only if a
+   * section genuinely needs the same padding at every width. */
   contentPadding?: string;
   style?: React.CSSProperties;
 }
@@ -120,7 +122,13 @@ export default function TornSection({
   color = NAVY,
   tearStripHeight = 60,
   maxTear = 50,
-  contentPadding = "40px",
+  // Horizontal padding shrinks on narrow screens instead of staying a flat
+  // 40px — a flat value eats a disproportionate share of a phone-width
+  // screen (e.g. 40px/side on a 375px viewport vs 16px/side once this
+  // clamps down), which is exactly what made the landing page's teaser
+  // cards render with noticeably more side padding than the same cards on
+  // /stories, which already passed this same responsive value explicitly.
+  contentPadding = "40px clamp(16px, 3vw, 40px)",
   style,
 }: TornSectionProps) {
   const vw = 1440; // viewBox width — preserveAspectRatio="none" handles scaling
