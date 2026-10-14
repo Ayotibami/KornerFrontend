@@ -15,21 +15,25 @@ export default async function StoryAnalyticsPage({
 
   let title = "";
   let views: DataPoint[] = [];
+  let totalViews = 0;
 
   try {
     const res = await apiRequest(`/master/analytics/story/${storiId}`);
     const data = await res.json();
     title = data.title ?? "";
     views = data.views ?? [];
+    // Lifetime count from the backend — NOT the sum of the 30-day series
+    // below, which would quietly undercount any story older than a month.
+    totalViews = data.totalViews ?? 0;
   } catch {
     notFound();
   }
 
-  const totalViews = views.reduce((s, d) => s + d.count, 0);
   const peak = views.reduce(
     (best, d) => (d.count > best.count ? d : best),
     { date: "", count: 0 },
   );
+  const recentViews = views.reduce((s, d) => s + d.count, 0);
 
   return (
     <div className="p-4 sm:p-6 flex flex-col gap-5 max-w-3xl mx-auto">
@@ -80,7 +84,7 @@ export default async function StoryAnalyticsPage({
         <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
           Daily views · last 30 days
         </p>
-        {totalViews === 0 ? (
+        {recentViews === 0 ? (
           <p className="text-sm text-gray-400 dark:text-gray-500 py-4 text-center">
             No views recorded in the last 30 days.
           </p>

@@ -62,9 +62,10 @@ export async function getPublicWriters(): Promise<PublicWriter[]> {
   }
 }
 
-// The single-story fetch increments the story's view count server-side as
-// a side effect of this exact request — caching it would silently suppress
-// real views, so this one is always fetched fresh.
+// View counting happens separately (ViewTracker pings /user/stories/:id/view
+// client-side, deduplicated by fingerprint) — not a side effect of this fetch.
+// Still kept uncached: `views` in the response should reflect what's actually
+// in the database at render time, not a stale count from a cached response.
 export async function getPublicStory(storiId: string): Promise<PublicStoryDetail | null> {
   try {
     const res = await fetch(`${BASE_URL}/user/stories/${storiId}`, {

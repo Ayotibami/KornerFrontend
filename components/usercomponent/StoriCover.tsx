@@ -4,6 +4,7 @@
 import { useEffect, useState } from "react";
 import { nunito } from "@/lib/font";
 import Image from "next/image";
+import { Eye } from "lucide-react";
 
 import AnimatedClock from "./AnimatedClock";
 
@@ -20,6 +21,7 @@ export default function StoriCover({
   coverImage = "",
   readingTime = "",
   date = "",
+  views,
 }: {
   title: string;
   subtitle: string;
@@ -28,6 +30,7 @@ export default function StoriCover({
   coverImage?: string;
   readingTime?: string;
   date?: string;
+  views?: number;
 }) {
   // Each *Chars state tracks how many characters of that string have been revealed so far.
   // We slice the string to *Chars length when rendering, which creates the typing effect.
@@ -348,6 +351,29 @@ export default function StoriCover({
                   >
                     {date}
                   </p>
+                )}
+                {typeof views === "number" && (
+                  <div
+                    style={{
+                      display: "flex",
+                      flexDirection: "row",
+                      alignItems: "center",
+                      gap: 5,
+                    }}
+                  >
+                    <Eye size={14} color="white" strokeWidth={2} />
+                    <p
+                      style={{
+                        fontFamily: nunito.style.fontFamily,
+                        fontSize: "clamp(0.7rem, 1.8vw, 0.85rem)",
+                        fontWeight: 500,
+                        color: "white",
+                        margin: 0,
+                      }}
+                    >
+                      {views.toLocaleString()} {views === 1 ? "view" : "views"}
+                    </p>
+                  </div>
                 )}
               </div>
             )}

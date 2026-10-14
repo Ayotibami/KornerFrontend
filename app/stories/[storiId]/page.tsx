@@ -108,6 +108,7 @@ export default async function StoriPage({
           coverImage={story.cover_image}
           readingTime={story.reading_time}
           date={formatFullDate(story.created_at)}
+          views={story.views}
         />
 
         <StoriBody blocks={story.blocks} title={story.title} />
