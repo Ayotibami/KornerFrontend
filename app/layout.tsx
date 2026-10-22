@@ -12,7 +12,7 @@ const poppins = Poppins({
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL!),
-  title: "The Korner",
+  title: "The Korner — gist, stories & real talk for Nigerian students",
   description:
     "Korner is that chill corner on Kampos where we just get student life. From late-night gist about love and grades to real talks on career, money, and culture — it's Kampos talking your talk, straight from our hearts to yours.",
   icons: {
@@ -49,6 +49,39 @@ export default function RootLayout({
         <script
           dangerouslySetInnerHTML={{
             __html: `(function(){try{var t=localStorage.getItem('theme');if(t==='dark'||(t===null&&window.matchMedia('(prefers-color-scheme:dark)').matches)){document.documentElement.classList.add('dark')}}catch(e){}})()`,
+          }}
+        />
+        {/* Organization + WebSite structured data — Korner is a Kampos
+            product, so it points at the same Kampos social profiles (no
+            separate Korner accounts exist yet). Same pattern as the Kampos
+            marketing site's index.html and the Kampos app's layout.tsx —
+            helps Google associate the bare "korner" brand term with this
+            domain instead of leaving it to guess from page text alone. */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "Organization",
+              name: "Korner",
+              alternateName: "The Korner by Kampos",
+              url: `${process.env.NEXT_PUBLIC_BASE_URL}/`,
+              logo: `${process.env.NEXT_PUBLIC_BASE_URL}/icon.png`,
+              description:
+                "Korner is that chill corner on Kampos where we just get student life — gist about love and grades, real talks on career, money, and culture.",
+              sameAs: ["https://x.com/Kamposapp", "https://instagram.com/Kamposapp"],
+            }),
+          }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "WebSite",
+              name: "Korner",
+              url: `${process.env.NEXT_PUBLIC_BASE_URL}/`,
+            }),
           }}
         />
       </head>

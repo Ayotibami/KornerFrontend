@@ -2,6 +2,7 @@ export const dynamic = "force-dynamic";
 
 import StoriesList from "@/components/admin/stories/StoriesList";
 import WriterStatsBanner from "@/components/admin/home/WriterStatsBanner";
+import GrowthStatCard from "@/components/admin/home/GrowthStatCard";
 import AttentionStatCard from "@/components/admin/home/AttentionStatCard";
 import StoriesStatCard from "@/components/admin/home/StoriesStatCard";
 import AdminsStatCard from "@/components/admin/home/AdminsStatCard";
@@ -31,6 +32,11 @@ export default async function HomePage({
     <div className="flex flex-col">
       {isMaster ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-4 sm:p-6">
+          <div className="col-span-1 sm:col-span-2">
+            <Suspense fallback={<StatCardSkeleton />}>
+              <GrowthStatCard />
+            </Suspense>
+          </div>
           <Suspense fallback={<StatCardSkeleton />}>
             <AttentionStatCard />
           </Suspense>
@@ -76,7 +82,7 @@ export default async function HomePage({
         </>
       )}
 
-      <SpeedDialFAB />
+      <SpeedDialFAB isMaster={isMaster} />
     </div>
   );
 }

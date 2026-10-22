@@ -2,16 +2,20 @@
 
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
-import { FeatherIcon, Megaphone, Plus } from "lucide-react";
+import { FeatherIcon, Megaphone, Plus, TrendingUp } from "lucide-react";
 
 const ACTIONS = [
-  { href: "/admin/newsletter",     icon: <Megaphone  size={20} />, label: "Newsletter",       delay: "60ms"  },
-  { href: "/admin/stories/create", icon: <FeatherIcon size={20} />, label: "Create new story", delay: "0ms"  },
+  { href: "/admin/growth",         icon: <TrendingUp size={20} />, label: "Growth dashboard", delay: "120ms", masterOnly: true },
+  { href: "/admin/newsletter",     icon: <Megaphone  size={20} />, label: "Newsletter",       delay: "60ms",  masterOnly: false },
+  { href: "/admin/stories/create", icon: <FeatherIcon size={20} />, label: "Create new story", delay: "0ms",  masterOnly: false },
 ];
 
-export default function SpeedDialFAB() {
+export default function SpeedDialFAB({ isMaster = false }: { isMaster?: boolean }) {
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+  // Growth dashboard redirects non-master roles straight back to /admin/home
+  // server-side — filtering it out here just avoids a dead-end tap for them.
+  const actions = ACTIONS.filter((a) => !a.masterOnly || isMaster);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -26,7 +30,7 @@ export default function SpeedDialFAB() {
 
   return (
     <div ref={containerRef} className="fixed bottom-6 right-5 sm:bottom-8 sm:right-8 flex flex-col items-center gap-3 z-50">
-      {ACTIONS.map(({ href, icon, label, delay }) => (
+      {actions.map(({ href, icon, label, delay }) => (
         <div
           key={href}
           className={`transition-all duration-200 ${
