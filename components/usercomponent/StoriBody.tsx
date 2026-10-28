@@ -6,6 +6,7 @@ import { nunito } from "@/lib/font";
 import Image from "next/image";
 import { FaQuoteLeft } from "react-icons/fa";
 import { useStoryTheme } from "@/context/StoryThemeContext";
+import { headingToSafeHtml } from "@/lib/headingHtml";
 
 type Block = {
   id: string;
@@ -27,22 +28,28 @@ const RICH_HTML_BASE = `
   .stori-rich-html li p { margin: 0; }
 `;
 
+// Headings can now carry bold / italic / underline / strikethrough. Older ones
+// are plain text; headingToSafeHtml shows those exactly as before and lets
+// nothing but those four formats through for the new ones.
 function HeadingBlock({ content, dark }: { content: string; dark: boolean }) {
   return (
-    <h2
-      style={{
-        fontFamily: nunito.style.fontFamily,
-        fontSize: "clamp(1.2rem, 3vw, 1.75rem)",
-        fontWeight: 800,
-        color: dark ? "#ccd6f6" : "#0f1e3d",
-        margin: 0,
-        lineHeight: 1.3,
-        textTransform: "capitalize",
-        transition: "color 0.45s ease",
-      }}
-    >
-      {content}
-    </h2>
+    <>
+      <style>{`.stori-heading strong { font-weight: 900; }`}</style>
+      <h2
+        className="stori-heading"
+        style={{
+          fontFamily: nunito.style.fontFamily,
+          fontSize: "clamp(1.2rem, 3vw, 1.75rem)",
+          fontWeight: 800,
+          color: dark ? "#ccd6f6" : "#0f1e3d",
+          margin: 0,
+          lineHeight: 1.3,
+          textTransform: "capitalize",
+          transition: "color 0.45s ease",
+        }}
+        dangerouslySetInnerHTML={{ __html: headingToSafeHtml(content) }}
+      />
+    </>
   );
 }
 

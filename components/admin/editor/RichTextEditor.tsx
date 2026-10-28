@@ -40,9 +40,11 @@ const EDITOR_CSS = `
   }
   .rte-box .ProseMirror p            { margin: 0; }
   .rte-box .ProseMirror p + p        { margin-top: 0.5em; }
-  .rte-box .ProseMirror:empty::before,
-  .rte-box .ProseMirror p.is-empty:first-child::before {
-    content: attr(data-placeholder);
+  /* Placeholder: shown while the editor holds a single empty paragraph (TipTap
+     renders that as <p><br class="ProseMirror-trailingBreak"></p>). The text comes
+     from the --rte-placeholder variable set on the wrapper. */
+  .rte-box .ProseMirror > p:only-child:has(> br.ProseMirror-trailingBreak:only-child)::before {
+    content: var(--rte-placeholder, "");
     color: #9CA3AF;
     pointer-events: none;
     float: left;
@@ -55,12 +57,14 @@ const EDITOR_CSS = `
   .rte-box .ProseMirror li  { margin: 0.15em 0; }
   .rte-box .ProseMirror li p { margin: 0; }
 
+  /* Headings (singleLine): already 800, so bold goes one step heavier (900). */
+  .rte-heading .ProseMirror strong { font-weight: 900; }
+
   /* Dark mode overrides — .dark class on an ancestor activates these */
   .dark .rte-box .ProseMirror {
-    color: #D1D5DB;
+    color: var(--rte-dark-color, #D1D5DB);
   }
-  .dark .rte-box .ProseMirror:empty::before,
-  .dark .rte-box .ProseMirror p.is-empty:first-child::before {
+  .dark .rte-box .ProseMirror > p:only-child:has(> br.ProseMirror-trailingBreak:only-child)::before {
     color: #4B5563;
   }
 `;
@@ -101,6 +105,8 @@ export default function RichTextEditor({
   fontWeight = 500,
   color = "#374151",
   fontStyle = "normal",
+  darkColor,
+  singleLine = false,
 }: {
   content: string;
   onChange: (html: string) => void;
@@ -110,6 +116,12 @@ export default function RichTextEditor({
   fontWeight?: number;
   color?: string;
   fontStyle?: string;
+  // Text colour in dark mode (defaults to the paragraph grey).
+  darkColor?: string;
+  // One line of text, formatting only (bold, italic, underline, strikethrough):
+  // used for headings. No lists, no links, Enter does nothing, and pasted text
+  // is flattened to a single line.
+  singleLine?: boolean;
 }) {
   const [, forceUpdate] = useReducer((x) => x + 1, 0);
 
@@ -121,12 +133,32 @@ export default function RichTextEditor({
         code: false,
         codeBlock: false,
         horizontalRule: false,
+        ...(singleLine
+          ? {
+              bulletList: false,
+              orderedList: false,
+              listItem: false,
+              listKeymap: false,
+              hardBreak: false,
+              link: false,
+            }
+          : {}),
       }),
       Underline,
     ],
     content: content || "",
     editorProps: {
       attributes: { "data-placeholder": placeholder ?? "" },
+      ...(singleLine
+        ? {
+            handleKeyDown: (_view, event) => event.key === "Enter",
+            handlePaste: (view, event) => {
+              const text = event.clipboardData?.getData("text/plain") ?? "";
+              view.dispatch(view.state.tr.insertText(text.replace(/\s*[\r\n]+\s*/g, " ")));
+              return true;
+            },
+          }
+        : {}),
     },
     onUpdate: ({ editor }) => {
       const html = editor.getHTML();
@@ -137,7 +169,7 @@ export default function RichTextEditor({
 
   return (
     <div
-      className="rte-box border-2 border-secondary dark:border-[#2a4a7a] rounded-xl overflow-hidden bg-[#F0F5FF] dark:bg-[#1e2a3a] leading-[1.85]"
+      className={`rte-box ${singleLine ? "rte-heading leading-snug" : "leading-[1.85]"} border-2 border-secondary dark:border-[#2a4a7a] rounded-xl overflow-hidden bg-[#F0F5FF] dark:bg-[#1e2a3a]`}
       style={
         {
           fontSize,
@@ -145,6 +177,8 @@ export default function RichTextEditor({
           color,
           fontStyle,
           "--rte-min-height": `${minHeight}px`,
+          "--rte-placeholder": JSON.stringify(placeholder ?? ""),
+          ...(darkColor ? { "--rte-dark-color": darkColor } : {}),
         } as React.CSSProperties
       }
     >
@@ -164,13 +198,17 @@ export default function RichTextEditor({
         <ToolbarBtn active={editor?.isActive("strike") ?? false} onClick={() => editor?.chain().focus().toggleStrike().run()}>
           <Strikethrough size={13} />
         </ToolbarBtn>
-        <span className="w-px h-5 bg-secondary dark:bg-[#2a4a7a] self-center mx-0.5" />
-        <ToolbarBtn active={editor?.isActive("bulletList") ?? false} onClick={() => editor?.chain().focus().toggleBulletList().run()}>
-          <List size={13} />
-        </ToolbarBtn>
-        <ToolbarBtn active={editor?.isActive("orderedList") ?? false} onClick={() => editor?.chain().focus().toggleOrderedList().run()}>
-          <ListOrdered size={13} />
-        </ToolbarBtn>
+        {!singleLine && (
+          <>
+            <span className="w-px h-5 bg-secondary dark:bg-[#2a4a7a] self-center mx-0.5" />
+            <ToolbarBtn active={editor?.isActive("bulletList") ?? false} onClick={() => editor?.chain().focus().toggleBulletList().run()}>
+              <List size={13} />
+            </ToolbarBtn>
+            <ToolbarBtn active={editor?.isActive("orderedList") ?? false} onClick={() => editor?.chain().focus().toggleOrderedList().run()}>
+              <ListOrdered size={13} />
+            </ToolbarBtn>
+          </>
+        )}
       </div>
 
       <EditorContent editor={editor} />

@@ -6,6 +6,12 @@ import type { EditorBlock as BlockData } from "@/context/StoryEditorContext";
 import { FaQuoteLeft } from "react-icons/fa";
 import RichTextEditor from "./RichTextEditor";
 import ImageUploader from "./ImageUploader";
+import { headingToEditorHtml, headingToSafeHtml } from "@/lib/headingHtml";
+
+// Bold inside a heading goes one step heavier than the heading's own 800.
+const HEADING_READ_CSS = `
+  .heading-read strong { font-weight: 900; }
+`;
 
 // Strips default browser margins from TipTap's <p> output in read mode.
 // Dark mode overrides ensure the text color adapts.
@@ -27,27 +33,35 @@ const QUOTE_SHAKE_CSS = `
   }
 `;
 
+// Headings use the same rich editor as paragraphs (bold, italic, underline,
+// strikethrough), limited to one line. Older headings were saved as plain text;
+// headingToEditorHtml / headingToSafeHtml keep those working unchanged.
 function HeadingBlock({ block, mode, onChange }: { block: BlockData; mode: "write" | "read"; onChange: (v: string) => void }) {
   if (mode === "write") {
     return (
-      <input
-        type="text"
-        value={block.content}
-        onChange={(e) => onChange(e.target.value)}
+      <RichTextEditor
+        content={headingToEditorHtml(block.content)}
+        onChange={onChange}
         placeholder="Heading goes here…"
-        className="w-full px-4 py-3 bg-[#F0F5FF] dark:bg-[#1e2a3a] border-2 border-secondary dark:border-[#2a4a7a] rounded-xl outline-none font-extrabold text-[#0f1e3d] dark:text-gray-50 placeholder:text-gray-300 dark:placeholder:text-gray-600 box-border"
-        style={{ fontSize: "clamp(1.2rem, 3vw, 1.75rem)" }}
+        minHeight={0}
+        singleLine
+        fontSize="clamp(1.2rem, 3vw, 1.75rem)"
+        fontWeight={800}
+        color="#0f1e3d"
+        darkColor="#f9fafb"
       />
     );
   }
-  const text = block.content.replace(/<[^>]*>/g, "").trim();
+  const html = headingToSafeHtml(block.content);
   return (
-    <h2
-      className="font-extrabold text-[#0f1e3d] dark:text-gray-50 m-0 leading-snug"
-      style={{ fontSize: "clamp(1.2rem, 3vw, 1.75rem)" }}
-    >
-      {text || "Heading goes here"}
-    </h2>
+    <>
+      <style>{HEADING_READ_CSS}</style>
+      <h2
+        className="heading-read font-extrabold text-[#0f1e3d] dark:text-gray-50 m-0 leading-snug"
+        style={{ fontSize: "clamp(1.2rem, 3vw, 1.75rem)" }}
+        dangerouslySetInnerHTML={{ __html: html || "Heading goes here" }}
+      />
+    </>
   );
 }
 
