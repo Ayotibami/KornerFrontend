@@ -14,6 +14,7 @@ import Footer from "@/components/usercomponent/Footer";
 import { StoryThemeProvider } from "@/context/StoryThemeContext";
 import { getPublicStory } from "@/lib/publicApi";
 import { formatFullDate } from "@/lib/utils";
+import { ogImageUrl } from "@/lib/ogImage";
 import ViewTracker from "@/components/ViewTracker";
 const extractUuid = (slug: string) => {
   const match = slug.match(/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/);
@@ -35,7 +36,7 @@ export async function generateMetadata({
 
   const base = process.env.NEXT_PUBLIC_BASE_URL!;
   const coverImage = story.cover_image
-    ? [{ url: story.cover_image, width: 1200, height: 630, alt: story.title }]
+    ? [{ url: ogImageUrl(story.cover_image), width: 1200, height: 630, alt: story.title }]
     : [{ url: `${base}/images/og-default.png`, width: 1200, height: 630, alt: "The Korner" }];
 
   return {
@@ -54,7 +55,7 @@ export async function generateMetadata({
       card: "summary_large_image",
       title: story.title,
       description: story.excerpt,
-      images: story.cover_image ? [story.cover_image] : [`${base}/images/og-default.png`],
+      images: story.cover_image ? [ogImageUrl(story.cover_image)] : [`${base}/images/og-default.png`],
     },
     alternates: {
       canonical: `${base}/stories/${story.slug}`,
